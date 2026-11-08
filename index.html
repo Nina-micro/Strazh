@@ -134,6 +134,7 @@
   .badge {
     display: inline-block; padding: 2px 8px; border-radius: 999px;
     font-size: 11px; font-weight: 600; color: #fff; background: #64748b;
+    cursor: pointer; user-select: none;
   }
   .badge.over { background: #ef4444; }
   .badge.soon { background: #f59e0b; }
@@ -235,7 +236,10 @@
     display: flex; gap: 8px; margin-top: 8px; align-items: center;
     flex-wrap: wrap; font-size: 12px; color: #475569;
   }
-  .pay-fact input { width: auto; flex: 1; min-width: 90px; margin-top: 0; padding: 6px 8px; font-size: 13px; }
+  .pay-fact input, .pay-fact select {
+    width: auto; flex: 1; min-width: 90px;
+    margin-top: 0; padding: 6px 8px; font-size: 13px;
+  }
   .pay-fact .lbl2 { white-space: nowrap; font-weight: 600; }
   .pay-block {
     border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px;
@@ -518,7 +522,7 @@
       </div>
 
       <div id="docList"><p class="note">Договоров пока нет</p></div>
-      <p class="mini-note" style="text-align:center">Нажми на строку договора — откроется карточка для редактирования.</p>
+      <p class="mini-note" style="text-align:center">Нажми на строку договора — откроется карточка. Кнопка «оригиналы» переключает статус получения оригиналов (и отдельно по ДС).</p>
     </div>
   </div>
 
@@ -526,7 +530,8 @@
     <div class="card">
       <h3>Реестр оплаты</h3>
       <p class="mini-note" style="text-align:left; margin-bottom:8px">
-        Счета формируются из карточек договоров. Рядом по счёту вноси факт оплаты: платёжное поручение.
+        Счета формируются из карточек договоров. Дата оплаты считается автоматически:
+        для аванса — от даты подписания, для окончательного расчёта — от события расчёта.
       </p>
       <div id="payList"><p class="note">Счетов пока нет</p></div>
     </div>
@@ -619,7 +624,7 @@
         <option value="work">рабочих</option>
       </select>
     </label>
-    <p class="mini-note">Срок аванса отсчитывается с момента подписания договора и выставления счёта.</p>
+    <p class="mini-note">Срок аванса отсчитывается с момента подписания договора и счёта.</p>
 
     <div class="filters">
       <div>
@@ -729,7 +734,8 @@
     <label>Дата подписания акта <input type="date" id="cActDate"></label>
 
     <h4>Счета на оплату</h4>
-    <p class="mini-note">Счета, внесённые здесь, автоматически попадают в реестр оплаты.</p>
+    <p class="mini-note">Счета, внесённые здесь, автоматически попадают в реестр оплаты.
+    Укажи тип — аванс или окончательный расчёт — дата оплаты посчитается сама.</p>
     <div id="cInvoicesWrap"></div>
     <button class="btn add-inv" onclick="addCardInvoiceRow()">+ Добавить счёт</button>
 
@@ -752,7 +758,6 @@ const TEAM = ['Нина', 'Аня', 'Маша', 'Вика', 'Алина'];
 
 let currentTab = 'tasks';
 
-// ===== экранирование ввода =====
 function esc(v) {
   return String(v === null || v === undefined ? '' : v)
     .replace(/&/g, '&amp;')
@@ -796,6 +801,19 @@ const DOC_STRIP = {
 const DOC_CLS = {
   'проект': 'ss-project', 'на согласовании': 'ss-on-approval',
   'подписан': 'ss-signed', 'закрыт': 'ss-closed'
+};
+
+// статусы получения оригиналов
+const ORIG_STATUS = ['не получены', 'на согласовании', 'получены'];
+const ORIG_BADGE = {
+  'не получены':    { cls: 'over', label: 'оригиналы: не получены' },
+  'на согласовании':{ cls: 'soon', label: 'оригиналы: на согл.' },
+  'получены':       { cls: 'paid', label: 'оригиналы: получены' }
+};
+const ORIG_DS_BADGE = {
+  'не получены':    { cls: 'over', label: 'ориг. ДС: не получены' },
+  'на согласовании':{ cls: 'soon', label: 'ориг. ДС: на согл.' },
+  'получены':       { cls: 'paid', label: 'ориг. ДС: получены' }
 };
 
 const COND_TEXT = {
@@ -1272,6 +1290,8 @@ function loadDocs() {
     if (!Array.isArray(d.items)) d.items = [];
     if (!Array.isArray(d.invoices)) d.invoices = [];
     if (!Array.isArray(d.ds)) d.ds = [];
+    if (!d.origStatus) { d.origStatus = 'не получены'; changed = true; }
+    if (!d.origDsStatus) { d.origDsStatus = 'не получены'; changed = true; }
   });
   if (changed) saveDocs(docs);
   return docs;
@@ -1299,6 +1319,18 @@ function recalcModalSum(wrapId, lineId) {
   const line = document.getElementById(lineId);
   if (!wrap || !line) return;
   updateSumLine(lineId, itemsTotal(collectItems(wrapId)));
+}
+
+// ===== оригиналы: циклическое переключение статуса =====
+function cycleOrig(id, field) {
+  const docs = loadDocs();
+  const d = docs.find(x => x.id === id);
+  if (!d) return;
+  const cur = d[field] || 'не получены';
+  const i = ORIG_STATUS.indexOf(cur);
+  d[field] = ORIG_STATUS[(i + 1) % ORIG_STATUS.length];
+  saveDocs(docs);
+  renderDocs();
 }
 
 // ===== добавление договора =====
@@ -1329,6 +1361,8 @@ function addDoc() {
     items: items,
     invoices: [],
     ds: [],
+    origStatus: 'не получены',
+    origDsStatus: 'не получены',
     status: 'проект',
     statusDate: new Date().toISOString(),
     createdAt: new Date().toISOString()
@@ -1490,8 +1524,9 @@ function collectDs() {
   return out;
 }
 
-// ===== счёт в карточке =====
+// ===== счёт в карточке: номер, дата, сумма, тип (аванс/окончательный расчёт) + ПП =====
 function invoiceRowHtml(inv) {
+  const t = inv ? (inv.type || 'аванс') : 'аванс';
   return '<div class="pay-block">' +
     '<button class="remove-inv" title="Убрать счёт" onclick="this.parentNode.remove()">✕</button>' +
     '<div class="pb-title">Счёт на оплату</div>' +
@@ -1499,6 +1534,10 @@ function invoiceRowHtml(inv) {
     '<input type="text" class="inv-num" placeholder="номер счёта" value="' + esc(inv ? inv.num : '') + '">' +
     '<input type="date" class="inv-date" value="' + (inv ? (inv.date || '') : '') + '">' +
     '<input type="number" step="0.01" class="inv-sum" placeholder="сумма, руб." value="' + (inv && inv.sum ? inv.sum : '') + '">' +
+    '<select class="inv-type">' +
+    '<option value="аванс"' + (t === 'аванс' ? ' selected' : '') + '>аванс</option>' +
+    '<option value="окончательный расчёт"' + (t === 'окончательный расчёт' ? ' selected' : '') + '>окончательный расчёт</option>' +
+    '</select>' +
     '</div>' +
     '<div class="pb-title" style="margin-top:6px">Факт оплаты — платёжное поручение</div>' +
     '<div class="pay-fact">' +
@@ -1518,6 +1557,7 @@ function collectInvoices() {
       num: row.querySelector('.inv-num').value.trim(),
       date: row.querySelector('.inv-date').value,
       sum: parseFloat(row.querySelector('.inv-sum').value) || 0,
+      type: row.querySelector('.inv-type').value || 'аванс',
       ppNum: row.querySelector('.pp-num').value.trim(),
       ppDate: row.querySelector('.pp-date').value,
       ppSum: parseFloat(row.querySelector('.pp-sum').value) || 0
@@ -1566,6 +1606,7 @@ function finalBaseDate(d) {
   });
   return last;
 }
+// плановая дата оплаты по типу платежа
 function payPlanDate(d, type) {
   if (type === 'аванс') {
     return (d.signDate && d.prepayDays) ? isoOf(addDays(d.signDate, d.prepayDays, d.prepayUnit)) : null;
@@ -1620,12 +1661,18 @@ function docRow(d) {
     if (left < 0) badge = '<span class="badge over">истёк</span>';
     else if (left <= 30) badge = '<span class="badge soon">' + left + ' дн.</span>';
   }
-  const nItems = (d.items || []).length;
   const nInv = (d.invoices || []).length;
   const catMark = d.cat
     ? '<span class="cat-mark ' + (d.cat === 'ГОЗ' ? 'goz' : 'kom') + '" title="Категория">' + esc(d.cat) + '</span>' : '';
   const accBadge = d.accept
     ? '<span class="badge ' + (d.accept === 'ОТК' ? 'otk' : 'vp') + '">приёмка: ' + esc(d.accept) + '</span>' : '';
+  const oB = ORIG_BADGE[d.origStatus || 'не получены'];
+  const origBtn = '<span class="badge ' + oB.cls + '" onclick="cycleOrig(\'' + d.id + '\', \'origStatus\')" title="Нажми, чтобы сменить статус">' + oB.label + '</span>';
+  let origDsBtn = '';
+  if ((d.ds || []).length) {
+    const oD = ORIG_DS_BADGE[d.origDsStatus || 'не получены'];
+    origDsBtn = '<span class="badge ' + oD.cls + '" onclick="cycleOrig(\'' + d.id + '\', \'origDsStatus\')" title="Нажми, чтобы сменить статус">' + oD.label + '</span>';
+  }
   return '<div class="task' + (d.status === 'закрыт' ? ' is-done' : '') + '" style="border-left-color:' + strip + '">' +
     '<div class="info clickable" onclick="openDocCard(\'' + d.id + '\')">' +
     '<div class="name">' + catMark + ' ' + esc(d.num) + ' <span style="font-weight:400;color:#64748b">· ' + esc(d.subjectType || '') + '</span></div>' +
@@ -1633,7 +1680,6 @@ function docRow(d) {
     (d.contr ? '<span class="who">' + esc(d.contr) + '</span>' : '') +
     accBadge +
     (d.sum ? '<span>' + fmtNum(d.sum) + ' руб.</span>' : '') +
-    (nItems ? '<span>позиций: ' + nItems + '</span>' : '') +
     (nInv ? '<span>счетов: ' + nInv + '</span>' : '') +
     (d.date ? '<span>до ' + fmtDate(d.date) + '</span>' : '') +
     badge +
@@ -1643,6 +1689,7 @@ function docRow(d) {
     (itemsText(d) ? '<div class="doc-extra">Ведомость поставки:<br>' + itemsText(d) + '</div>' : '') +
     (payText(d) ? '<div class="doc-extra">Оплата: ' + payText(d) + '</div>' : '') +
     (dsText(d) ? '<div class="doc-extra">Допсоглашения:<br>' + dsText(d) + '</div>' : '') +
+    '<div class="meta">' + origBtn + origDsBtn + '</div>' +
     '</div>' +
     '<div><button class="del" title="Удалить" onclick="delDoc(\'' + d.id + '\')">✕</button></div>' +
     '</div>';
@@ -1776,7 +1823,7 @@ function delDocFromCard() {
   delDoc(id);
 }
 
-// ===== реестр оплаты =====
+// ===== реестр оплаты: счета из карточек, дата оплаты по типу, по месяцам =====
 function saveInv(id, i, field, val) {
   const docs = loadDocs();
   const d = docs.find(x => x.id === id);
@@ -1789,11 +1836,13 @@ function saveInv(id, i, field, val) {
 function invRow(d, i, inv) {
   const strip = DOC_STRIP[d.status] || '#64748b';
   const isPaid = !!(inv.ppNum || inv.ppDate || inv.ppSum);
+  const dueDate = payPlanDate(d, inv.type || 'аванс');
   let badge = isPaid
     ? '<span class="badge paid">оплачено</span>'
-    : (inv.date && daysLeft(inv.date) < 0
-        ? '<span class="badge over">просрочен</span>'
+    : (dueDate && daysLeft(dueDate) < 0
+        ? '<span class="badge over">просрочено</span>'
         : '<span class="badge wait">ждёт оплаты</span>');
+  const typeBadge = '<span class="badge ' + ((inv.type || 'аванс') === 'аванс' ? 'ok' : 'soon') + '">' + esc(inv.type || 'аванс') + '</span>';
   return '<div class="task" style="border-left-color:' + strip + '">' +
     '<div class="info">' +
     '<div class="name">Счёт №' + esc(inv.num || '—') + ' от ' + fmtDate(inv.date) + '</div>' +
@@ -1801,6 +1850,8 @@ function invRow(d, i, inv) {
     '<span class="who">' + esc(d.num) + '</span>' +
     (d.contr ? '<span>' + esc(d.contr) + '</span>' : '') +
     '<span>сумма: <b>' + (inv.sum ? fmtNum(inv.sum) : '—') + '</b> руб.</span>' +
+    (dueDate ? '<span>срок оплаты: ' + fmtDate(dueDate) + '</span>' : '<span>срок оплаты: не рассчитан (заполни факты в карточке)</span>') +
+    typeBadge +
     badge +
     '</div>' +
     '<div class="pay-block">' +
@@ -1825,21 +1876,27 @@ function renderPays() {
     list.innerHTML = '<p class="note">Счетов пока нет — добавь счёт в карточку договора</p>';
     return;
   }
+  // группировка по месяцу срока оплаты (если не рассчитан — по дате счёта)
   const months = {};
   rows.forEach(r => {
-    const key = r.inv.date ? r.inv.date.slice(0, 7) : 'nodate';
+    const dueDate = payPlanDate(r.d, r.inv.type || 'аванс');
+    const key = (dueDate || r.inv.date) ? (dueDate || r.inv.date).slice(0, 7) : 'nodate';
     if (!months[key]) months[key] = [];
     months[key].push(r);
   });
-  const keys = Object.keys(months).sort().reverse();
+  const keys = Object.keys(months).sort();
   list.innerHTML = keys.map(key => {
     const arr = months[key];
     const total = r2(arr.reduce((s, r) => s + (r.inv.sum || 0), 0));
     const paidTotal = r2(arr.filter(r => r.inv.ppNum || r.inv.ppDate || r.inv.ppSum)
       .reduce((s, r) => s + (r.inv.ppSum || r.inv.sum || 0), 0));
-    const label = key === 'nodate' ? 'без даты' :
+    const label = key === 'nodate' ? 'Срок не определён' :
       new Date(key + '-01').toLocaleDateString('ru-RU', { year: 'numeric', month: 'long' });
-    const arr2 = arr.slice().sort((a, b) => (a.inv.date || '9999').localeCompare(b.inv.date || '9999'));
+    const arr2 = arr.slice().sort((a, b) => {
+      const da = payPlanDate(a.d, a.inv.type || 'аванс') || a.inv.date || '9999';
+      const db = payPlanDate(b.d, b.inv.type || 'аванс') || b.inv.date || '9999';
+      return da.localeCompare(db);
+    });
     return '<div class="group">' +
       '<div class="group-head g-month">' +
       '<span>' + label + '</span>' +
@@ -1852,7 +1909,7 @@ function renderPays() {
   }).join('');
 }
 
-// ===== график поставок =====
+// ===== график поставок: месяц → договор → позиции =====
 function schedItemRow(d, it) {
   const strip = DOC_STRIP[d.status] || '#64748b';
   const due = itemDueDate(d, it);
@@ -1937,8 +1994,7 @@ function renderSched() {
         '<div class="group-head g-doc" onclick="toggleSchedDoc(\'' + did + '\')">' +
         '<span>' + (isOpen ? '▾ ' : '▸ ') + esc(g.d.num) +
         (g.d.contr ? ' · ' + esc(g.d.contr) : '') + '</span>' +
-        '<small>позиций: ' + g.items.length +
-        ' · на ' + fmtNum(itemsTotal(g.items)) + ' руб. ' + nearestBadge + overBadge + '</small>' +
+        '<small>' + g.items.length + ' поз. · на ' + fmtNum(itemsTotal(g.items)) + ' руб. ' + nearestBadge + overBadge + '</small>' +
         '</div>' +
         (isOpen ? '<div class="group-body">' +
           g.items.map(it => schedItemRow(g.d, it)).join('') + '</div>' : '') +
