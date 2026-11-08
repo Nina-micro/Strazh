@@ -131,14 +131,22 @@
     font-size: 13px;
   }
   .btn.ghost { background: #e2e8f0; color: #475569; }
+  .btn.danger {
+    background: #fff;
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.5);
+    width: 100%;
+    font-size: 13px;
+    padding: 9px;
+  }
 
   .hot-title { color: #ef4444; }
 
-  /* ===== строка задачи/договора ===== */
+  /* ===== строка задачи/договора/платежа ===== */
   .task {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     padding: 10px 10px 10px 12px;
     border-bottom: 1px solid #e2e8f0;
     font-size: 14px;
@@ -154,6 +162,7 @@
   .task .meta { color: #64748b; font-size: 12px; margin-top: 3px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
   .who { color: #2563eb; font-weight: 600; }
   .stdate { font-size: 8px; color: #94a3b8; }
+  .task .clickable { cursor: pointer; }
 
   .status-pill {
     display: inline-block;
@@ -224,6 +233,8 @@
   .badge.over { background: #ef4444; }
   .badge.soon { background: #f59e0b; }
   .badge.ok   { background: #2563eb; }
+  .badge.paid { background: #16a34a; }
+  .badge.wait { background: #94a3b8; }
 
   /* ===== группы ===== */
   .group { border: 1px solid #e2e8f0; border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
@@ -322,8 +333,9 @@
     overflow-y: auto;
   }
   .modal h3 { font-size: 17px; margin-bottom: 12px; display: block; }
-  .modal-actions { display: flex; gap: 10px; }
+  .modal-actions { display: flex; gap: 10px; flex-wrap: wrap; }
   .modal-actions .btn { margin-top: 10px; }
+  .modal-actions .btn { flex: 1; }
 
   /* ===== этапы поставки в окне договора ===== */
   .stage-row {
@@ -352,6 +364,18 @@
   }
   .mini-note { font-size: 11px; color: #94a3b8; margin: 4px 0 0; }
   .doc-extra { font-size: 11px; color: #64748b; margin-top: 4px; line-height: 1.5; }
+
+  /* ===== факт оплаты ===== */
+  .pay-fact {
+    display: flex; gap: 8px; margin-top: 8px;
+    align-items: center; flex-wrap: wrap;
+    font-size: 12px; color: #475569;
+  }
+  .pay-fact input {
+    width: auto; flex: 1; min-width: 110px;
+    margin-top: 0; padding: 6px 8px; font-size: 13px;
+  }
+  .pay-fact .lbl2 { white-space: nowrap; font-weight: 600; }
 
   /* ===== календарь экономиста ===== */
   .cal-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
@@ -400,6 +424,7 @@
   body.red-mode .btn:active { background: #b91c1c; }
   body.red-mode .btn.clear,
   body.red-mode .btn.ghost { background: #fee2e2; color: #b91c1c; }
+  body.red-mode .btn.danger { background: #fff; color: #ef4444; }
   body.red-mode #secDoc .card h3 { color: #b91c1c; }
   body.red-mode #secDoc .who { color: #dc2626; }
   body.red-mode #secDoc .card { box-shadow: 0 1px 4px rgba(220, 38, 38, 0.12); }
@@ -568,33 +593,67 @@
 <!-- ===== РАЗДЕЛ: Договорная работа ===== -->
 <div id="secDoc" class="hidden">
 
-  <div class="card">
-    <h3>Реестр договоров
-      <button class="btn clear" onclick="clearDocFilters()">сбросить</button>
-    </h3>
+  <div class="tabs">
+    <button id="subDocRegistry" class="on" onclick="showDocSub('registry')">Реестр договоров</button>
+    <button id="subDocPay" onclick="showDocSub('pay')">Реестр оплаты</button>
+    <button id="subDocSched" onclick="showDocSub('sched')">График поставок</button>
+  </div>
 
-    <div class="filters">
-      <div>
-        <span class="small-lbl">Статус</span>
-        <select id="dStatus" onchange="renderDocs()">
-          <option value="all">все</option>
-          <option value="проект">проект</option>
-          <option value="на согласовании">на согласовании</option>
-          <option value="подписан">подписан</option>
-          <option value="в работе">в работе</option>
-          <option value="закрыт">закрыт</option>
-        </select>
+  <!-- подвкладка: реестр договоров -->
+  <div id="docSubRegistry">
+    <div class="card">
+      <h3>Реестр договоров
+        <button class="btn clear" onclick="clearDocFilters()">сбросить</button>
+      </h3>
+
+      <div class="filters">
+        <div>
+          <span class="small-lbl">Статус</span>
+          <select id="dStatus" onchange="renderDocs()">
+            <option value="all">все</option>
+            <option value="проект">проект</option>
+            <option value="на согласовании">на согласовании</option>
+            <option value="подписан">подписан</option>
+            <option value="в работе">в работе</option>
+            <option value="закрыт">закрыт</option>
+          </select>
+        </div>
+        <div>
+          <span class="small-lbl">Сортировка</span>
+          <select id="dSort" onchange="renderDocs()">
+            <option value="new">новые сверху</option>
+            <option value="end">по окончанию срока</option>
+          </select>
+        </div>
       </div>
-      <div>
-        <span class="small-lbl">Сортировка</span>
-        <select id="dSort" onchange="renderDocs()">
-          <option value="new">новые сверху</option>
-          <option value="end">по окончанию срока</option>
-        </select>
-      </div>
+
+      <div id="docList"><p class="note">Договоров пока нет</p></div>
+      <p class="mini-note" style="text-align:center">Нажми на строку договора — откроется карточка для редактирования.</p>
     </div>
+  </div>
 
-    <div id="docList"><p class="note">Договоров пока нет</p></div>
+  <!-- подвкладка: реестр оплаты -->
+  <div id="docSubPay" class="hidden">
+    <div class="card">
+      <h3>Реестр оплаты</h3>
+      <p class="mini-note" style="text-align:left; margin-bottom:8px">
+        Платежи формируются из карточек договоров (аванс и окончательный расчёт).
+        Вноси фактическую дату и сумму по счёту прямо здесь.
+      </p>
+      <div id="payList"><p class="note">Платежей пока нет</p></div>
+    </div>
+  </div>
+
+  <!-- подвкладка: график поставок -->
+  <div id="docSubSched" class="hidden">
+    <div class="card">
+      <h3>График поставок</h3>
+      <p class="mini-note" style="text-align:left; margin-bottom:8px">
+        Этапы собираются из карточек договоров. Фиксированные даты — по возрастанию,
+        остальные — по условиям отсчёта. Нажми на строку, чтобы открыть договор.
+      </p>
+      <div id="schedList"><p class="note">Этапов пока нет</p></div>
+    </div>
   </div>
 
   <p class="note">ТЕСТОВЫЙ РЕЖИМ. Договоры хранятся только на этом устройстве — переноси в Kaiten.</p>
@@ -685,6 +744,69 @@
   </div>
 </div>
 
+<!-- ===== карточка договора (просмотр и редактирование) ===== -->
+<div id="docCardOverlay" class="overlay hidden" onclick="if(event.target === this) closeDocCard()">
+  <div class="modal">
+    <h3>Карточка договора</h3>
+    <label>Номер договора <input type="text" id="cNum"></label>
+    <label>Контрагент <input type="text" id="cContr"></label>
+    <label>Предмет договора <input type="text" id="cSubject"></label>
+    <label>Сумма с НДС, руб. <input type="number" id="cSum" step="0.01"></label>
+    <label>Окончание срока действия <input type="date" id="cDate"></label>
+    <label>Статус <select id="cStatus"></select></label>
+
+    <h4>Оплата</h4>
+    <div class="filters">
+      <div>
+        <span class="small-lbl">Аванс, %</span>
+        <input type="number" id="cPrepay" step="0.1">
+      </div>
+      <div>
+        <span class="small-lbl">Срок оплаты аванса, дн.</span>
+        <input type="number" id="cPrepayDays" step="1">
+      </div>
+    </div>
+    <label>Отсчёт срока аванса
+      <select id="cPrepayUnit">
+        <option value="cal">календарных дней</option>
+        <option value="work">рабочих дней</option>
+      </select>
+    </label>
+
+    <div class="filters">
+      <div>
+        <span class="small-lbl">Окончательный расчёт, дн.</span>
+        <input type="number" id="cFinalDays" step="1">
+      </div>
+      <div>
+        <span class="small-lbl">Тип дней</span>
+        <select id="cFinalUnit">
+          <option value="cal">календарных</option>
+          <option value="work">рабочих</option>
+        </select>
+      </div>
+    </div>
+    <label>С какого момента отсчитывать
+      <select id="cFinalEvent">
+        <option value="act">после подписания акта</option>
+        <option value="delivery">после поставки (последнего этапа)</option>
+        <option value="contract">после подписания договора</option>
+      </select>
+    </label>
+
+    <h4>Этапность поставки</h4>
+    <div id="cStagesWrap"></div>
+    <button class="btn add-stage" onclick="addCardStageRow()">+ Добавить этап</button>
+    <p class="mini-note">Реестр оплаты и график поставок обновятся автоматически после сохранения.</p>
+
+    <div class="modal-actions">
+      <button class="btn" onclick="saveDocCard()">Сохранить</button>
+      <button class="btn ghost" onclick="closeDocCard()">Отмена</button>
+    </div>
+    <button class="btn danger" onclick="delDocFromCard()">Удалить договор</button>
+  </div>
+</div>
+
 <script>
 // ===== СПИСОК ИСПОЛНИТЕЛЕЙ =====
 const TEAM = ['Нина', 'Аня', 'Маша', 'Вика', 'Алина'];
@@ -756,6 +878,18 @@ const DOC_CLS = {
   'закрыт':          'ss-closed'
 };
 
+const COND_TEXT = {
+  prepay:   'с даты перечисления аванса',
+  tolling:  'с даты получения давальческого сырья',
+  contract: 'с даты подписания договора',
+  fixed:    'фиксированная дата'
+};
+const FINAL_EVENT_TEXT = {
+  act:      'после подписания акта',
+  delivery: 'после последнего этапа поставки',
+  contract: 'после подписания договора'
+};
+
 // раскрытые группы исполнителей (аккордеон)
 const whoOpen = {};
 
@@ -772,7 +906,12 @@ function showTab(name) {
   document.getElementById('tabCalc').classList.toggle('on', name === 'calc');
   document.getElementById('tabDoc').classList.toggle('on', name === 'doc');
   if (name === 'cal') renderCal();
-  if (name === 'doc') renderDocs();
+  if (name === 'doc') {
+    renderDocs();
+    renderPays();
+    renderSched();
+    showDocSub(docSub);
+  }
   // красная тема для вкладки «Договорная работа»
   document.body.classList.toggle('red-mode', name === 'doc');
 }
@@ -1188,6 +1327,21 @@ buildWhoSelect();
 render();
 
 // ===== ДОГОВОРНАЯ РАБОТА =====
+let docSub = 'registry';
+let editingDocId = null;
+
+function showDocSub(name) {
+  docSub = name;
+  document.getElementById('docSubRegistry').classList.toggle('hidden', name !== 'registry');
+  document.getElementById('docSubPay').classList.toggle('hidden', name !== 'pay');
+  document.getElementById('docSubSched').classList.toggle('hidden', name !== 'sched');
+  document.getElementById('subDocRegistry').classList.toggle('on', name === 'registry');
+  document.getElementById('subDocPay').classList.toggle('on', name === 'pay');
+  document.getElementById('subDocSched').classList.toggle('on', name === 'sched');
+  if (name === 'pay') renderPays();
+  if (name === 'sched') renderSched();
+}
+
 function loadDocs() {
   let docs = [];
   try { docs = JSON.parse(localStorage.getItem('strazh_docs')) || []; }
@@ -1205,37 +1359,69 @@ function loadDocs() {
 function saveDocs(docs) {
   localStorage.setItem('strazh_docs', JSON.stringify(docs));
 }
+function r2(x) { return Math.round(x * 100) / 100; }
+
+// платежи формируются из карточки договора; факт сохраняется при пересборке
+function ensurePayments(d) {
+  const prev = {};
+  (d.payments || []).forEach(p => { prev[p.type] = p; });
+  const list = [];
+  const avans = d.prepay > 0 ? r2((d.sum || 0) * d.prepay / 100) : 0;
+  if (avans > 0 || d.prepay > 0) {
+    list.push({
+      type: 'аванс',
+      planned: avans,
+      factDate: (prev['аванс'] && prev['аванс'].factDate) || '',
+      factSum: (prev['аванс'] && prev['аванс'].factSum) || ''
+    });
+  }
+  const finalSum = r2((d.sum || 0) - avans);
+  if (d.finalDays > 0 || avans <= 0) {
+    list.push({
+      type: 'окончательный расчёт',
+      planned: finalSum,
+      factDate: (prev['окончательный расчёт'] && prev['окончательный расчёт'].factDate) || '',
+      factSum: (prev['окончательный расчёт'] && prev['окончательный расчёт'].factSum) || ''
+    });
+  }
+  return list;
+}
+
 function addDoc() {
   const num = document.getElementById('dNum').value.trim();
   if (!num) { alert('Введите номер договора'); return; }
   const docs = loadDocs();
-  docs.unshift({
+  const d = {
     id: 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
     num: num,
     contr: document.getElementById('dContr').value.trim(),
     subject: document.getElementById('dSubject').value.trim(),
     sum: parseFloat(document.getElementById('dSum').value) || 0,
     date: document.getElementById('dDate').value,
-    // оплата
     prepay: parseFloat(document.getElementById('dPrepay').value) || 0,
     prepayDays: parseInt(document.getElementById('dPrepayDays').value, 10) || 0,
     prepayUnit: document.getElementById('dPrepayUnit').value,
     finalDays: parseInt(document.getElementById('dFinalDays').value, 10) || 0,
     finalUnit: document.getElementById('dFinalUnit').value,
     finalEvent: document.getElementById('dFinalEvent').value,
-    // этапность
-    stages: collectStages(),
+    stages: collectStages('stagesWrap'),
     status: 'проект',
     statusDate: new Date().toISOString(),
     createdAt: new Date().toISOString()
-  });
+  };
+  d.payments = ensurePayments(d);
+  docs.unshift(d);
   saveDocs(docs);
   closeDocModal();
   renderDocs();
+  renderPays();
+  renderSched();
 }
 function delDoc(id) {
   saveDocs(loadDocs().filter(d => d.id !== id));
   renderDocs();
+  renderPays();
+  renderSched();
 }
 function setDocStatus(id, val) {
   const docs = loadDocs();
@@ -1266,14 +1452,11 @@ function clearDocFilters() {
   renderDocs();
 }
 
-// ===== Этапы поставки (динамические строки в окне) =====
-function addStageRow(s) {
-  const wrap = document.getElementById('stagesWrap');
-  const row = document.createElement('div');
-  row.className = 'stage-row';
-  row.innerHTML =
+// ===== строки этапов (общая для окна создания и карточки) =====
+function stageRowHtml(s) {
+  return '<div class="stage-row">' +
     '<button class="remove-stage" title="Убрать этап" onclick="this.parentNode.remove()">✕</button>' +
-    '<input type="text" class="st-name" placeholder="Название этапа (например: поставка КИ)" value="' + (s ? s.name : '') + '">' +
+    '<input type="text" class="st-name" placeholder="Название этапа (например: поставка КИ)" value="' + (s ? (s.name || '') : '') + '">' +
     '<div class="filters">' +
     '<div><span class="small-lbl">Условие отсчёта</span>' +
     '<select class="st-cond">' +
@@ -1285,13 +1468,18 @@ function addStageRow(s) {
     '<div><span class="small-lbl">Срок, дн.</span>' +
     '<input type="number" class="st-days" step="1" value="' + (s && s.days ? s.days : '') + '">' +
     '</div></div>' +
-    '<input type="date" class="st-date" value="' + (s ? (s.date || '') : '') + '">';
-  wrap.appendChild(row);
+    '<input type="date" class="st-date" value="' + (s ? (s.date || '') : '') + '">' +
+    '</div>';
 }
-// собрать значения всех строк этапов в массив
-function collectStages() {
+function addStageRow(s) {
+  document.getElementById('stagesWrap').insertAdjacentHTML('beforeend', stageRowHtml(s));
+}
+function addCardStageRow(s) {
+  document.getElementById('cStagesWrap').insertAdjacentHTML('beforeend', stageRowHtml(s));
+}
+function collectStages(wrapId) {
   const out = [];
-  document.querySelectorAll('#stagesWrap .stage-row').forEach(row => {
+  document.querySelectorAll('#' + wrapId + ' .stage-row').forEach(row => {
     out.push({
       name: row.querySelector('.st-name').value.trim(),
       cond: row.querySelector('.st-cond').value,
@@ -1303,17 +1491,6 @@ function collectStages() {
 }
 
 // ===== расчёт сроков (рабочие дни: сб/вс исключаем, праздники не учитываем) =====
-const COND_TEXT = {
-  prepay:   'с даты перечисления аванса',
-  tolling:  'с даты получения давальческого сырья',
-  contract: 'с даты подписания договора',
-  fixed:    'фиксированная дата'
-};
-const FINAL_EVENT_TEXT = {
-  act:      'после подписания акта',
-  delivery: 'после последнего этапа поставки',
-  contract: 'после подписания договора'
-};
 function addDays(from, n, unit) {
   const d = new Date(from);
   if (unit === 'work') {
@@ -1352,6 +1529,7 @@ function payText(d) {
   return parts.join(' · ');
 }
 
+// ===== реестр договоров =====
 function docRow(d) {
   const strip = DOC_STRIP[d.status] || '#64748b';
   const stCls = DOC_CLS[d.status] || 'ss-project';
@@ -1363,7 +1541,8 @@ function docRow(d) {
     else if (left <= 30) badge = '<span class="badge soon">' + left + ' дн.</span>';
   }
   return '<div class="task' + (d.status === 'закрыт' ? ' is-done' : '') + '" style="border-left-color:' + strip + '">' +
-    '<div class="info"><div class="name">' + d.num + '</div>' +
+    '<div class="info clickable" onclick="openDocCard(\'' + d.id + '\')">' +
+    '<div class="name">' + d.num + '</div>' +
     '<div class="meta">' +
     (d.contr ? '<span class="who">' + d.contr + '</span>' : '') +
     (d.subject ? '<span>' + d.subject + '</span>' : '') +
@@ -1397,6 +1576,187 @@ function renderDocs() {
     return;
   }
   list.innerHTML = shown.map(docRow).join('');
+}
+
+// ===== карточка договора =====
+function fillStatusSelect(selId, cur) {
+  const sel = document.getElementById(selId);
+  sel.innerHTML = DOC_STATUS.map(s =>
+    '<option value="' + s + '"' + (s === cur ? ' selected' : '') + '>' + s + '</option>'
+  ).join('');
+}
+function openDocCard(id) {
+  closeStatusMenu();
+  const d = loadDocs().find(x => x.id === id);
+  if (!d) return;
+  editingDocId = id;
+  document.getElementById('cNum').value = d.num || '';
+  document.getElementById('cContr').value = d.contr || '';
+  document.getElementById('cSubject').value = d.subject || '';
+  document.getElementById('cSum').value = d.sum || '';
+  document.getElementById('cDate').value = d.date || '';
+  fillStatusSelect('cStatus', d.status || 'проект');
+  document.getElementById('cPrepay').value = d.prepay || '';
+  document.getElementById('cPrepayDays').value = d.prepayDays || '';
+  document.getElementById('cPrepayUnit').value = d.prepayUnit || 'cal';
+  document.getElementById('cFinalDays').value = d.finalDays || '';
+  document.getElementById('cFinalUnit').value = d.finalUnit || 'cal';
+  document.getElementById('cFinalEvent').value = d.finalEvent || 'act';
+  const wrap = document.getElementById('cStagesWrap');
+  wrap.innerHTML = '';
+  (d.stages && d.stages.length ? d.stages : [null]).forEach(s => addCardStageRow(s));
+  document.getElementById('docCardOverlay').classList.remove('hidden');
+  document.getElementById('cNum').focus();
+}
+function closeDocCard() {
+  document.getElementById('docCardOverlay').classList.add('hidden');
+  editingDocId = null;
+}
+function saveDocCard() {
+  if (!editingDocId) return;
+  const docs = loadDocs();
+  const d = docs.find(x => x.id === editingDocId);
+  if (!d) return;
+  const num = document.getElementById('cNum').value.trim();
+  if (!num) { alert('Введите номер договора'); return; }
+  d.num = num;
+  d.contr = document.getElementById('cContr').value.trim();
+  d.subject = document.getElementById('cSubject').value.trim();
+  d.sum = parseFloat(document.getElementById('cSum').value) || 0;
+  d.date = document.getElementById('cDate').value;
+  const newStatus = document.getElementById('cStatus').value;
+  if (newStatus !== d.status) {
+    d.status = newStatus;
+    d.statusDate = new Date().toISOString();
+  }
+  d.prepay = parseFloat(document.getElementById('cPrepay').value) || 0;
+  d.prepayDays = parseInt(document.getElementById('cPrepayDays').value, 10) || 0;
+  d.prepayUnit = document.getElementById('cPrepayUnit').value;
+  d.finalDays = parseInt(document.getElementById('cFinalDays').value, 10) || 0;
+  d.finalUnit = document.getElementById('cFinalUnit').value;
+  d.finalEvent = document.getElementById('cFinalEvent').value;
+  d.stages = collectStages('cStagesWrap');
+  d.payments = ensurePayments(d);
+  saveDocs(docs);
+  closeDocCard();
+  renderDocs();
+  renderPays();
+  renderSched();
+}
+function delDocFromCard() {
+  if (!editingDocId) return;
+  if (!confirm('Удалить договор? Реестр оплаты и график обновятся автоматически.')) return;
+  const id = editingDocId;
+  closeDocCard();
+  delDoc(id);
+}
+
+// ===== реестр оплаты =====
+function saveFact(id, i, field, val) {
+  const docs = loadDocs();
+  const d = docs.find(x => x.id === id);
+  if (!d || !d.payments || !d.payments[i]) return;
+  if (field === 'factSum') d.payments[i].factSum = parseFloat(val) || 0;
+  else d.payments[i].factDate = val;
+  saveDocs(docs);
+  renderPays();
+}
+function payRow(d, i, p) {
+  const strip = DOC_STRIP[d.status] || '#64748b';
+  const isPaid = !!(p.factDate || p.factSum);
+  const badge = isPaid
+    ? '<span class="badge paid">оплачено</span>'
+    : '<span class="badge wait">ждёт оплаты</span>';
+  const cond = p.type === 'аванс'
+    ? (d.prepayDays ? 'в течение ' + d.prepayDays + ' ' + (d.prepayUnit === 'work' ? 'раб.' : 'календ.') + ' дн. с перечисления' : '')
+    : (d.finalDays ? 'в течение ' + d.finalDays + ' ' + (d.finalUnit === 'work' ? 'раб.' : 'календ.') + ' дн. ' + (FINAL_EVENT_TEXT[d.finalEvent] || '') : '');
+  return '<div class="task" style="border-left-color:' + strip + '">' +
+    '<div class="info">' +
+    '<div class="name">' + p.type + '</div>' +
+    '<div class="meta">' +
+    '<span class="who">' + d.num + '</span>' +
+    (d.contr ? '<span>' + d.contr + '</span>' : '') +
+    '<span>план: <b>' + (p.planned ? fmt(p.planned) : '—') + '</b></span>' +
+    badge +
+    (cond ? '<span>' + cond + '</span>' : '') +
+    '</div>' +
+    '<div class="pay-fact">' +
+    '<span class="lbl2">Факт:</span>' +
+    '<input type="date" value="' + (p.factDate || '') + '" onchange="saveFact(\'' + d.id + '\', ' + i + ', \'factDate\', this.value)">' +
+    '<input type="number" step="0.01" placeholder="сумма по счёту" value="' + (p.factSum || '') + '" onchange="saveFact(\'' + d.id + '\', ' + i + ', \'factSum\', this.value)">' +
+    '</div>' +
+    '</div>' +
+    '</div>';
+}
+function renderPays() {
+  const docs = loadDocs();
+  const rows = [];
+  docs.forEach(d => {
+    (d.payments || []).forEach((p, i) => rows.push({ d: d, i: i, p: p }));
+  });
+  const list = document.getElementById('payList');
+  if (!rows.length) {
+    list.innerHTML = '<p class="note">Платежей пока нет</p>';
+    return;
+  }
+  // неоплаченные сверху
+  rows.sort((a, b) => {
+    const pa = (a.p.factDate || a.p.factSum) ? 1 : 0;
+    const pb = (b.p.factDate || b.p.factSum) ? 1 : 0;
+    if (pa !== pb) return pa - pb;
+    return a.d.num.localeCompare(b.d.num);
+  });
+  list.innerHTML = rows.map(r => payRow(r.d, r.i, r.p)).join('');
+}
+
+// ===== график поставок =====
+function schedRow(entry) {
+  const d = entry.d;
+  const s = entry.s;
+  const isEnd = !!entry.isEnd;
+  const strip = DOC_STRIP[d.status] || '#64748b';
+  const hasDate = s.cond === 'fixed' && s.date;
+  const left = hasDate ? daysLeft(s.date) : null;
+  let badge = '';
+  if (d.status !== 'закрыт' && hasDate && left !== null) {
+    if (left < 0) badge = '<span class="badge over">просрочено</span>';
+    else if (left <= 14) badge = '<span class="badge soon">через ' + left + ' дн.</span>';
+  }
+  const when = hasDate
+    ? 'до ' + fmtDate(s.date)
+    : (s.days ? '+ ' + s.days + ' дн. — ' + COND_TEXT[s.cond] : COND_TEXT[s.cond]);
+  return '<div class="task" style="border-left-color:' + strip + '">' +
+    '<div class="info clickable" onclick="openDocCard(\'' + d.id + '\')">' +
+    '<div class="name">' + (s.name || (isEnd ? 'окончание договора' : 'этап')) + '</div>' +
+    '<div class="meta">' +
+    '<span class="who">' + d.num + '</span>' +
+    (d.contr ? '<span>' + d.contr + '</span>' : '') +
+    '<span>' + when + '</span>' +
+    (isEnd ? '<span class="badge ok">срок договора</span>' : badge) +
+    '</div>' +
+    '</div>' +
+    '</div>';
+}
+function renderSched() {
+  const docs = loadDocs();
+  const entries = [];
+  docs.forEach(d => {
+    if (d.status === 'закрыт') return;
+    (d.stages || []).forEach(s => entries.push({ d: d, s: s }));
+    if (d.date) entries.push({ d: d, s: { name: 'Окончание договора', cond: 'fixed', date: d.date }, isEnd: true });
+  });
+  const list = document.getElementById('schedList');
+  if (!entries.length) {
+    list.innerHTML = '<p class="note">Этапов пока нет</p>';
+    return;
+  }
+  entries.sort((a, b) => {
+    const da = (a.s.cond === 'fixed' && a.s.date) ? a.s.date : '9999-99-99';
+    const db = (b.s.cond === 'fixed' && b.s.date) ? b.s.date : '9999-99-99';
+    if (da !== db) return da < db ? -1 : 1;
+    return a.d.num.localeCompare(b.d.num);
+  });
+  list.innerHTML = entries.map(schedRow).join('');
 }
 
 // ===== Календарь экономиста =====
@@ -1538,7 +1898,6 @@ function numToWords(n) {
   const groups = [];
   let x = n;
   while (x > 0) { groups.push(x % 1000); x = Math.floor(x / 1000); }
-  // scale 1 = тысячи (жен. род), 2 = миллионы, 3 = миллиарды
   const scales = [
     null,
     ['тысяча', 'тысячи', 'тысяч'],
@@ -1557,7 +1916,7 @@ function numToWords(n) {
   }
   return out.join(' ');
 }
-// сумма прописью: "173 240 (Сто семьдесят три тысячи двести сорок) рублей 00 копеек"
+// сумма прописью
 function sumInWords(amount) {
   const cents = Math.round(amount * 100);
   let rub = Math.floor(cents / 100);
@@ -1595,7 +1954,6 @@ function calc() {
 
   const price = seb + profit;
 
-  // НДС 22% начисляется на цену без НДС
   const nds = price * 0.22;
   const priceWithNds = price + nds;
 
@@ -1621,8 +1979,6 @@ function calc() {
 }
 
 // ===== отдельный блок: сумма прописью =====
-// вводится стоимость договора С НДС; НДС выделяется «в том числе»:
-// НДС = сумма × 22/122, без НДС = сумма − НДС
 function sumWords() {
   const s = parseFloat(document.getElementById('swSum').value) || 0;
   if (s <= 0) { alert('Введите стоимость договора с НДС'); return; }
