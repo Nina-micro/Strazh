@@ -15,7 +15,26 @@
     margin: 0 auto;
   }
   h1 { font-size: 26px; text-align: center; margin-top: 8px; }
-  .subtitle { text-align: center; color: #64748b; margin-bottom: 20px; }
+  .subtitle { text-align: center; color: #64748b; margin-bottom: 16px; }
+  .tabs {
+    display: flex;
+    background: #e2e8f0;
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 16px;
+  }
+  .tabs button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    background: none;
+    color: #475569;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .tabs button.on { background: #2563eb; color: #fff; }
   .card {
     background: #fff;
     border-radius: 14px;
@@ -74,6 +93,7 @@
   .hr { border: none; border-top: 1px solid #e2e8f0; margin: 10px 0; }
   #res p { font-size: 14px; margin: 4px 0; }
   .note { font-size: 12px; color: #94a3b8; text-align: center; margin-top: 4px; }
+  .hidden { display: none; }
 </style>
 </head>
 <body>
@@ -81,60 +101,83 @@
 <h1>Страж</h1>
 <p class="subtitle">Отдел ПЭО · задачи и дедлайны</p>
 
-<div class="card">
-  <div class="counters">
-    <div class="counter"><div class="num" id="cAll">0</div><div class="lbl">всего</div></div>
-    <div class="counter"><div class="num" id="cWork">0</div><div class="lbl">в работе</div></div>
-    <div class="counter"><div class="num" id="cSoon">0</div><div class="lbl">скоро дедлайн</div></div>
-    <div class="counter"><div class="num" id="cOver">0</div><div class="lbl">просрочено</div></div>
-    <div class="counter"><div class="num" id="cDone">0</div><div class="lbl">закрыто</div></div>
+<div class="tabs">
+  <button id="tabTasks" class="on" onclick="showTab('tasks')">Задачи</button>
+  <button id="tabCalc" onclick="showTab('calc')">Калькулятор</button>
+</div>
+
+<!-- ===== РАЗДЕЛ: Задачи ===== -->
+<div id="secTasks">
+
+  <div class="card">
+    <div class="counters">
+      <div class="counter"><div class="num" id="cAll">0</div><div class="lbl">всего</div></div>
+      <div class="counter"><div class="num" id="cWork">0</div><div class="lbl">в работе</div></div>
+      <div class="counter"><div class="num" id="cSoon">0</div><div class="lbl">скоро дедлайн</div></div>
+      <div class="counter"><div class="num" id="cOver">0</div><div class="lbl">просрочено</div></div>
+      <div class="counter"><div class="num" id="cDone">0</div><div class="lbl">закрыто</div></div>
+    </div>
   </div>
+
+  <div class="card">
+    <h3>Новая задача</h3>
+    <label>Название <input type="text" id="tName" placeholder="Например: РКМ по проекту"></label>
+    <label>Ответственный <input type="text" id="tWho" placeholder="Фамилия"></label>
+    <label>Дедлайн <input type="date" id="tDate"></label>
+    <button class="btn" onclick="addTask()">Добавить</button>
+  </div>
+
+  <div class="card">
+    <h3>Задачи</h3>
+    <div id="taskList"><p class="note">Задач пока нет</p></div>
+  </div>
+
+  <p class="note">Черновик. Задачи хранятся только на этом устройстве — переноши в Kaiten.</p>
+
 </div>
 
-<div class="card">
-  <h3>Новая задача</h3>
-  <label>Название <input type="text" id="tName" placeholder="Например: РКМ по проекту"></label>
-  <label>Ответственный <input type="text" id="tWho" placeholder="Фамилия"></label>
-  <label>Дедлайн <input type="date" id="tDate"></label>
-  <button class="btn" onclick="addTask()">Добавить</button>
+<!-- ===== РАЗДЕЛ: Калькулятор ===== -->
+<div id="secCalc" class="hidden">
+
+  <div class="card">
+    <h3>Калькулятор затрат (ПЭО)</h3>
+
+    <h4>Материалы</h4>
+    <label>Ф4 — материалы, руб. <input type="number" id="f4" step="0.01"></label>
+    <label>Ф6 — ПКИ, руб. <input type="number" id="f6" step="0.01"></label>
+    <label>Ф7 — услуги сторонних организаций, руб. <input type="number" id="f7" step="0.01"></label>
+
+    <h4>Заработная плata</h4>
+    <label>Средняя ЗП (норматив), руб./мес. <input type="number" id="avg" step="0.01"></label>
+    <label>Трудоёмкость <input type="number" id="labor" step="0.1">
+      <select id="unit">
+        <option value="mm">чел./мес.</option>
+        <option value="h">часы</option>
+      </select>
+    </label>
+    <label>Часов в чел./мес. <input type="number" id="hpm" value="164" step="0.1"></label>
+    <label>ДЗП (Ф10), % от основной ЗП <input type="number" id="dzp" step="0.1"></label>
+    <label>СТРАХ, % от ЗП всего <input type="number" id="strah" step="0.1"></label>
+
+    <h4>Накладные расходы</h4>
+    <label>ОПР (Ф11), % от ЗП всего <input type="number" id="opr" step="0.1"></label>
+    <label>ОХР/АУР (Ф12), % от ЗП всего <input type="number" id="ohr" step="0.1"></label>
+
+    <button class="btn" onclick="calc()">Рассчитать</button>
+    <div id="res"></div>
+  </div>
+
 </div>
-
-<div class="card">
-  <h3>Задачи</h3>
-  <div id="taskList"><p class="note">Задач пока нет</p></div>
-</div>
-
-<div class="card">
-  <h3>Калькулятор затрат (ПЭО)</h3>
-
-  <h4>Материалы</h4>
-  <label>Ф4 — материалы, руб. <input type="number" id="f4" step="0.01"></label>
-  <label>Ф6 — ПКИ, руб. <input type="number" id="f6" step="0.01"></label>
-  <label>Ф7 — услуги сторонних организаций, руб. <input type="number" id="f7" step="0.01"></label>
-
-  <h4>Заработная плата</h4>
-  <label>Средняя ЗП (норматив), руб./мес. <input type="number" id="avg" step="0.01"></label>
-  <label>Трудоёмкость <input type="number" id="labor" step="0.1">
-    <select id="unit">
-      <option value="mm">чел./мес.</option>
-      <option value="h">часы</option>
-    </select>
-  </label>
-  <label>Часов в чел./мес. <input type="number" id="hpm" value="164" step="0.1"></label>
-  <label>ДЗП (Ф10), % от основной ЗП <input type="number" id="dzp" step="0.1"></label>
-  <label>СТРАХ, % от ЗП всего <input type="number" id="strah" step="0.1"></label>
-
-  <h4>Накладные расходы</h4>
-  <label>ОПР (Ф11), % от ЗП всего <input type="number" id="opr" step="0.1"></label>
-  <label>ОХР/АУР (Ф12), % от ЗП всего <input type="number" id="ohr" step="0.1"></label>
-
-  <button class="btn" onclick="calc()">Рассчитать</button>
-  <div id="res"></div>
-</div>
-
-<p class="note">Черновик. Задачи хранятся только на этом устройстве — переноши в Kaiten.</p>
 
 <script>
+// ===== Переключение разделов =====
+function showTab(name) {
+  document.getElementById('secTasks').classList.toggle('hidden', name !== 'tasks');
+  document.getElementById('secCalc').classList.toggle('hidden', name !== 'calc');
+  document.getElementById('tabTasks').classList.toggle('on', name === 'tasks');
+  document.getElementById('tabCalc').classList.toggle('on', name === 'calc');
+}
+
 // ===== Задачи =====
 function loadTasks() {
   try { return JSON.parse(localStorage.getItem('strazh_tasks')) || []; }
@@ -145,8 +188,7 @@ function saveTasks(tasks) {
 }
 function fmtDate(s) {
   if (!s) return '';
-  const d = new Date(s);
-  return d.toLocaleDateString('ru-RU');
+  return new Date(s).toLocaleDateString('ru-RU');
 }
 function daysLeft(s) {
   if (!s) return null;
@@ -157,7 +199,6 @@ function daysLeft(s) {
 }
 function render() {
   const tasks = loadTasks();
-  const now = new Date();
   let all = 0, work = 0, soon = 0, over = 0, done = 0;
 
   tasks.forEach(t => {
@@ -236,18 +277,14 @@ function fmt(x) {
 function calc() {
   const v = id => parseFloat(document.getElementById(id).value) || 0;
 
-  // Материалы
-  const f4 = v('f4'), f6 = v('f6'), f7 = v('f7');
-  const materials = f4 + f6 + f7;
+  const materials = v('f4') + v('f6') + v('f7');
 
-  // Заработная плата
-  const avg = v('avg');
-  const labor = v('labor');
-  const unit = document.getElementById('unit').value;
   const hpm = v('hpm') || 164;
-  const manMonths = unit === 'h' ? labor / hpm : labor;
+  const manMonths = document.getElementById('unit').value === 'h'
+    ? v('labor') / hpm
+    : v('labor');
 
-  const f9 = avg * manMonths;              // основная ЗП
+  const f9 = v('avg') * manMonths;         // основная ЗП
   const f10 = f9 * v('dzp') / 100;         // ДЗП
   const salary = f9 + f10;                 // ЗП всего
   const strah = salary * v('strah') / 100; // страховые взносы
@@ -262,7 +299,6 @@ function calc() {
   const profitOther = (salary + strah + f11 + f12) * 0.25;
   const profit = profitMaterials + profitOther;
 
-  // Цена без НДС
   const price = seb + profit;
 
   document.getElementById('res').innerHTML =
