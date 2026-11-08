@@ -289,8 +289,6 @@
     justify-content: center;
     padding: 16px;
   }
-  /* ключевое исправление: это правило сильнее display:flex у .overlay,
-     поэтому окно скрыто до нажатия плюса и закрывается кнопкой «Отмена» */
   .overlay.hidden {
     display: none !important;
   }
@@ -466,7 +464,7 @@
     <label>Ф6 — ПКИ, руб. <input type="number" id="f6" step="0.01"></label>
     <label>Ф7 — услуги сторонних организаций, руб. <input type="number" id="f7" step="0.01"></label>
 
-    <h4>Заработная плata</h4>
+    <h4>Заработная плата</h4>
     <label>Средняя ЗП (норматив), руб./мес. <input type="number" id="avg" step="0.01"></label>
     <label>Трудоёмкость <input type="number" id="labor" step="0.1">
       <select id="unit">
@@ -1060,10 +1058,14 @@ function calc() {
   const seb = materials + salary + strah + f11 + f12;
 
   const profitMaterials = materials * 0.01;
-  const profitOther = (salary + strah + f11 + f12) * 0.25;
-  const profit = profitMaterials + profitOther;
+  const profitOwn = (salary + strah + f11 + f12) * 0.25;
+  const profit = profitMaterials + profitOwn;
 
   const price = seb + profit;
+
+  // НДС 22% начисляется на цену без НДС
+  const nds = price * 0.22;
+  const priceWithNds = price + nds;
 
   document.getElementById('res').innerHTML =
     '<hr class="hr">' +
@@ -1078,11 +1080,15 @@ function calc() {
     '<p>СЕБ — себестоимость: <b>' + fmt(seb) + '</b></p>' +
     '<p>Прибыль: <b>' + fmt(profit) + '</b>' +
     ' <span class="note">(1% от материалов: ' + fmt(profitMaterials) +
-    ' · 25% от остальных: ' + fmt(profitOther) + ')</span></p>' +
+    ' · 25% от собственных: ' + fmt(profitOwn) + ')</span></p>' +
     '<hr class="hr">' +
-    '<p style="font-size:17px">ЦЕНА БЕЗ НДС: <b>' + fmt(price) + '</b></p>';
+    '<p style="font-size:17px">ЦЕНА БЕЗ НДС: <b>' + fmt(price) + '</b></p>' +
+    '<p>НДС 22%: <b>' + fmt(nds) + '</b></p>' +
+    '<hr class="hr">' +
+    '<p style="font-size:19px">ЦЕНА С НДС: <b>' + fmt(priceWithNds) + '</b></p>';
 }
 </script>
 
 </body>
 </html>
+
