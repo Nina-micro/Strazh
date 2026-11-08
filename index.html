@@ -106,11 +106,6 @@
     font-size: 15px;
     background: #fff;
   }
-  input[readonly] {
-    background: #f1f5f9;
-    color: #475569;
-    font-weight: 700;
-  }
   .filters { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
   .small-lbl { display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 2px; }
   .btn {
@@ -242,7 +237,6 @@
   .badge.kom  { background: #2563eb; }
   .badge.otk  { background: #f59e0b; }
   .badge.vp   { background: #64748b; }
-  /* сильный акцент-метка на строке договора */
   .cat-mark {
     display: inline-block;
     padding: 1px 7px;
@@ -608,7 +602,7 @@
     <label>Ф6 — ПКИ, руб. <input type="number" id="f6" step="0.01"></label>
     <label>Ф7 — услуги сторонних организаций, руб. <input type="number" id="f7" step="0.01"></label>
 
-    <h4>Заработная плata</h4>
+    <h4>Заработная плата</h4>
     <label>Средняя ЗП (норматив), руб./мес. <input type="number" id="avg" step="0.01"></label>
     <label>Трудоёмкость <input type="number" id="labor" step="0.1">
       <select id="unit">
@@ -793,10 +787,9 @@
 
     <h4>Ведомость поставки</h4>
     <div id="itemsWrap"></div>
-    <button class="btn add-item" onclick="addItemRow('itemsWrap')">+ Добавить позицию</button>
+    <button class="btn add-item" onclick="addItemRow('itemsWrap', 'dSumLine')">+ Добавить позицию</button>
     <div class="auto-sum-line" id="dSumLine">Сумма договора с НДС: <b>0,00</b> руб.
       <span class="note" style="margin:0">· заполняется автоматически из ведомости</span></div>
-    <input type="hidden" id="dSum">
 
     <h4>Оплата</h4>
     <div class="filters">
@@ -875,10 +868,9 @@
 
     <h4>Ведомость поставки</h4>
     <div id="cItemsWrap"></div>
-    <button class="btn add-item" onclick="addItemRow('cItemsWrap')">+ Добавить позицию</button>
+    <button class="btn add-item" onclick="addItemRow('cItemsWrap', 'cSumLine')">+ Добавить позицию</button>
     <div class="auto-sum-line" id="cSumLine">Сумма договора с НДС: <b>0,00</b> руб.
       <span class="note" style="margin:0">· заполняется автоматически из ведомости</span></div>
-    <input type="hidden" id="cSum">
 
     <h4>Оплата</h4>
     <div class="filters">
@@ -949,6 +941,15 @@ const TEAM = ['Нина', 'Аня', 'Маша', 'Вика', 'Алина'];
 
 let currentTab = 'tasks';
 
+// ===== экранирование пользовательского ввода в HTML =====
+function esc(v) {
+  return String(v === null || v === undefined ? '' : v)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
 // ===== СТАТУСЫ ЗАДАЧ =====
 const STATUS_LIST = [
   'в очереди', 'в работе', 'на паузе',
@@ -1018,8 +1019,8 @@ const FINAL_EVENT_TEXT = {
 };
 
 const whoOpen = {};
-const schedOpenMonth = {}; // раскрытые месяцы графика
-const schedOpenDoc = {};   // раскрытые договоры внутри месяца
+const schedOpenMonth = {};
+const schedOpenDoc = {};
 
 // ===== Переключение разделов =====
 function showTab(name) {
@@ -1052,13 +1053,13 @@ function fabClick() {
 function buildWhoSelect() {
   const sel = document.getElementById('tWho');
   let html = '<option value="">— не выбран —</option>';
-  TEAM.forEach(t => { html += '<option value="' + t + '">' + t + '</option>'; });
+  TEAM.forEach(t => { html += '<option value="' + esc(t) + '">' + esc(t) + '</option>'; });
   html += '<option value="__other">Другое…</option>';
   sel.innerHTML = html;
 
   const fSel = document.getElementById('fWho');
   let fHtml = '<option value="all">все</option>';
-  TEAM.forEach(t => { fHtml += '<option value="' + t + '">' + t + '</option>'; });
+  TEAM.forEach(t => { fHtml += '<option value="' + esc(t) + '">' + esc(t) + '</option>'; });
   fHtml += '<option value="__none">без исполнителя</option>';
   fSel.innerHTML = fHtml;
 }
@@ -1141,6 +1142,7 @@ function daysLeft(s) {
   const y = parseInt(s.slice(0, 4), 10);
   const m = parseInt(s.slice(5, 7), 10);
   const d = parseInt(s.slice(8, 10), 10);
+  if (isNaN(y) || isNaN(m) || isNaN(d)) return null;
   const dd = new Date(y, m - 1, d, 23, 59, 59);
   const now = new Date();
   return Math.ceil((dd - now) / 86400000);
@@ -1200,12 +1202,12 @@ function taskRow(t, idx) {
   const strip = STATUS_STRIP[status] || '#64748b';
 
   return '<div class="task' + (cat === 'done' ? ' is-done' : '') + '" style="border-left-color:' + strip + '">' +
-    '<div class="info"><div class="name">' + (cat === 'done' ? '✅ ' : '') + t.name + '</div>' +
+    '<div class="info"><div class="name">' + (cat === 'done' ? '✅ ' : '') + esc(t.name) + '</div>' +
     '<div class="meta">' +
-    (t.who ? '<span class="who">' + t.who + '</span>' : '') +
+    (t.who ? '<span class="who">' + esc(t.who) + '</span>' : '') +
     '<span>' + (t.date ? fmtDate(t.date) : '') + '</span>' +
     (badgeCat ? '<span class="badge ' + badgeCls + '">' + badgeCat + '</span>' : '') +
-    '<span class="status-pill ' + stCls + '" onclick="openStatusMenu(event, \'' + t.id + '\')">' + status + '</span>' +
+    '<span class="status-pill ' + stCls + '" onclick="openStatusMenu(event, \'' + t.id + '\')">' + esc(status) + '</span>' +
     (t.statusDate ? '<span class="stdate">' + fmtDT(t.statusDate) + '</span>' : '') +
     '</div></div>' +
     '<div>' +
@@ -1246,7 +1248,7 @@ function renderStatusMenu() {
     menu.innerHTML = STATUS_LIST.map(s => {
       const color = STATUS_STRIP[s] || '#64748b';
       return '<div class="opt" onclick="pickStatus(\'' + s + '\')">' +
-        '<span><span class="sdot" style="background:' + color + '"></span>' + s + '</span>' +
+        '<span><span class="sdot" style="background:' + color + '"></span>' + esc(s) + '</span>' +
         (s === status ? '<b>✓</b>' : '') +
         '</div>';
     }).join('');
@@ -1257,7 +1259,7 @@ function renderStatusMenu() {
     menu.innerHTML = DOC_STATUS.map(s => {
       const color = DOC_STRIP[s] || '#64748b';
       return '<div class="opt" onclick="setDocStatus(\'' + menuDocId + '\', \'' + s + '\')">' +
-        '<span><span class="sdot" style="background:' + color + '"></span>' + s + '</span>' +
+        '<span><span class="sdot" style="background:' + color + '"></span>' + esc(s) + '</span>' +
         (s === status ? '<b>✓</b>' : '') +
         '</div>';
     }).join('');
@@ -1321,7 +1323,7 @@ function renderStats(tasks) {
   }));
   const max = Math.max.apply(null, [1].concat(load.map(x => x.n)));
   document.getElementById('loadBlock').innerHTML = load.map(x =>
-    '<div class="load-row"><div class="lr-top"><span>' + x.name + '</span><b>' + x.n + '</b></div>' +
+    '<div class="load-row"><div class="lr-top"><span>' + esc(x.name) + '</span><b>' + x.n + '</b></div>' +
     '<div class="load-track"><div class="load-fill' + (x.n === max && x.n > 0 ? ' max' : '') +
     '" style="width:' + (x.n / max * 100) + '%"></div></div></div>'
   ).join('');
@@ -1362,7 +1364,7 @@ function render() {
       const group = shown.filter(t => (t.status || 'в работе') === s);
       if (!group.length) return;
       html += '<div class="group">' +
-        '<div class="group-head ' + STATUS_HEAD[s] + '"><span>' + s + '</span><small>' + group.length + '</small></div>' +
+        '<div class="group-head ' + STATUS_HEAD[s] + '"><span>' + esc(s) + '</span><small>' + group.length + '</small></div>' +
         '<div class="group-body">' +
         group.map(t => taskRow(t, tasks.indexOf(t))).join('') +
         '</div></div>';
@@ -1381,7 +1383,7 @@ function render() {
       const safeName = name.replace(/'/g, "\\'");
       return '<div class="group">' +
         '<div class="group-head g-who" onclick="toggleWho(\'' + safeName + '\')">' +
-        '<span>' + (isOpen ? '▾ ' : '▸ ') + name + '</span><small>' + group.length + '</small></div>' +
+        '<span>' + (isOpen ? '▾ ' : '▸ ') + esc(name) + '</span><small>' + group.length + '</small></div>' +
         (isOpen ? '<div class="group-body">' +
           group.map(t => taskRow(t, tasks.indexOf(t))).join('') + '</div>' : '') +
         '</div>';
@@ -1478,6 +1480,9 @@ function loadDocs() {
       d.id = 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
       changed = true;
     }
+    if (!Array.isArray(d.items)) d.items = [];
+    if (!Array.isArray(d.invoices)) d.invoices = [];
+    if (!Array.isArray(d.ds)) d.ds = [];
   });
   if (changed) saveDocs(docs);
   return docs;
@@ -1491,21 +1496,22 @@ function fmtNum(x) {
 }
 
 // ===== автоматическая сумма договора из ведомости =====
-// сумма договора с НДС = сумма позиций ведомости (позиции с НДС);
-// НДС выделяется «в том числе»: НДС = сумма × 22/122
+// цены в ведомости считаем уже с НДС; сумма договора = сумма позиций
 function itemsTotal(items) {
   return r2((items || []).reduce((acc, it) => acc + (it.sum || 0), 0));
 }
 function updateSumLine(lineId, total) {
   const line = document.getElementById(lineId);
-  if (line) {
-    line.querySelector('b').textContent = fmtNum(total);
-  }
+  if (!line) return;
+  const b = line.querySelector('b');
+  if (b) b.textContent = fmtNum(total);
 }
-// пересчитать сумму в открытом окне (окно создания или карточка)
+// пересчитать сумму в конкретном окне (по его ведомости и строке суммы)
 function recalcModalSum(wrapId, lineId) {
-  const total = itemsTotal(collectItems(wrapId));
-  updateSumLine(lineId, total);
+  const wrap = document.getElementById(wrapId);
+  const line = document.getElementById(lineId);
+  if (!wrap || !line) return;
+  updateSumLine(lineId, itemsTotal(collectItems(wrapId)));
 }
 
 // ===== добавление договора =====
@@ -1514,14 +1520,14 @@ function addDoc() {
   if (!num) { alert('Введите номер договора'); return; }
   const items = collectItems('itemsWrap');
   const docs = loadDocs();
-  const d = {
+  docs.unshift({
     id: 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
     num: num,
     contr: document.getElementById('dContr').value.trim(),
     subjectType: document.getElementById('dSubjectType').value,
     accept: document.getElementById('dAccept').value,
     cat: document.getElementById('dCat').value,
-    sum: itemsTotal(items), // автоматическая сумма из ведомости
+    sum: itemsTotal(items),
     date: document.getElementById('dDate').value,
     prepay: parseFloat(document.getElementById('dPrepay').value) || 0,
     prepayDays: parseInt(document.getElementById('dPrepayDays').value, 10) || 0,
@@ -1539,8 +1545,7 @@ function addDoc() {
     status: 'проект',
     statusDate: new Date().toISOString(),
     createdAt: new Date().toISOString()
-  };
-  docs.unshift(d);
+  });
   saveDocs(docs);
   closeDocModal();
   buildContrFilter();
@@ -1594,23 +1599,25 @@ function buildContrFilter() {
     if (d.contr && !names.includes(d.contr)) names.push(d.contr);
   });
   const sel = document.getElementById('fContr');
+  if (!sel) return;
   const cur = sel.value || 'all';
   let html = '<option value="all">все</option>';
-  names.sort().forEach(n => { html += '<option value="' + n + '">' + n + '</option>'; });
+  names.sort().forEach(n => { html += '<option value="' + esc(n) + '">' + esc(n) + '</option>'; });
   sel.innerHTML = html;
   if (names.includes(cur)) sel.value = cur;
 }
 
 // ===== строки ведомости =====
-function itemRowHtml(s) {
+// wrapId/lineId передаются в строку явно: обработчик работает только со своим окном
+function itemRowHtml(s, wrapId, lineId) {
   return '<div class="item-row">' +
-    '<button class="remove-item" title="Убрать позицию" onclick="this.parentNode.remove(); recalcModalSum(\'' + 'itemsWrap' + '\', \'dSumLine\'); recalcModalSum(\'cItemsWrap\', \'cSumLine\');">✕</button>' +
-    '<input type="text" class="it-name" placeholder="Наименование (позиция ведомости)" value="' + (s ? (s.name || '') : '') + '">' +
+    '<button class="remove-item" title="Убрать позицию" onclick="removeItemRow(this, \'' + wrapId + '\', \'' + lineId + '\')">✕</button>' +
+    '<input type="text" class="it-name" placeholder="Наименование (позиция ведомости)" value="' + esc(s ? s.name : '') + '">' +
     '<div class="filters">' +
     '<div><span class="small-lbl">Кол-во</span>' +
-    '<input type="number" class="it-qty" step="0.01" value="' + (s && s.qty ? s.qty : '') + '" oninput="updRowSum(this); recalcModalSum(\'' + 'itemsWrap' + '\', \'dSumLine\'); recalcModalSum(\'cItemsWrap\', \'cSumLine\');"></div>' +
+    '<input type="number" class="it-qty" step="0.01" value="' + (s && s.qty ? s.qty : '') + '" oninput="updRowSum(this); recalcModalSum(\'' + wrapId + '\', \'' + lineId + '\')"></div>' +
     '<div><span class="small-lbl">Цена за ед., руб.</span>' +
-    '<input type="number" class="it-price" step="0.01" value="' + (s && s.price ? s.price : '') + '" oninput="updRowSum(this); recalcModalSum(\'' + 'itemsWrap' + '\', \'dSumLine\'); recalcModalSum(\'cItemsWrap\', \'cSumLine\');"></div>' +
+    '<input type="number" class="it-price" step="0.01" value="' + (s && s.price ? s.price : '') + '" oninput="updRowSum(this); recalcModalSum(\'' + wrapId + '\', \'' + lineId + '\')"></div>' +
     '</div>' +
     '<div class="row-sum">Сумма: <span class="it-sum">' + (s && s.sum ? fmtNum(s.sum) : '0,00') + '</span> руб.</div>' +
     '<div class="filters">' +
@@ -1628,29 +1635,55 @@ function itemRowHtml(s) {
 }
 function updRowSum(input) {
   const row = input.closest('.item-row');
+  if (!row) return;
   const qty = parseFloat(row.querySelector('.it-qty').value) || 0;
   const price = parseFloat(row.querySelector('.it-price').value) || 0;
-  row.querySelector('.it-sum').textContent = fmtNum(qty * price);
+  const sumEl = row.querySelector('.it-sum');
+  if (sumEl) sumEl.textContent = fmtNum(qty * price);
 }
-function addItemRow(wrapId, s) {
-  document.getElementById(wrapId).insertAdjacentHTML('beforeend', itemRowHtml(s));
-  recalcModalSum(wrapId, wrapId === 'cItemsWrap' ? 'cSumLine' : 'dSumLine');
+function removeItemRow(btn, wrapId, lineId) {
+  const row = btn.closest('.item-row');
+  if (row) row.remove();
+  recalcModalSum(wrapId, lineId);
+}
+function addItemRow(wrapId, lineId, s) {
+  document.getElementById(wrapId).insertAdjacentHTML('beforeend', itemRowHtml(s, wrapId, lineId));
+  recalcModalSum(wrapId, lineId);
+}
+function collectItems(wrapId) {
+  const wrap = document.getElementById(wrapId);
+  if (!wrap) return [];
+  const out = [];
+  wrap.querySelectorAll('.item-row').forEach(row => {
+    const qty = parseFloat(row.querySelector('.it-qty').value) || 0;
+    const price = parseFloat(row.querySelector('.it-price').value) || 0;
+    out.push({
+      name: row.querySelector('.it-name').value.trim(),
+      qty: qty,
+      price: price,
+      sum: r2(qty * price),
+      months: parseInt(row.querySelector('.it-months').value, 10) || 0,
+      cond: row.querySelector('.it-cond').value,
+      date: row.querySelector('.it-date').value
+    });
+  });
+  return out;
 }
 
 // ===== строки ДС =====
 function dsRowHtml(s) {
   return '<div class="ds-row">' +
     '<button class="remove-ds" title="Убрать ДС" onclick="this.parentNode.remove()">✕</button>' +
-    '<input type="text" class="ds-num" placeholder="Номер ДС (например: ДС №1 от 12.01.2026)" value="' + (s ? (s.num || '') : '') + '">' +
-    '<input type="text" class="ds-subject" placeholder="Предмет ДС (например: изменение объёма поставки)" value="' + (s ? (s.subject || '') : '') + '">' +
-    '<input type="text" class="ds-item" placeholder="Позиция ведомости" value="' + (s ? (s.item || '') : '') + '">' +
+    '<input type="text" class="ds-num" placeholder="Номер ДС (например: ДС №1 от 12.01.2026)" value="' + esc(s ? s.num : '') + '">' +
+    '<input type="text" class="ds-subject" placeholder="Предмет ДС (например: изменение объёма поставки)" value="' + esc(s ? s.subject : '') + '">' +
+    '<input type="text" class="ds-item" placeholder="Позиция ведомости" value="' + esc(s ? s.item : '') + '">' +
     '<div class="filters">' +
     '<div><span class="small-lbl">Новое кол-во</span>' +
     '<input type="number" class="ds-qty" step="0.01" value="' + (s && s.newQty ? s.newQty : '') + '"></div>' +
     '<div><span class="small-lbl">Новая цена, руб.</span>' +
     '<input type="number" class="ds-price" step="0.01" value="' + (s && s.newPrice ? s.newPrice : '') + '"></div>' +
     '</div>' +
-    '<input type="text" class="ds-note" placeholder="Примечание (увеличение/уменьшение, иное)" value="' + (s ? (s.note || '') : '') + '">' +
+    '<input type="text" class="ds-note" placeholder="Примечание (увеличение/уменьшение, иное)" value="' + esc(s ? s.note : '') + '">' +
     '</div>';
 }
 function addCardDsRow(s) {
@@ -1671,20 +1704,19 @@ function collectDs() {
   return out;
 }
 
-// ===== счёт в карточке =====
-// счёт: номер, дата, сумма; факт оплаты — ПП: номер, дата, сумма
+// ===== счёт в карточке (номер, дата, сумма + платёжное поручение) =====
 function invoiceRowHtml(inv) {
   return '<div class="pay-block">' +
     '<button class="remove-inv" title="Убрать счёт" onclick="this.parentNode.remove()">✕</button>' +
     '<div class="pb-title">Счёт на оплату</div>' +
     '<div class="pay-fact">' +
-    '<input type="text" class="inv-num" placeholder="номер счёта" value="' + (inv ? (inv.num || '') : '') + '">' +
+    '<input type="text" class="inv-num" placeholder="номер счёта" value="' + esc(inv ? inv.num : '') + '">' +
     '<input type="date" class="inv-date" value="' + (inv ? (inv.date || '') : '') + '">' +
     '<input type="number" step="0.01" class="inv-sum" placeholder="сумма, руб." value="' + (inv && inv.sum ? inv.sum : '') + '">' +
     '</div>' +
     '<div class="pb-title" style="margin-top:6px">Факт оплаты — платёжное поручение</div>' +
     '<div class="pay-fact">' +
-    '<input type="text" class="pp-num" placeholder="номер ПП" value="' + (inv ? (inv.ppNum || '') : '') + '">' +
+    '<input type="text" class="pp-num" placeholder="номер ПП" value="' + esc(inv ? inv.ppNum : '') + '">' +
     '<input type="date" class="pp-date" value="' + (inv ? (inv.ppDate || '') : '') + '">' +
     '<input type="number" step="0.01" class="pp-sum" placeholder="сумма ПП" value="' + (inv && inv.ppSum ? inv.ppSum : '') + '">' +
     '</div>' +
@@ -1732,17 +1764,11 @@ function isoOf(d) {
   return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
 }
 function itemDueDate(d, it) {
+  if (!it) return null;
   if (it.cond === 'fixed') return it.date || null;
-  const base = it.cond === 'prepay' ? d.prepayFactDate : d.tollingDate;
+  const base = it.cond === 'tolling' ? d.tollingDate : d.prepayFactDate;
   if (!base) return null;
   return isoOf(addMonths(base, it.months || 0));
-}
-function payPlanDate(d, p) {
-  if (p.type === 'аванс') {
-    return (d.signDate && d.prepayDays) ? isoOf(addDays(d.signDate, d.prepayDays, d.prepayUnit)) : null;
-  }
-  const base = finalBaseDate(d);
-  return (base && d.finalDays) ? isoOf(addDays(base, d.finalDays, d.finalUnit)) : null;
 }
 function finalBaseDate(d) {
   if (d.finalEvent === 'act') return d.actDate || null;
@@ -1753,6 +1779,13 @@ function finalBaseDate(d) {
     if (dd && (!last || dd > last)) last = dd;
   });
   return last;
+}
+function payPlanDate(d, type) {
+  if (type === 'аванс') {
+    return (d.signDate && d.prepayDays) ? isoOf(addDays(d.signDate, d.prepayDays, d.prepayUnit)) : null;
+  }
+  const base = finalBaseDate(d);
+  return (base && d.finalDays) ? isoOf(addDays(base, d.finalDays, d.finalUnit)) : null;
 }
 
 // ===== тексты для реестра =====
@@ -1766,7 +1799,7 @@ function itemsText(d) {
     else if (it.months) when = it.months + ' мес. ' + COND_TEXT[it.cond];
     else when = COND_TEXT[it.cond];
     const sum = it.sum ? ' — ' + fmtNum(it.sum) + ' руб.' : '';
-    return '• ' + (it.name || 'позиция') + sum + ' · ' + when;
+    return '• ' + esc(it.name || 'позиция') + sum + ' · ' + when;
   }).join('<br>');
 }
 function dsText(d) {
@@ -1775,10 +1808,10 @@ function dsText(d) {
     let chg = [];
     if (x.newQty) chg.push('кол-во → ' + x.newQty);
     if (x.newPrice) chg.push('цена → ' + fmtNum(x.newPrice));
-    return '• ' + (x.num || 'ДС') + (x.subject ? ' — ' + x.subject : '') +
-      (x.item ? ' [' + x.item + ']' : '') +
+    return '• ' + esc(x.num || 'ДС') + (x.subject ? ' — ' + esc(x.subject) : '') +
+      (x.item ? ' [' + esc(x.item) + ']' : '') +
       (chg.length ? ': ' + chg.join(', ') : '') +
-      (x.note ? ' (' + x.note + ')' : '');
+      (x.note ? ' (' + esc(x.note) + ')' : '');
   }).join('<br>');
 }
 function payText(d) {
@@ -1803,23 +1836,22 @@ function docRow(d) {
   }
   const nItems = (d.items || []).length;
   const nInv = (d.invoices || []).length;
-  // акценты по категории и приёмке
   const catMark = d.cat
-    ? '<span class="cat-mark ' + (d.cat === 'ГОЗ' ? 'goz' : 'kom') + '" title="Категория">' + d.cat + '</span>' : '';
+    ? '<span class="cat-mark ' + (d.cat === 'ГОЗ' ? 'goz' : 'kom') + '" title="Категория">' + esc(d.cat) + '</span>' : '';
   const accBadge = d.accept
-    ? '<span class="badge ' + (d.accept === 'ОТК' ? 'otk' : 'vp') + '">приёмка: ' + d.accept + '</span>' : '';
+    ? '<span class="badge ' + (d.accept === 'ОТК' ? 'otk' : 'vp') + '">приёмка: ' + esc(d.accept) + '</span>' : '';
   return '<div class="task' + (d.status === 'закрыт' ? ' is-done' : '') + '" style="border-left-color:' + strip + '">' +
     '<div class="info clickable" onclick="openDocCard(\'' + d.id + '\')">' +
-    '<div class="name">' + catMark + ' ' + d.num + ' <span style="font-weight:400;color:#64748b">· ' + (d.subjectType || '') + '</span></div>' +
+    '<div class="name">' + catMark + ' ' + esc(d.num) + ' <span style="font-weight:400;color:#64748b">· ' + esc(d.subjectType || '') + '</span></div>' +
     '<div class="meta">' +
-    (d.contr ? '<span class="who">' + d.contr + '</span>' : '') +
+    (d.contr ? '<span class="who">' + esc(d.contr) + '</span>' : '') +
     accBadge +
     (d.sum ? '<span>' + fmtNum(d.sum) + ' руб.</span>' : '') +
     (nItems ? '<span>позиций: ' + nItems + '</span>' : '') +
     (nInv ? '<span>счетов: ' + nInv + '</span>' : '') +
     (d.date ? '<span>до ' + fmtDate(d.date) + '</span>' : '') +
     badge +
-    '<span class="status-pill ' + stCls + '" onclick="openDocStatusMenu(event, \'' + d.id + '\')">' + d.status + '</span>' +
+    '<span class="status-pill ' + stCls + '" onclick="openDocStatusMenu(event, \'' + d.id + '\')">' + esc(d.status) + '</span>' +
     (d.statusDate ? '<span class="stdate">' + fmtDT(d.statusDate) + '</span>' : '') +
     '</div>' +
     (itemsText(d) ? '<div class="doc-extra">Ведомость поставки:<br>' + itemsText(d) + '</div>' : '') +
@@ -1870,7 +1902,7 @@ function renderDocs() {
 function fillStatusSelect(selId, cur) {
   const sel = document.getElementById(selId);
   sel.innerHTML = DOC_STATUS.map(s =>
-    '<option value="' + s + '"' + (s === cur ? ' selected' : '') + '>' + s + '</option>'
+    '<option value="' + esc(s) + '"' + (s === cur ? ' selected' : '') + '>' + esc(s) + '</option>'
   ).join('');
 }
 function openDocCard(id) {
@@ -1897,7 +1929,7 @@ function openDocCard(id) {
   document.getElementById('cActDate').value = d.actDate || '';
   const wrap = document.getElementById('cItemsWrap');
   wrap.innerHTML = '';
-  (d.items && d.items.length ? d.items : [null]).forEach(s => addItemRow('cItemsWrap', s));
+  (d.items && d.items.length ? d.items : [null]).forEach(s => addItemRow('cItemsWrap', 'cSumLine', s));
   const invWrap = document.getElementById('cInvoicesWrap');
   invWrap.innerHTML = '';
   (d.invoices || []).forEach(inv => addCardInvoiceRow(inv));
@@ -1959,7 +1991,6 @@ function delDocFromCard() {
 }
 
 // ===== реестр оплаты: счета из карточек, по месяцам =====
-// редактирование ПП прямо в реестре — сохраняется в карточке договора
 function saveInv(id, i, field, val) {
   const docs = loadDocs();
   const d = docs.find(x => x.id === id);
@@ -1979,17 +2010,17 @@ function invRow(d, i, inv) {
         : '<span class="badge wait">ждёт оплаты</span>');
   return '<div class="task" style="border-left-color:' + strip + '">' +
     '<div class="info">' +
-    '<div class="name">Счёт №' + (inv.num || '—') + ' от ' + fmtDate(inv.date) + '</div>' +
+    '<div class="name">Счёт №' + esc(inv.num || '—') + ' от ' + fmtDate(inv.date) + '</div>' +
     '<div class="meta">' +
-    '<span class="who">' + d.num + '</span>' +
-    (d.contr ? '<span>' + d.contr + '</span>' : '') +
+    '<span class="who">' + esc(d.num) + '</span>' +
+    (d.contr ? '<span>' + esc(d.contr) + '</span>' : '') +
     '<span>сумма: <b>' + (inv.sum ? fmtNum(inv.sum) : '—') + '</b> руб.</span>' +
     badge +
     '</div>' +
     '<div class="pay-block">' +
     '<div class="pb-title">Факт оплаты — платёжное поручение</div>' +
     '<div class="pay-fact">' +
-    '<input type="text" placeholder="номер ПП" value="' + (inv.ppNum || '') + '" onchange="saveInv(\'' + d.id + '\', ' + i + ', \'ppNum\', this.value)">' +
+    '<input type="text" placeholder="номер ПП" value="' + esc(inv.ppNum || '') + '" onchange="saveInv(\'' + d.id + '\', ' + i + ', \'ppNum\', this.value)">' +
     '<input type="date" value="' + (inv.ppDate || '') + '" onchange="saveInv(\'' + d.id + '\', ' + i + ', \'ppDate\', this.value)">' +
     '<input type="number" step="0.01" placeholder="сумма ПП" value="' + (inv.ppSum || '') + '" onchange="saveInv(\'' + d.id + '\', ' + i + ', \'ppSum\', this.value)">' +
     '</div>' +
@@ -2008,14 +2039,13 @@ function renderPays() {
     list.innerHTML = '<p class="note">Счетов пока нет — добавь счёт в карточку договора</p>';
     return;
   }
-  // группировка по месяцам даты счёта
   const months = {};
   rows.forEach(r => {
     const key = r.inv.date ? r.inv.date.slice(0, 7) : 'nodate';
     if (!months[key]) months[key] = [];
     months[key].push(r);
   });
-  const keys = Object.keys(months).sort().reverse(); // свежие сверху
+  const keys = Object.keys(months).sort().reverse();
   list.innerHTML = keys.map(key => {
     const arr = months[key];
     const total = r2(arr.reduce((s, r) => s + (r.inv.sum || 0), 0));
@@ -2036,7 +2066,7 @@ function renderPays() {
   }).join('');
 }
 
-// ===== график поставок: по месяцам → договоры → позиции =====
+// ===== график поставок: месяц → договор → позиции =====
 function schedItemRow(d, it) {
   const strip = DOC_STRIP[d.status] || '#64748b';
   const due = itemDueDate(d, it);
@@ -2046,17 +2076,17 @@ function schedItemRow(d, it) {
     if (left < 0) badge = '<span class="badge over">просрочено</span>';
     else if (left <= 14) badge = '<span class="badge soon">через ' + left + ' дн.</span>';
   } else {
-    badge = '<span class="badge wait">' + COND_TEXT[it.cond] + '</span>';
+    badge = '<span class="badge wait">' + (COND_TEXT[it.cond] || '') + '</span>';
   }
-  const when = due ? 'до ' + fmtDate(due) : (it.months ? it.months + ' мес. — ' + COND_TEXT[it.cond] : COND_TEXT[it.cond]);
+  const when = due ? 'до ' + fmtDate(due) : (it.months ? it.months + ' мес. — ' + (COND_TEXT[it.cond] || '') : (COND_TEXT[it.cond] || ''));
   const sumTxt = it.sum ? ' · ' + fmtNum(it.sum) + ' руб.' : '';
   const qtyTxt = it.qty ? ' (' + it.qty + ' ед.)' : '';
   return '<div class="task" style="border-left-color:' + strip + '">' +
     '<div class="info clickable" onclick="openDocCard(\'' + d.id + '\')">' +
-    '<div class="name">' + (it.name || 'позиция') + qtyTxt + sumTxt + '</div>' +
+    '<div class="name">' + esc(it.name || 'позиция') + qtyTxt + sumTxt + '</div>' +
     '<div class="meta">' +
-    '<span class="who">' + d.num + '</span>' +
-    (d.contr ? '<span>' + d.contr + '</span>' : '') +
+    '<span class="who">' + esc(d.num) + '</span>' +
+    (d.contr ? '<span>' + esc(d.contr) + '</span>' : '') +
     '<span>' + when + '</span>' +
     badge +
     '</div>' +
@@ -2065,13 +2095,11 @@ function schedItemRow(d, it) {
 }
 function renderSched() {
   const docs = loadDocs();
-  // собираем все активные позиции
   const entries = [];
   docs.forEach(d => {
     if (d.status === 'закрыт') return;
     (d.items || []).forEach(it => {
-      const due = itemDueDate(d, it);
-      entries.push({ d: d, it: it, due: due });
+      entries.push({ d: d, it: it, due: itemDueDate(d, it) });
     });
   });
   const list = document.getElementById('schedList');
@@ -2079,21 +2107,19 @@ function renderSched() {
     list.innerHTML = '<p class="note">Позиций пока нет</p>';
     return;
   }
-  // группировка: месяц → договор → позиции
   const byMonth = {};
   entries.forEach(e => {
     const key = e.due ? e.due.slice(0, 7) : 'nodate';
     if (!byMonth[key]) byMonth[key] = [];
     byMonth[key].push(e);
   });
-  const keys = Object.keys(byMonth).sort(); // по возрастанию месяцев
+  const keys = Object.keys(byMonth).sort();
   list.innerHTML = keys.map(mKey => {
     const arr = byMonth[mKey];
     const mTotal = r2(arr.reduce((s, e) => s + (e.it.sum || 0), 0));
     const label = mKey === 'nodate' ? 'Дата не определена (нет триггера)' :
       new Date(mKey + '-01').toLocaleDateString('ru-RU', { year: 'numeric', month: 'long' });
     const monthOpen = schedOpenMonth[mKey] !== false;
-    // внутри месяца — группировка по договорам
     const byDoc = {};
     arr.forEach(e => {
       if (!byDoc[e.d.id]) byDoc[e.d.id] = { d: e.d, items: [] };
@@ -2123,8 +2149,8 @@ function renderSched() {
       const overBadge = overCount ? '<span class="badge over">просрочено: ' + overCount + '</span>' : '';
       return '<div class="group" style="margin:8px">' +
         '<div class="group-head g-doc" onclick="toggleSchedDoc(\'' + did + '\')">' +
-        '<span>' + (isOpen ? '▾ ' : '▸ ') + g.d.num +
-        (g.d.contr ? ' · ' + g.d.contr : '') + '</span>' +
+        '<span>' + (isOpen ? '▾ ' : '▸ ') + esc(g.d.num) +
+        (g.d.contr ? ' · ' + esc(g.d.contr) : '') + '</span>' +
         '<small>позиций: ' + g.items.length +
         ' · на ' + fmtNum(itemsTotal(g.items)) + ' руб. ' + nearestBadge + overBadge + '</small>' +
         '</div>' +
@@ -2163,225 +2189,3 @@ let calSel = null;
 function calKey(y, m, d) {
   const p = n => (n < 10 ? '0' : '') + n;
   return y + '-' + p(m + 1) + '-' + p(d);
-}
-function calMove(dir) {
-  calMonth += dir;
-  if (calMonth < 0) { calMonth = 11; calYear--; }
-  if (calMonth > 11) { calMonth = 0; calYear++; }
-  renderCal();
-}
-function calTasksOn(key) {
-  return loadTasks().filter(t => t.date === key);
-}
-function renderCal() {
-  document.getElementById('calTitle').textContent = MONTHS[calMonth] + ' ' + calYear;
-
-  const grid = document.getElementById('calGrid');
-  const first = new Date(calYear, calMonth, 1);
-  const shift = (first.getDay() + 6) % 7;
-  const start = new Date(calYear, calMonth, 1 - shift);
-
-  const today = new Date();
-  const todayKey = calKey(today.getFullYear(), today.getMonth(), today.getDate());
-
-  const order = { over: 0, soon: 1, work: 2, done: 3 };
-  let html = '';
-  for (let cell = 0; cell < 42; cell++) {
-    const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + cell);
-    const inMonth = d.getMonth() === calMonth;
-    const key = calKey(d.getFullYear(), d.getMonth(), d.getDate());
-    const dayTasks = calTasksOn(key).slice().sort((a, b) =>
-      (order[taskCat(a)] !== undefined ? order[taskCat(a)] : 9) -
-      (order[taskCat(b)] !== undefined ? order[taskCat(b)] : 9));
-
-    let chips = '';
-    dayTasks.slice(0, 2).forEach(t => {
-      chips += '<div class="cal-chip c-' + taskCat(t) + '">' + t.name + '</div>';
-    });
-    if (dayTasks.length > 2) {
-      chips += '<div class="cal-chip c-work">+ ещё ' + (dayTasks.length - 2) + '</div>';
-    }
-
-    const cls = 'cal-day' + (inMonth ? '' : ' other') +
-      (key === todayKey ? ' today' : '') +
-      (key === calSel ? ' sel' : '');
-    html += '<div class="' + cls + '" onclick="calPick(\'' + key + '\')">' +
-      '<div class="d">' + d.getDate() + '</div>' + chips + '</div>';
-  }
-  grid.innerHTML = html;
-}
-function calPick(key) {
-  calSel = (calSel === key) ? null : key;
-  renderCal();
-  renderCalDay();
-}
-function renderCalDay() {
-  const title = document.getElementById('calDayTitle');
-  const listEl = document.getElementById('calDayList');
-  if (!calSel) {
-    title.textContent = 'Выберите день';
-    listEl.innerHTML = '<p class="note">Нажмите на день в календаре</p>';
-    return;
-  }
-  title.textContent = 'Дедлайны: ' + fmtDate(calSel);
-  const dayTasks = calTasksOn(calSel);
-  if (!dayTasks.length) {
-    listEl.innerHTML = '<p class="note">На этот день задач нет</p>';
-    return;
-  }
-  listEl.innerHTML = dayTasks.map(t => {
-    const cat = taskCat(t);
-    const status = t.status || 'в работе';
-    const bCls = cat === 'over' ? 'over' : (cat === 'soon' ? 'soon' : (cat === 'done' ? '' : 'ok'));
-    return '<div class="task">' +
-      '<div class="info"><div class="name">' + (cat === 'done' ? '✅ ' : '') + t.name + '</div>' +
-      '<div class="meta">' +
-      (t.who ? '<span class="who">' + t.who + '</span>' : '') +
-      '<span class="badge ' + bCls + '">' + (cat === 'done' ? 'закрыто' : status) + '</span>' +
-      '</div></div></div>';
-  }).join('');
-}
-renderCal();
-
-// ===== Калькулятор =====
-function fmt(x) {
-  return x.toLocaleString('ru-RU', {maximumFractionDigits: 2}) + ' руб.';
-}
-
-// ===== Число прописью =====
-const W_UNITS_M = ['', 'один', 'два', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять'];
-const W_UNITS_F = ['', 'одна', 'две', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять'];
-const W_TEEN = ['десять', 'одиннадцать', 'двенадцать', 'тринадцать', 'четырнадцать',
-                'пятнадцать', 'шестнадцать', 'семнадцать', 'восемнадцать', 'девятнадцать'];
-const W_TENS = ['', '', 'двадцать', 'тридцать', 'сорок', 'пятьдесят',
-                'шестьдесят', 'семьдесят', 'восемьдесят', 'девяносто'];
-const W_HUNDREDS = ['', 'сто', 'двести', 'триста', 'четыреста', 'пятьсот',
-                    'шестьсот', 'семьсот', 'восемьсот', 'девятьсот'];
-
-function wordsUpTo999(n, fem) {
-  const out = [];
-  const h = Math.floor(n / 100);
-  if (h) out.push(W_HUNDREDS[h]);
-  const rest = n % 100;
-  if (rest >= 10 && rest < 20) {
-    out.push(W_TEEN[rest - 10]);
-  } else {
-    const t = Math.floor(rest / 10);
-    if (t) out.push(W_TENS[t]);
-    const u = rest % 10;
-    if (u) out.push((fem ? W_UNITS_F : W_UNITS_M)[u]);
-  }
-  return out.join(' ');
-}
-function pluralForm(n, one, few, many) {
-  const m100 = n % 100;
-  const m10 = n % 10;
-  if (m10 === 1 && m100 !== 11) return one;
-  if (m10 >= 2 && m10 <= 4 && !(m100 >= 12 && m100 <= 14)) return few;
-  return many;
-}
-function numToWords(n) {
-  if (n === 0) return 'ноль';
-  const groups = [];
-  let x = n;
-  while (x > 0) { groups.push(x % 1000); x = Math.floor(x / 1000); }
-  const scales = [
-    null,
-    ['тысяча', 'тысячи', 'тысяч'],
-    ['миллион', 'миллиона', 'миллионов'],
-    ['миллиард', 'миллиарда', 'миллиардов']
-  ];
-  const out = [];
-  for (let i = groups.length - 1; i >= 0; i--) {
-    const g = groups[i];
-    if (!g) continue;
-    out.push(wordsUpTo999(g, i === 1));
-    if (i > 0) {
-      const f = scales[i];
-      out.push(pluralForm(g, f[0], f[1], f[2]));
-    }
-  }
-  return out.join(' ');
-}
-function sumInWords(amount) {
-  const cents = Math.round(amount * 100);
-  let rub = Math.floor(cents / 100);
-  let kop = cents % 100;
-  if (kop === 100) { rub += 1; kop = 0; }
-  const rubWords = rub === 0 ? 'ноль' : numToWords(rub);
-  const capitalized = rubWords.charAt(0).toUpperCase() + rubWords.slice(1);
-  const kopStr = (kop < 10 ? '0' : '') + kop;
-  return rub.toLocaleString('ru-RU') + ' (' + capitalized + ') ' +
-    pluralForm(rub, 'рубль', 'рубля', 'рублей') + ' ' + kopStr + ' копеек';
-}
-
-function calc() {
-  const v = id => parseFloat(document.getElementById(id).value) || 0;
-
-  const materials = v('f4') + v('f6') + v('f7');
-
-  const hpm = v('hpm') || 164;
-  const manMonths = document.getElementById('unit').value === 'h'
-    ? v('labor') / hpm
-    : v('labor');
-
-  const f9 = v('avg') * manMonths;
-  const f10 = f9 * v('dzp') / 100;
-  const salary = f9 + f10;
-  const strah = salary * v('strah') / 100;
-  const f11 = salary * v('opr') / 100;
-  const f12 = salary * v('ohr') / 100;
-
-  const seb = materials + salary + strah + f11 + f12;
-
-  const profitMaterials = materials * 0.01;
-  const profitOwn = (salary + strah + f11 + f12) * 0.25;
-  const profit = profitMaterials + profitOwn;
-
-  const price = seb + profit;
-
-  const nds = price * 0.22;
-  const priceWithNds = price + nds;
-
-  document.getElementById('res').innerHTML =
-    '<hr class="hr">' +
-    '<p>Материалы всего: <b>' + fmt(materials) + '</b></p>' +
-    '<p>Ф9 — основная ЗП: ' + fmt(f9) + '</p>' +
-    '<p>Ф10 — ДЗП: ' + fmt(f10) + '</p>' +
-    '<p>ЗП всего: <b>' + fmt(salary) + '</b></p>' +
-    '<p>СТРАХ: ' + fmt(strah) + '</p>' +
-    '<p>Ф11 — ОПР: ' + fmt(f11) + '</p>' +
-    '<p>Ф12 — ОХР/АУР: ' + fmt(f12) + '</p>' +
-    '<hr class="hr">' +
-    '<p>СЕБ — себестоимость: <b>' + fmt(seb) + '</b></p>' +
-    '<p>Прибыль: <b>' + fmt(profit) + '</b>' +
-    ' <span class="note">(1% от материалов: ' + fmt(profitMaterials) +
-    ' · 25% от собственных: ' + fmt(profitOwn) + ')</span></p>' +
-    '<hr class="hr">' +
-    '<p style="font-size:17px">ЦЕНА БЕЗ НДС: <b>' + fmt(price) + '</b></p>' +
-    '<p>НДС 22%: <b>' + fmt(nds) + '</b></p>' +
-    '<hr class="hr">' +
-    '<p style="font-size:19px">ЦЕНА С НДС: <b>' + fmt(priceWithNds) + '</b></p>';
-}
-
-// ===== отдельный блок: сумма прописью =====
-function sumWords() {
-  const s = parseFloat(document.getElementById('swSum').value) || 0;
-  if (s <= 0) { alert('Введите стоимость договора с НДС'); return; }
-
-  const nds = s * 22 / 122;
-  const priceNoNds = s - nds;
-
-  document.getElementById('swRes').innerHTML =
-    '<hr class="hr">' +
-    '<p>Цена без НДС: <b>' + fmtNum(priceNoNds) + '</b></p>' +
-    '<p>в том числе НДС 22%: <b>' + fmtNum(nds) + '</b></p>' +
-    '<div class="sum-box">' +
-    '<div class="sum-title">Стоимость договора</div>' +
-    '<p>' + sumInWords(s) + ', в том числе НДС 22% — ' + sumInWords(nds) + '</p>' +
-    '</div>';
-}
-</script>
-
-</body>
-</html>
