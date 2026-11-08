@@ -67,7 +67,7 @@
   .sb-work   { background: #2563eb; }
   .sb-pause  { background: #db2777; }
   .sb-ge     { background: #ca8a04; }
-  .sb-mv     { background: #eab308; }
+  .sb-mv     { background: #ca8a04; }
   .sb-rework { background: #ea580c; }
   .sb-done   { background: #16a34a; }
   .status-legend {
@@ -82,7 +82,7 @@
   .lg-work::before   { background: #2563eb; }
   .lg-pause::before  { background: #db2777; }
   .lg-ge::before     { background: #ca8a04; }
-  .lg-mv::before     { background: #eab308; }
+  .lg-mv::before     { background: #ca8a04; }
   .lg-rework::before { background: #ea580c; }
   .lg-done::before   { background: #16a34a; }
 
@@ -238,7 +238,7 @@
   .g-work   { background: #2563eb; }
   .g-pause  { background: #db2777; }
   .g-ge     { background: #ca8a04; }
-  .g-mv     { background: #eab308; }
+  .g-mv     { background: #ca8a04; }
   .g-rework { background: #ea580c; }
   .g-done   { background: #16a34a; }
   .g-who    { background: #475569; cursor: pointer; user-select: none; }
@@ -308,8 +308,7 @@
     <div class="status-legend">
       <span class="lg-work">в работе</span>
       <span class="lg-pause">пауза</span>
-      <span class="lg-ge">ГЭ</span>
-      <span class="lg-mv">МВ</span>
+      <span class="lg-ge">согласование (ГЭ/МВ)</span>
       <span class="lg-rework">доработка</span>
       <span class="lg-done">выполнено</span>
     </div>
@@ -482,7 +481,7 @@ const STATUS_STRIP = {
   'в работе':             '#2563eb',
   'на паузе':             '#db2777',
   'на согласовании у ГЭ': '#ca8a04',
-  'на согласовании у МВ': '#eab308',
+  'на согласовании у МВ': '#ca8a04',
   'на доработке':         '#ea580c',
   'выполнено':            '#16a34a'
 };
@@ -726,7 +725,7 @@ function renderStats(tasks) {
   setCounter('cOver', over, 'c-red');
   setCounter('cDone', done, 'c-green');
 
-  // сегментированная диаграмма статусов
+  // сегментированная диаграмма статусов (ГЭ и МВ — один жёлтый сегмент)
   const total = tasks.length;
   const bar = document.getElementById('statusBar');
   if (!total) {
@@ -784,13 +783,21 @@ function render() {
   }
 
   if (view === 'status') {
-    // группы по статусам
+    // группы по статусам (ГЭ и МВ объединены в одну группу «на согласовании»)
+    const groups = [
+      { name: 'в работе',             cls: 'g-work',   key: 'в работе' },
+      { name: 'на паузе',             cls: 'g-pause',  key: 'на паузе' },
+      { name: 'на согласовании у ГЭ', cls: 'g-ge',     key: 'на согласовании у ГЭ' },
+      { name: 'на согласовании у МВ', cls: 'g-ge',     key: 'на согласовании у МВ' },
+      { name: 'на доработке',         cls: 'g-rework', key: 'на доработке' },
+      { name: 'выполнено',            cls: 'g-done',   key: 'выполнено' }
+    ];
     let html = '';
-    STATUS_LIST.forEach(s => {
-      const group = shown.filter(t => (t.status || 'в работе') === s);
+    groups.forEach(g => {
+      const group = shown.filter(t => (t.status || 'в работе') === g.key);
       if (!group.length) return;
       html += '<div class="group">' +
-        '<div class="group-head ' + STATUS_HEAD[s] + '"><span>' + s + '</span><small>' + group.length + '</small></div>' +
+        '<div class="group-head ' + g.cls + '"><span>' + g.name + '</span><small>' + group.length + '</small></div>' +
         '<div class="group-body">' +
         group.map(t => taskRow(t, tasks.indexOf(t))).join('') +
         '</div></div>';
@@ -836,7 +843,9 @@ function setStatusById(id, val) {
   if (!t) return;
   t.status = val;
   t.statusDate = new Date().toISOString();
-  if (val === 'выполнено') t.done = true;
+  // флажок закрытия синхронизируется со статусом:
+  // любой статус кроме «выполнено» снимает done
+  t.done = (val === 'выполнено');
   saveTasks(tasks);
   render();
 }
