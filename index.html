@@ -44,6 +44,8 @@
   }
   .card h3 { font-size: 17px; margin-bottom: 12px; }
   .card h4 { font-size: 14px; margin: 12px 0 8px; color: #475569; }
+
+  /* ===== счётчики, диаграмма статусов, нагрузка ===== */
   .counters { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; text-align: center; }
   .counter .num { font-size: 22px; font-weight: 700; }
   .counter .lbl { font-size: 11px; color: #64748b; }
@@ -52,6 +54,46 @@
   .num.c-orange { color: #f59e0b; }
   .num.c-red    { color: #ef4444; }
   .num.c-green  { color: #16a34a; }
+
+  .status-bar {
+    display: flex;
+    height: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+    margin: 14px 0 4px;
+    background: #e2e8f0;
+  }
+  .status-bar div { height: 100%; }
+  .sb-work   { background: #2563eb; }
+  .sb-pause  { background: #db2777; }
+  .sb-ge     { background: #ca8a04; }
+  .sb-mv     { background: #eab308; }
+  .sb-rework { background: #ea580c; }
+  .sb-done   { background: #16a34a; }
+  .status-legend {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    font-size: 10px; color: #64748b; margin-bottom: 12px;
+  }
+  .status-legend span::before {
+    content: ''; display: inline-block;
+    width: 8px; height: 8px; border-radius: 2px;
+    margin-right: 3px; vertical-align: middle;
+  }
+  .lg-work::before   { background: #2563eb; }
+  .lg-pause::before  { background: #db2777; }
+  .lg-ge::before     { background: #ca8a04; }
+  .lg-mv::before     { background: #eab308; }
+  .lg-rework::before { background: #ea580c; }
+  .lg-done::before   { background: #16a34a; }
+
+  .load-title { font-size: 13px; font-weight: 700; color: #475569; margin: 10px 0 4px; }
+  .load-row { margin: 6px 0; }
+  .load-row .lr-top { display: flex; justify-content: space-between; font-size: 12px; color: #475569; }
+  .load-track { height: 8px; border-radius: 4px; background: #e2e8f0; margin-top: 3px; overflow: hidden; }
+  .load-fill { height: 100%; border-radius: 4px; background: #2563eb; }
+  .load-fill.max { background: #ef4444; }
+
+  /* ===== формы ===== */
   label { display: block; font-size: 14px; margin-bottom: 8px; }
   input, select {
     width: 100%;
@@ -62,19 +104,8 @@
     font-size: 15px;
     background: #fff;
   }
-  .filters {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 12px;
-  }
-  .filters .lbl {
-    display: block;
-    font-size: 12px;
-    color: #475569;
-    font-weight: 600;
-    margin-bottom: 2px;
-  }
+  .filters { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  .small-lbl { display: block; font-size: 12px; color: #475569; font-weight: 600; margin-bottom: 2px; }
   .btn {
     display: inline-block;
     width: 100%;
@@ -97,18 +128,27 @@
     margin-top: 0;
     font-size: 13px;
   }
+
+  /* ===== «горит сейчас» ===== */
+  .hot-title { color: #ef4444; }
+
+  /* ===== строка задачи ===== */
   .task {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px;
+    padding: 10px 10px 10px 12px;
     border-bottom: 1px solid #e2e8f0;
     font-size: 14px;
     gap: 8px;
+    border-left-width: 4px;
+    border-left-style: solid;
   }
   .task:last-child { border-bottom: none; }
-  .task .info { flex: 1; }
+  .task .info { flex: 1; min-width: 0; }
   .task .name { font-weight: 600; }
+  .task.is-done .name { text-decoration: line-through; color: #94a3b8; }
+  .task.is-done { opacity: 0.65; }
   .task .meta { color: #64748b; font-size: 12px; margin-top: 3px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
   .who { color: #2563eb; font-weight: 600; }
   .stdate { font-size: 10px; color: #94a3b8; }
@@ -144,65 +184,70 @@
   .badge.over { background: #ef4444; }
   .badge.soon { background: #f59e0b; }
   .badge.ok   { background: #2563eb; }
-  .del {
-    background: none;
-    border: none;
-    color: #ef4444;
-    font-size: 18px;
-    cursor: pointer;
+
+  /* полоска сгорания дедлайна */
+  .burn { height: 4px; border-radius: 2px; background: #e2e8f0; margin-top: 5px; overflow: hidden; }
+  .burn div { height: 100%; border-radius: 2px; }
+  .burn .b-ok  { background: #2563eb; }
+  .burn .b-mid { background: #f59e0b; }
+  .burn .b-hot { background: #ef4444; }
+
+  /* ===== группы (по статусам / по исполнителям) ===== */
+  .group { border: 1px solid #e2e8f0; border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
+  .group-head {
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
-  /* Календарь экономиста */
+  .group-head small { font-weight: 600; opacity: 0.9; }
+  .g-work   { background: #2563eb; }
+  .g-pause  { background: #db2777; }
+  .g-ge     { background: #ca8a04; }
+  .g-mv     { background: #eab308; }
+  .g-rework { background: #ea580c; }
+  .g-done   { background: #16a34a; }
+  .g-who    { background: #475569; cursor: pointer; user-select: none; }
+  .group-body { border-top: 1px solid #e2e8f0; }
+
+  .del { background: none; border: none; color: #ef4444; font-size: 18px; cursor: pointer; }
+  .hr { border: none; border-top: 1px solid #e2e8f0; margin: 10px 0; }
+  #res p { font-size: 14px; margin: 4px 0; }
+  .note { font-size: 12px; color: #94a3b8; text-align: center; margin-top: 4px; }
+  .hidden { display: none; }
+
+  /* ===== календарь экономиста===== */
   .cal-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
   .cal-nav .mon { font-size: 16px; font-weight: 700; text-transform: capitalize; }
   .cal-nav button {
-    background: #e2e8f0;
-    border: none;
-    border-radius: 8px;
-    padding: 6px 14px;
-    font-size: 15px;
-    cursor: pointer;
-    color: #475569;
-    font-weight: 700;
+    background: #e2e8f0; border: none; border-radius: 8px;
+    padding: 6px 14px; font-size: 15px; cursor: pointer;
+    color: #475569; font-weight: 700;
   }
-  .cal-week {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
-    margin-bottom: 4px;
-  }
+  .cal-week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 4px; }
   .cal-week div { text-align: center; font-size: 11px; color: #64748b; font-weight: 600; }
   .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
   .cal-day {
-    min-height: 52px;
-    background: #f8fafc;
-    border-radius: 8px;
-    padding: 3px 4px;
-    cursor: pointer;
-    overflow: hidden;
+    min-height: 52px; background: #f8fafc; border-radius: 8px;
+    padding: 3px 4px; cursor: pointer; overflow: hidden;
   }
   .cal-day.other { opacity: 0.35; }
   .cal-day.today { box-shadow: inset 0 0 0 2px #2563eb; }
   .cal-day.sel   { background: #dbeafe; }
   .cal-day .d { font-size: 12px; font-weight: 600; }
   .cal-chip {
-    font-size: 9px;
-    line-height: 1.3;
-    padding: 1px 4px;
-    border-radius: 4px;
-    margin-top: 2px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    font-size: 9px; line-height: 1.3; padding: 1px 4px;
+    border-radius: 4px; margin-top: 2px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     font-weight: 600;
   }
-  .cal-chip.c-work { background: rgba(37, 99, 235, 0.15);  color: #1d4ed8; }
-  .cal-chip.c-soon { background: rgba(245, 158, 11, 0.2);  color: #b45309; }
-  .cal-chip.c-over { background: rgba(239, 68, 68, 0.18);  color: #b91c1c; }
-  .cal-chip.c-done { background: rgba(22, 163, 74, 0.15);  color: #15803d; }
-  .hr { border: none; border-top: 1px solid #e2e8f0; margin: 10px 0; }
-  #res p { font-size: 14px; margin: 4px 0; }
-  .note { font-size: 12px; color: #94a3b8; text-align: center; margin-top: 4px; }
-  .hidden { display: none; }
+  .cal-chip.c-work { background: rgba(37, 99, 235, 0.15); color: #1d4ed8; }
+  .cal-chip.c-soon { background: rgba(245, 158, 11, 0.2); color: #b45309; }
+  .cal-chip.c-over { background: rgba(239, 68, 68, 0.18); color: #b91c1c; }
+  .cal-chip.c-done { background: rgba(22, 163, 74, 0.15); color: #15803d; }
 </style>
 </head>
 <body>
@@ -227,6 +272,25 @@
       <div class="counter"><div class="num" id="cOver">0</div><div class="lbl">просрочено</div></div>
       <div class="counter"><div class="num" id="cDone">0</div><div class="lbl">закрыто</div></div>
     </div>
+
+    <div class="status-bar" id="statusBar"></div>
+    <div class="status-legend">
+      <span class="lg-work">в работе</span>
+      <span class="lg-pause">пауза</span>
+      <span class="lg-ge">ГЭ</span>
+      <span class="lg-mv">МВ</span>
+      <span class="lg-rework">доработка</span>
+      <span class="lg-done">выполнено</span>
+    </div>
+
+    <div class="load-title">Нагрузка по исполнителям (открытые задачи)</div>
+    <div id="loadBlock"></div>
+  </div>
+
+  <!-- Горит сейчас -->
+  <div class="card hidden" id="hotCard">
+    <h3 class="hot-title">🔥 Горит сейчас</h3>
+    <div id="hotList"></div>
   </div>
 
   <div class="card">
@@ -245,17 +309,35 @@
 
     <div class="filters">
       <div>
-        <span class="lbl">Исполнитель</span>
+        <span class="small-lbl">Исполнитель</span>
         <select id="fWho" onchange="render()"></select>
       </div>
       <div>
-        <span class="lbl">Категория</span>
+        <span class="small-lbl">Категория</span>
         <select id="fCat" onchange="render()">
           <option value="all">все</option>
           <option value="work">в работе</option>
           <option value="soon">скоро дедлайн</option>
           <option value="over">просрочено</option>
           <option value="done">закрыто</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="filters">
+      <div>
+        <span class="small-lbl">Вид</span>
+        <select id="vView" onchange="render()">
+          <option value="list">плоский список</option>
+          <option value="status">по статусам</option>
+          <option value="who">по исполнителям</option>
+        </select>
+      </div>
+      <div>
+        <span class="small-lbl">Сортировка</span>
+        <select id="vSort" onchange="render()">
+          <option value="new">новые сверху</option>
+          <option value="deadline">по дедлайну</option>
         </select>
       </div>
     </div>
@@ -283,7 +365,7 @@
     <div class="cal-grid" id="calGrid"></div>
   </div>
 
-  <div class="card" id="calDayCard">
+  <div class="card">
     <h3 id="calDayTitle">Выберите день</h3>
     <div id="calDayList"><p class="note">Нажмите на день в календаре</p></div>
   </div>
@@ -338,7 +420,6 @@ const STATUS_LIST = [
   'на доработке',
   'выполнено'
 ];
-// цветовая тема капсулы статуса
 const STATUS_CLS = {
   'в работе':             'ss-work',
   'на паузе':             'ss-pause',
@@ -347,6 +428,33 @@ const STATUS_CLS = {
   'на доработке':         'ss-rework',
   'выполнено':            'ss-done'
 };
+const STATUS_HEAD = {
+  'в работе':             'g-work',
+  'на паузе':             'g-pause',
+  'на согласовании у ГЭ': 'g-ge',
+  'на согласовании у МВ': 'g-mv',
+  'на доработке':         'g-rework',
+  'выполнено':            'g-done'
+};
+const STATUS_SEG = {
+  'в работе':             'sb-work',
+  'на паузе':             'sb-pause',
+  'на согласовании у ГЭ': 'sb-ge',
+  'на согласовании у МВ': 'sb-mv',
+  'на доработке':         'sb-rework',
+  'выполнено':            'sb-done'
+};
+const STATUS_STRIP = {
+  'в работе':             '#2563eb',
+  'на паузе':             '#db2777',
+  'на согласовании у ГЭ': '#ca8a04',
+  'на согласовании у МВ': '#eab308',
+  'на доработке':         '#ea580c',
+  'выполнено':            '#16a34a'
+};
+
+// раскрытые группы исполнителей (аккордеон)
+const whoOpen = {};
 
 // ===== Переключение разделов =====
 function showTab(name) {
@@ -359,7 +467,7 @@ function showTab(name) {
   if (name === 'cal') renderCal();
 }
 
-// ===== Исполнитель: сборка списка =====
+// ===== Исполнитель: сборка списков =====
 function buildWhoSelect() {
   const sel = document.getElementById('tWho');
   let html = '<option value="">— не выбран —</option>';
@@ -405,7 +513,6 @@ function daysLeft(s) {
   const now = new Date();
   return Math.ceil((dd - now) / 86400000);
 }
-// категория задачи: done / over / soon / work
 function taskCat(t) {
   if (t.done || t.status === 'выполнено') return 'done';
   const left = daysLeft(t.date);
@@ -418,11 +525,89 @@ function clearFilters() {
   document.getElementById('fCat').value = 'all';
   render();
 }
-function render() {
+function filteredTasks() {
   const tasks = loadTasks();
+  const fWho = document.getElementById('fWho').value;
+  const fCat = document.getElementById('fCat').value;
+  return tasks.filter(t => {
+    const c = taskCat(t);
+    if (fCat !== 'all' && c !== fCat) return false;
+    if (fWho === 'all') return true;
+    if (fWho === '__none') return !t.who;
+    return t.who === fWho;
+  });
+}
+function sortByChoice(arr) {
+  const sort = document.getElementById('vSort').value;
+  if (sort === 'new') return arr.slice();
+  return arr.slice().sort((a, b) => {
+    const da = taskCat(a) === 'done' ? 1 : 0;
+    const db = taskCat(b) === 'done' ? 1 : 0;
+    if (da !== db) return da - db;
+    const la = daysLeft(a.date), lb = daysLeft(b.date);
+    if (la === null && lb === null) return 0;
+    if (la === null) return 1;
+    if (lb === null) return -1;
+    return la - lb;
+  });
+}
+
+// ===== строка задачи (общая для всех видов) =====
+function taskRow(t, i) {
+  const cat = taskCat(t);
+  const left = daysLeft(t.date);
+  let badgeCat = '';
+  if (cat === 'done') badgeCat = 'закрыто';
+  else if (left !== null) {
+    if (left < 0) badgeCat = 'просрочено';
+    else badgeCat = 'дедлайн: ' + left + ' дн.';
+  } else badgeCat = 'в работе';
+
+  const badgeCls = cat === 'over' ? 'over' : (cat === 'soon' ? 'soon' : (cat === 'done' ? '' : 'ok'));
+  const status = t.status || 'в работе';
+  const stCls = STATUS_CLS[status] || 'ss-work';
+  const strip = STATUS_STRIP[status] || '#64748b';
+  const stOptions = STATUS_LIST.map(s =>
+    '<option value="' + s + '"' + (s === status ? ' selected' : '') + '>' + s + '</option>'
+  ).join('');
+
+  // индикатор сгорания дедлайна
+  let burn = '';
+  if (t.createdAt && t.date) {
+    const [y, m, d] = t.date.split('-').map(Number);
+    const dl = new Date(y, m - 1, d, 23, 59, 59).getTime();
+    const created = new Date(t.createdAt).getTime();
+    if (dl > created) {
+      const now = Date.now();
+      const p = Math.min(100, Math.max(0, Math.round((now - created) / (dl - created) * 100)));
+      const bCls = p >= 90 ? 'b-hot' : (p >= 70 ? 'b-mid' : 'b-ok');
+      burn = '<div class="burn"><div class="' + bCls + '" style="width:' + p + '%"></div></div>';
+    }
+  }
+
+  return '<div class="task' + (cat === 'done' ? ' is-done' : '') + '" style="border-left-color:' + strip + '">' +
+    '<div class="info"><div class="name">' + (cat === 'done' ? '✅ ' : '') + t.name + '</div>' +
+    '<div class="meta">' +
+    (t.who ? '<span class="who">' + t.who + '</span>' : '') +
+    '<span>' + (t.date ? fmtDate(t.date) : '') + '</span>' +
+    (badgeCat ? '<span class="badge ' + badgeCls + '">' + badgeCat + '</span>' : '') +
+    '<select class="status-select ' + stCls + '" onchange="setStatus(' + i + ', this.value)">' + stOptions + '</select>' +
+    (t.statusDate ? '<span class="stdate">' + fmtDT(t.statusDate) + '</span>' : '') +
+    '</div>' + burn + '</div>' +
+    '<div>' +
+    (cat !== 'done' ? '<button class="del" title="Закрыть" onclick="closeTask(' + i + ')">✓</button>' : '') +
+    '<button class="del" title="Удалить" onclick="delTask(' + i + ')">✕</button>' +
+    '</div></div>';
+}
+
+// ===== рендер: счётчики + диаграмма + нагрузка + «горит сейчас» =====
+function renderStats(tasks) {
   let all = 0, work = 0, soon = 0, over = 0, done = 0;
+  const byStatus = {};
+  STATUS_LIST.forEach(s => byStatus[s] = 0);
 
   tasks.forEach(t => {
+    byStatus[t.status || 'в работе'] = (byStatus[t.status || 'в работе'] || 0) + 1;
     const c = taskCat(t);
     if (c === 'done') done++;
     else if (c === 'over') { all++; over++; }
@@ -441,56 +626,109 @@ function render() {
   setCounter('cOver', over, 'c-red');
   setCounter('cDone', done, 'c-green');
 
-  // фильтры
-  const fWho = document.getElementById('fWho').value;
-  const fCat = document.getElementById('fCat').value;
-  const shown = tasks.filter(t => {
-    const c = taskCat(t);
-    if (fCat !== 'all' && c !== fCat) return false;
-    if (fWho === 'all') return true;
-    if (fWho === '__none') return !t.who;
-    return t.who === fWho;
-  });
+  // сегментированная диаграмма статусов
+  const total = tasks.length;
+  const bar = document.getElementById('statusBar');
+  if (!total) {
+    bar.innerHTML = '';
+  } else {
+    bar.innerHTML = STATUS_LIST.map(s => {
+      const n = byStatus[s] || 0;
+      if (!n) return '';
+      return '<div class="' + STATUS_SEG[s] + '" style="width:' + (n / total * 100) + '%"></div>';
+    }).join('');
+  }
 
+  // распределение нагрузки
+  const load = TEAM.map(name => ({
+    name: name,
+    n: tasks.filter(t => t.who === name && taskCat(t) !== 'done').length
+  }));
+  const max = Math.max(1, ...load.map(x => x.n));
+  document.getElementById('loadBlock').innerHTML = load.map(x =>
+    '<div class="load-row"><div class="lr-top"><span>' + x.name + '</span><b>' + x.n + '</b></div>' +
+    '<div class="load-track"><div class="load-fill' + (x.n === max && x.n > 0 ? ' max' : '') +
+    '" style="width:' + (x.n / max * 100) + '%"></div></div></div>'
+  ).join('');
+
+  // «горит сейчас»: просроченные + дедлайн в ближайшие 3 дня
+  const hot = tasks
+    .filter(t => { const c = taskCat(t); return c === 'over' || c === 'soon'; })
+    .sort((a, b) => (daysLeft(a.date) ?? 0) - (daysLeft(b.date) ?? 0));
+  const hotCard = document.getElementById('hotCard');
+  if (!hot.length) {
+    hotCard.classList.add('hidden');
+  } else {
+    hotCard.classList.remove('hidden');
+    document.getElementById('hotList').innerHTML = hot.map(t => {
+      const i = tasks.indexOf(t);
+      return taskRow(t, i);
+    }).join('');
+  }
+}
+
+// ===== рендер списка задач =====
+function render() {
+  const tasks = loadTasks();
+  renderStats(tasks);
+
+  const view = document.getElementById('vView').value;
+  const shown = sortByChoice(filteredTasks());
   const list = document.getElementById('taskList');
+
   if (!shown.length) {
     list.innerHTML = tasks.length
       ? '<p class="note">По выбранным фильтрам задач нет</p>'
       : '<p class="note">Задач пока нет</p>';
     return;
   }
-  list.innerHTML = shown.map(t => {
-    const i = tasks.indexOf(t);
-    const cat = taskCat(t);
-    const left = daysLeft(t.date);
-    let badgeCat = '';
-    if (cat === 'done') badgeCat = 'закрыто';
-    else if (left !== null) {
-      if (left < 0) badgeCat = 'просрочено';
-      else badgeCat = 'дедлайн: ' + left + ' дн.';
-    } else badgeCat = 'в работе';
 
-    const badgeCls = cat === 'over' ? 'over' : (cat === 'soon' ? 'soon' : 'ok');
-    const status = t.status || 'в работе';
-    const stCls = STATUS_CLS[status] || 'ss-work';
-    const stOptions = STATUS_LIST.map(s =>
-      '<option value="' + s + '"' + (s === status ? ' selected' : '') + '>' + s + '</option>'
-    ).join('');
-    return '<div class="task">' +
-      '<div class="info"><div class="name">' + (cat === 'done' ? '✅ ' : '') + t.name + '</div>' +
-      '<div class="meta">' +
-      (t.who ? '<span class="who">' + t.who + '</span>' : '') +
-      '<span>' + (t.date ? fmtDate(t.date) : '') + '</span>' +
-      (badgeCat ? '<span class="badge ' + badgeCls + '">' + badgeCat + '</span>' : '') +
-      '<select class="status-select ' + stCls + '" onchange="setStatus(' + i + ', this.value)">' + stOptions + '</select>' +
-      (t.statusDate ? '<span class="stdate">' + fmtDT(t.statusDate) + '</span>' : '') +
-      '</div></div>' +
-      '<div>' +
-      (cat !== 'done' ? '<button class="del" title="Закрыть" onclick="closeTask(' + i + ')">✓</button>' : '') +
-      '<button class="del" title="Удалить" onclick="delTask(' + i + ')">✕</button>' +
-      '</div></div>';
-  }).join('');
+  if (view === 'status') {
+    // канбан-подобные группы по статусам
+    let html = '';
+    STATUS_LIST.forEach(s => {
+      const group = shown.filter(t => (t.status || 'в работе') === s);
+      if (!group.length) return;
+      html += '<div class="group">' +
+        '<div class="group-head ' + STATUS_HEAD[s] + '"><span>' + s + '</span><small>' + group.length + '</small></div>' +
+        '<div class="group-body">' +
+        group.map(t => taskRow(t, tasks.indexOf(t))).join('') +
+        '</div></div>';
+    });
+    list.innerHTML = html;
+
+  } else if (view === 'who') {
+    // аккордеон по исполнителям
+    const names = [];
+    shown.forEach(t => {
+      const k = t.who || '— без исполнителя —';
+      if (!names.includes(k)) names.push(k);
+    });
+    list.innerHTML = names.map(name => {
+      const group = shown.filter(t => (t.who || '— без исполнителя —') === name);
+      const isOpen = whoOpen[name] !== false; // по умолчанию раскрыто
+      return '<div class="group">' +
+        '<div class="group-head g-who" onclick="toggleWho(\'' + name.replace(/'/g, "\\'") + '\')">' +
+        '<span>' + (isOpen ? '▾ ' : '▸ ') + name + '</span><small>' + group.length + '</small></div>' +
+        (isOpen ? '<div class="group-body">' +
+          group.map(t => taskRow(t, tasks.indexOf(t))).join('') + '</div>' : '') +
+        '</div>';
+    }).join('');
+
+  } else {
+    // плоский список (закрытые в конце)
+    const active = shown.filter(t => taskCat(t) !== 'done');
+    const doneT  = shown.filter(t => taskCat(t) === 'done');
+    list.innerHTML = active.map(t => taskRow(t, tasks.indexOf(t))).join('') +
+      doneT.map(t => taskRow(t, tasks.indexOf(t))).join('');
+  }
 }
+function toggleWho(name) {
+  whoOpen[name] = whoOpen[name] === false ? true : false;
+  render();
+}
+
+// ===== действия =====
 function setStatus(i, val) {
   const tasks = loadTasks();
   tasks[i].status = val;
@@ -516,6 +754,7 @@ function addTask() {
     date: document.getElementById('tDate').value,
     status: 'в работе',
     statusDate: new Date().toISOString(),
+    createdAt: new Date().toISOString(),
     done: false
   });
   saveTasks(tasks);
@@ -543,17 +782,16 @@ function delTask(i) {
 buildWhoSelect();
 render();
 
-// ===== Календарь экономиста=====
+// ===== Календарь экономиста =====
 const MONTHS = ['январь','февраль','март','апрель','май','июнь',
                 'июль','август','сентябрь','октябрь','ноябрь','декабрь'];
-let calYear, calMonth;       // просматриваемый месяц
-let calSel = null;           // выбранный день 'YYYY-MM-DD' или null
+let calYear, calMonth;
+let calSel = null;
 (function initCal() {
   const n = new Date();
   calYear = n.getFullYear();
   calMonth = n.getMonth();
 })();
-
 function calKey(y, m, d) {
   const p = n => (n < 10 ? '0' : '') + n;
   return y + '-' + p(m + 1) + '-' + p(d);
@@ -572,7 +810,7 @@ function renderCal() {
 
   const grid = document.getElementById('calGrid');
   const first = new Date(calYear, calMonth, 1);
-  let shift = (first.getDay() + 6) % 7; // пн = 0
+  const shift = (first.getDay() + 6) % 7;
   const start = new Date(calYear, calMonth, 1 - shift);
 
   const today = new Date();
@@ -587,7 +825,7 @@ function renderCal() {
 
     let chips = '';
     const order = { over: 0, soon: 1, work: 2, done: 3 };
-    dayTasks.sort((a, b) => (order[taskCat(a)] ?? 9) - (order[taskCat(b)] ?? 9));
+    dayTasks.slice().sort((a, b) => (order[taskCat(a)] ?? 9) - (order[taskCat(b)] ?? 9));
     dayTasks.slice(0, 2).forEach(t => {
       chips += '<div class="cal-chip c-' + taskCat(t) + '">' + t.name + '</div>';
     });
@@ -616,7 +854,6 @@ function renderCalDay() {
     listEl.innerHTML = '<p class="note">Нажмите на день в календаре</p>';
     return;
   }
-  const [y, m, d] = calSel.split('-').map(Number);
   title.textContent = 'Дедлайны: ' + fmtDate(calSel);
   const dayTasks = calTasksOn(calSel);
   if (!dayTasks.length) {
@@ -626,13 +863,12 @@ function renderCalDay() {
   listEl.innerHTML = dayTasks.map(t => {
     const cat = taskCat(t);
     const status = t.status || 'в работе';
-    const stCls = STATUS_CLS[status] || 'ss-work';
     return '<div class="task">' +
       '<div class="info"><div class="name">' + (cat === 'done' ? '✅ ' : '') + t.name + '</div>' +
       '<div class="meta">' +
       (t.who ? '<span class="who">' + t.who + '</span>' : '') +
       '<span class="badge ' + (cat === 'over' ? 'over' : (cat === 'soon' ? 'soon' : (cat === 'done' ? '' : 'ok'))) + '">' +
-      (cat === 'over' ? 'просрочено' : (cat === 'done' ? 'закрыто' : status)) + '</span>' +
+      (cat === 'done' ? 'закрыто' : status) + '</span>' +
       '</div></div></div>';
   }).join('');
 }
@@ -652,17 +888,15 @@ function calc() {
     ? v('labor') / hpm
     : v('labor');
 
-  const f9 = v('avg') * manMonths;         // основная ЗП
-  const f10 = f9 * v('dzp') / 100;         // ДЗП
-  const salary = f9 + f10;                 // ЗП всего
-  const strah = salary * v('strah') / 100; // страховые взносы
-  const f11 = salary * v('opr') / 100;     // ОПР
-  const f12 = salary * v('ohr') / 100;     // ОХР/АУР
+  const f9 = v('avg') * manMonths;
+  const f10 = f9 * v('dzp') / 100;
+  const salary = f9 + f10;
+  const strah = salary * v('strah') / 100;
+  const f11 = salary * v('opr') / 100;
+  const f12 = salary * v('ohr') / 100;
 
-  // Себестоимость (включая СТРАХ)
   const seb = materials + salary + strah + f11 + f12;
 
-  // Прибыль: 1% от материалов всего, 25% от остальных статей
   const profitMaterials = materials * 0.01;
   const profitOther = (salary + strah + f11 + f12) * 0.25;
   const profit = profitMaterials + profitOther;
