@@ -325,6 +325,34 @@
   .modal-actions { display: flex; gap: 10px; }
   .modal-actions .btn { margin-top: 10px; }
 
+  /* ===== этапы поставки в окне договора ===== */
+  .stage-row {
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 8px;
+    background: #f8fafc;
+  }
+  .stage-row .filters { margin-bottom: 6px; }
+  .stage-row .remove-stage {
+    background: none;
+    border: none;
+    color: #ef4444;
+    font-size: 16px;
+    cursor: pointer;
+    float: right;
+    padding: 0 4px;
+  }
+  .btn.add-stage {
+    background: #e2e8f0;
+    color: #475569;
+    font-size: 13px;
+    padding: 8px;
+    margin-top: 4px;
+  }
+  .mini-note { font-size: 11px; color: #94a3b8; margin: 4px 0 0; }
+  .doc-extra { font-size: 11px; color: #64748b; margin-top: 4px; line-height: 1.5; }
+
   /* ===== календарь экономиста ===== */
   .cal-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
   .cal-nav .mon { font-size: 16px; font-weight: 700; text-transform: capitalize; }
@@ -605,6 +633,51 @@
     <label>Предмет договора <input type="text" id="dSubject" placeholder="Например: НИОКР - изделие - ХХХП"></label>
     <label>Сумма с НДС, руб. <input type="number" id="dSum" step="0.01"></label>
     <label>Окончание срока действия <input type="date" id="dDate"></label>
+
+    <h4>Оплата</h4>
+    <div class="filters">
+      <div>
+        <span class="small-lbl">Аванс, %</span>
+        <input type="number" id="dPrepay" step="0.1" placeholder="0">
+      </div>
+      <div>
+        <span class="small-lbl">Срок оплаты аванса, дн.</span>
+        <input type="number" id="dPrepayDays" step="1" placeholder="0">
+      </div>
+    </div>
+    <label>Отсчёт срока аванса
+      <select id="dPrepayUnit">
+        <option value="cal">календарных дней</option>
+        <option value="work">рабочих дней</option>
+      </select>
+    </label>
+
+    <div class="filters">
+      <div>
+        <span class="small-lbl">Окончательный расчёт, дн.</span>
+        <input type="number" id="dFinalDays" step="1" placeholder="0">
+      </div>
+      <div>
+        <span class="small-lbl">Тип дней</span>
+        <select id="dFinalUnit">
+          <option value="cal">календарных</option>
+          <option value="work">рабочих</option>
+        </select>
+      </div>
+    </div>
+    <label>С какого момента отсчитывать
+      <select id="dFinalEvent">
+        <option value="act">после подписания акта</option>
+        <option value="delivery">после поставки (последнего этапа)</option>
+        <option value="contract">после подписания договора</option>
+      </select>
+    </label>
+
+    <h4>Этапность поставки</h4>
+    <div id="stagesWrap"></div>
+    <button class="btn add-stage" onclick="addStageRow()">+ Добавить этап</button>
+    <p class="mini-note">Условие отсчёта: с перечисления аванса, с получения давальческого сырья или календарно.</p>
+
     <div class="modal-actions">
       <button class="btn" onclick="addDoc()">Добавить</button>
       <button class="btn ghost" onclick="closeDocModal()">Отмена</button>
@@ -757,6 +830,13 @@ function closeDocModal() {
   document.getElementById('dSubject').value = '';
   document.getElementById('dSum').value = '';
   document.getElementById('dDate').value = '';
+  document.getElementById('dPrepay').value = '';
+  document.getElementById('dPrepayDays').value = '';
+  document.getElementById('dPrepayUnit').value = 'cal';
+  document.getElementById('dFinalDays').value = '';
+  document.getElementById('dFinalUnit').value = 'cal';
+  document.getElementById('dFinalEvent').value = 'act';
+  document.getElementById('stagesWrap').innerHTML = '';
 }
 
 // ===== Задачи =====
@@ -1136,6 +1216,15 @@ function addDoc() {
     subject: document.getElementById('dSubject').value.trim(),
     sum: parseFloat(document.getElementById('dSum').value) || 0,
     date: document.getElementById('dDate').value,
+    // оплата
+    prepay: parseFloat(document.getElementById('dPrepay').value) || 0,
+    prepayDays: parseInt(document.getElementById('dPrepayDays').value, 10) || 0,
+    prepayUnit: document.getElementById('dPrepayUnit').value,
+    finalDays: parseInt(document.getElementById('dFinalDays').value, 10) || 0,
+    finalUnit: document.getElementById('dFinalUnit').value,
+    finalEvent: document.getElementById('dFinalEvent').value,
+    // этапность
+    stages: collectStages(),
     status: 'проект',
     statusDate: new Date().toISOString(),
     createdAt: new Date().toISOString()
@@ -1176,6 +1265,93 @@ function clearDocFilters() {
   document.getElementById('dSort').value = 'new';
   renderDocs();
 }
+
+// ===== Этапы поставки (динамические строки в окне) =====
+function addStageRow(s) {
+  const wrap = document.getElementById('stagesWrap');
+  const row = document.createElement('div');
+  row.className = 'stage-row';
+  row.innerHTML =
+    '<button class="remove-stage" title="Убрать этап" onclick="this.parentNode.remove()">✕</button>' +
+    '<input type="text" class="st-name" placeholder="Название этапа (например: поставка КИ)" value="' + (s ? s.name : '') + '">' +
+    '<div class="filters">' +
+    '<div><span class="small-lbl">Условие отсчёта</span>' +
+    '<select class="st-cond">' +
+    '<option value="prepay"' + (s && s.cond === 'prepay' ? ' selected' : '') + '>с даты перечисления аванса</option>' +
+    '<option value="tolling"' + (s && s.cond === 'tolling' ? ' selected' : '') + '>с даты получения давальческого сырья</option>' +
+    '<option value="contract"' + (s && s.cond === 'contract' ? ' selected' : '') + '>с даты подписания договора</option>' +
+    '<option value="fixed"' + (s && s.cond === 'fixed' ? ' selected' : '') + '>конкретная дата</option>' +
+    '</select></div>' +
+    '<div><span class="small-lbl">Срок, дн.</span>' +
+    '<input type="number" class="st-days" step="1" value="' + (s && s.days ? s.days : '') + '">' +
+    '</div></div>' +
+    '<input type="date" class="st-date" value="' + (s ? (s.date || '') : '') + '">';
+  wrap.appendChild(row);
+}
+// собрать значения всех строк этапов в массив
+function collectStages() {
+  const out = [];
+  document.querySelectorAll('#stagesWrap .stage-row').forEach(row => {
+    out.push({
+      name: row.querySelector('.st-name').value.trim(),
+      cond: row.querySelector('.st-cond').value,
+      days: parseInt(row.querySelector('.st-days').value, 10) || 0,
+      date: row.querySelector('.st-date').value
+    });
+  });
+  return out;
+}
+
+// ===== расчёт сроков (рабочие дни: сб/вс исключаем, праздники не учитываем) =====
+const COND_TEXT = {
+  prepay:   'с даты перечисления аванса',
+  tolling:  'с даты получения давальческого сырья',
+  contract: 'с даты подписания договора',
+  fixed:    'фиксированная дата'
+};
+const FINAL_EVENT_TEXT = {
+  act:      'после подписания акта',
+  delivery: 'после последнего этапа поставки',
+  contract: 'после подписания договора'
+};
+function addDays(from, n, unit) {
+  const d = new Date(from);
+  if (unit === 'work') {
+    let left = n;
+    while (left > 0) {
+      d.setDate(d.getDate() + 1);
+      if (d.getDay() !== 0 && d.getDay() !== 6) left--;
+    }
+  } else {
+    d.setDate(d.getDate() + n);
+  }
+  return d;
+}
+function isoOf(d) {
+  const p = n => (n < 10 ? '0' : '') + n;
+  return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
+}
+
+// ===== текст этапов и оплаты для реестра =====
+function stagesText(d) {
+  if (!d.stages || !d.stages.length) return '';
+  return d.stages.map(s => {
+    let when;
+    if (s.cond === 'fixed' && s.date) when = 'до ' + fmtDate(s.date);
+    else if (s.days) when = '+ ' + s.days + ' дн. (' + COND_TEXT[s.cond] + ')';
+    else when = COND_TEXT[s.cond];
+    return '• ' + (s.name || 'этап') + ' — ' + when;
+  }).join('<br>');
+}
+function payText(d) {
+  const parts = [];
+  if (d.prepay) parts.push('аванс ' + d.prepay + '% — оплата в течение ' +
+    d.prepayDays + ' ' + (d.prepayUnit === 'work' ? 'раб.' : 'календ.') + ' дн.');
+  if (d.finalDays) parts.push('окончательный расчёт — в течение ' + d.finalDays + ' ' +
+    (d.finalUnit === 'work' ? 'раб.' : 'календ.') + ' дн. ' + (FINAL_EVENT_TEXT[d.finalEvent] || ''));
+  return parts.join(' · ');
+}
+
 function docRow(d) {
   const strip = DOC_STRIP[d.status] || '#64748b';
   const stCls = DOC_CLS[d.status] || 'ss-project';
@@ -1196,7 +1372,10 @@ function docRow(d) {
     badge +
     '<span class="status-pill ' + stCls + '" onclick="openDocStatusMenu(event, \'' + d.id + '\')">' + d.status + '</span>' +
     (d.statusDate ? '<span class="stdate">' + fmtDT(d.statusDate) + '</span>' : '') +
-    '</div></div>' +
+    '</div>' +
+    (stagesText(d) ? '<div class="doc-extra">Поставка:<br>' + stagesText(d) + '</div>' : '') +
+    (payText(d) ? '<div class="doc-extra">Оплата: ' + payText(d) + '</div>' : '') +
+    '</div>' +
     '<div><button class="del" title="Удалить" onclick="delDoc(\'' + d.id + '\')">✕</button></div>' +
     '</div>';
 }
@@ -1379,7 +1558,6 @@ function numToWords(n) {
   return out.join(' ');
 }
 // сумма прописью: "173 240 (Сто семьдесят три тысячи двести сорок) рублей 00 копеек"
-// перед скобкой — только целые рубли, без дробной части
 function sumInWords(amount) {
   const cents = Math.round(amount * 100);
   let rub = Math.floor(cents / 100);
