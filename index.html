@@ -111,6 +111,14 @@
   .task .name { font-weight: 600; }
   .task .meta { color: #64748b; font-size: 12px; margin-top: 3px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
   .who { color: #2563eb; font-weight: 600; }
+  .status-select {
+    width: auto;
+    max-width: 200px;
+    padding: 2px 4px;
+    font-size: 11px;
+    margin: 0;
+    color: #475569;
+  }
   .badge {
     display: inline-block;
     padding: 2px 8px;
@@ -123,6 +131,13 @@
   .badge.over { background: #ef4444; }
   .badge.soon { background: #f59e0b; }
   .badge.ok   { background: #2563eb; }
+  .st { font-size: 11px; font-weight: 600; }
+  .st.s-work   { color: #2563eb; }
+  .st.s-pause  { color: #64748b; }
+  .st.s-ge     { color: #7c3aed; }
+  .st.s-mv     { color: #0d9488; }
+  .st.s-rework { color: #ea580c; }
+  .st.s-done   { color: #16a34a; }
   .del {
     background: none;
     border: none;
@@ -234,6 +249,24 @@
 // ===== СПИСОК ИСПОЛНИТЕЛЕЙ =====
 const TEAM = ['Нина', 'Аня', 'Маша', 'Вика', 'Алина'];
 
+// ===== СТАТУСЫ ЗАДАЧ =====
+const STATUS_LIST = [
+  'в работе',
+  'на паузе',
+  'на согласовании у ГЭ',
+  'на согласовании у МВ',
+  'на доработке',
+  'выполнено'
+];
+const STATUS_CLS = {
+  'в работе':            's-work',
+  'на паузе':            's-pause',
+  'на согласовании у ГЭ': 's-ge',
+  'на согласовании у МВ': 's-mv',
+  'на доработке':        's-rework',
+  'выполнено':           's-done'
+};
+
 // ===== Переключение разделов =====
 function showTab(name) {
   document.getElementById('secTasks').classList.toggle('hidden', name !== 'tasks');
@@ -280,9 +313,10 @@ function daysLeft(s) {
   d.setHours(23,59,59,0);
   return Math.ceil((d - now) / 86400000);
 }
-// категория задачи: done / over / soon / work
+// категория задачи для счётчиков: done / over / soon / work
+// (дедлайн-логика не меняется; «выполнено» закрывает задачу)
 function taskCat(t) {
-  if (t.status === 'done') return 'done';
+  if (t.done || t.status === 'выполнено') return 'done';
   const left = daysLeft(t.date);
   if (left !== null && left < 0) return 'over';
   if (left !== null && left <= 3) return 'soon';
@@ -345,21 +379,33 @@ function render() {
       else badgeCat = 'дедлайн: ' + left + ' дн.';
     } else badgeCat = 'в работе';
 
-    // цвет плашки СРОКА — по состоянию задачи
     const badgeCls = cat === 'over' ? 'over' : (cat === 'soon' ? 'soon' : 'ok');
-    const check = cat === 'done' ? '✅ ' : '';
+    const status = t.status || 'в работе';
+    const stCls = STATUS_CLS[status] || 's-work';
+    const stOptions = STATUS_LIST.map(s =>
+      '<option value="' + s + '"' + (s === status ? ' selected' : '') + '>' + s + '</option>'
+    ).join('');
     return '<div class="task">' +
-      '<div class="info"><div class="name">' + check + t.name + '</div>' +
+      '<div class="info"><div class="name">' + (cat === 'done' ? '✅ ' : '') + t.name + '</div>' +
       '<div class="meta">' +
       (t.who ? '<span class="who">' + t.who + '</span>' : '') +
       '<span>' + (t.date ? fmtDate(t.date) : '') + '</span>' +
       (badgeCat ? '<span class="badge ' + badgeCls + '">' + badgeCat + '</span>' : '') +
+      '<span class="st ' + stCls + '">' + status + '</span>' +
+      '<select class="status-select" onchange="setStatus(' + i + ', this.value)">' + stOptions + '</select>' +
       '</div></div>' +
       '<div>' +
       (cat !== 'done' ? '<button class="del" title="Закрыть" onclick="closeTask(' + i + ')">✓</button>' : '') +
       '<button class="del" title="Удалить" onclick="delTask(' + i + ')">✕</button>' +
       '</div></div>';
   }).join('');
+}
+function setStatus(i, val) {
+  const tasks = loadTasks();
+  tasks[i].status = val;
+  if (val === 'выполнено') tasks[i].done = true;
+  saveTasks(tasks);
+  render();
 }
 function addTask() {
   const name = document.getElementById('tName').value.trim();
@@ -376,7 +422,8 @@ function addTask() {
     name: name,
     who: who,
     date: document.getElementById('tDate').value,
-    status: 'work'
+    status: 'в работе',
+    done: false
   });
   saveTasks(tasks);
   document.getElementById('tName').value = '';
@@ -388,7 +435,8 @@ function addTask() {
 }
 function closeTask(i) {
   const tasks = loadTasks();
-  tasks[i].status = 'done';
+  tasks[i].status = 'выполнено';
+  tasks[i].done = true;
   saveTasks(tasks);
   render();
 }
