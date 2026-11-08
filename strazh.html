@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Страж — отдел ПЭО</title>
+<style>
+  :root {
+    --bg: #f4f5f7;
+    --card: #ffffff;
+    --accent: #2f6fed;
+    --accent2: #4f8cff;
+    --text: #1c1d22;
+    --muted: #7a7e8a;
+    --danger: #e5484d;
+    --ok: #2fb344;
+    --warn: #e5a400;
+    --work: #3b7dd8;
+  }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+  header {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff;
+    padding: 18px 16px 14px;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  header p {
+    margin: 4px 0 0;
+    font-size: 13px;
+    opacity: .85;
+  }
+  main {
+    padding: 14px 14px 90px;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .screen { display: none; }
+  .screen.active { display: block; animation: fade .2s ease; }
+  @keyframes fade { from {opacity:0; transform: translateY(4px);} to {opacity:1;} }
+  .card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
+  }
+  .card h2 { margin: 0 0 10px; font-size: 17px; }
+  .item {
+    border: 1px solid #e7e9ee;
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    cursor: pointer;
+  }
+  .item .q { font-weight: 600; }
+  .item .a { display: none; margin-top: 8px; color: var(--text); white-space: pre-wrap; }
+  .item.open .a { display: block; }
+  .tag {
+    display: inline-block;
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    color: #fff;
+    margin-right: 6px;
+  }
+  .tag.work { background: var(--work); }
+  .tag.soon { background: var(--warn); }
+  .tag.over { background: var(--danger); }
+  .tag.done { background: var(--ok); }
+  .task {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .task .info { flex: 1; }
+  .task .title { font-weight: 600; }
+  .task .who { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .iconbtn {
+    border: none;
+    background: #eef1f6;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 15px;
+    cursor: pointer;
+  }
+  .btn {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    background: var(--accent);
+    color: #fff;
+    margin-top: 6px;
+  }
+  .btn.secondary { background: #eef1f6; color: var(--text); }
+  input, textarea {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #dfe2e8;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 15px;
+    margin-bottom: 10px;
+    font-family: inherit;
+    background: #fff;
+    color: var(--text);
+  }
+  .field label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+  .result {
+    background: #eef4ff;
+    border: 1px solid #d5e2ff;
+    border-radius: 10px;
+    padding: 12px;
+    margin-top: 10px;
+    white-space: pre-wrap;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--card);
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+    box-shadow: 0 -1px 4px rgba(0,0,0,.08);
+  }
+  nav button {
+    background: none;
+    border: none;
+    font-size: 12px;
+    color: var(--muted);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 4px 12px;
+  }
+  nav button span.icon { font-size: 20px; }
+  nav button.active { color: var(--accent); }
+  .empty { color: var(--muted); font-size: 14px; text-align: center; padding: 16px 0; }
+</style>
+</head>
+<body>
+<header>
+  <h1><span>🛡️</span> Страж</h1>
+  <p>Отдел ПЭО · вопрос-ответ · задачи · калькулятор цены</p>
+</header>
+
+<main>
+  <!-- Вопрос-ответ -->
+  <section class="screen active" id="screen-faq">
+    <div class="card">
+      <h2>❓ Вопрос-ответ</h2>
+      <div id="faq-list"></div>
+      <button class="btn secondary" onclick="showForm('faq-form')">+ Добавить вопрос</button>
+    </div>
+    <div class="card" id="faq-form" style="display:none">
+      <div class="field"><label>Вопрос</label><input id="faq-q" placeholder="Например: как оформить заявку на закупку?"></div>
+      <div class="field"><label>Ответ</label><textarea id="faq-a" rows="3" placeholder="Ответ..."></textarea></div>
+      <button class="btn" onclick="addFaq()">Сохранить</button>
+      <button class="btn secondary" onclick="hideForm('faq-form')">Отмена</button>
+    </div>
+  </section>
+
+  <!-- Задачи -->
+  <section class="screen" id="screen-tasks">
+    <div class="card">
+      <h2>📋 Задачи и дедлайны</h2>
+      <div id="task-list"></div>
+      <button class="btn secondary" onclick="showForm('task-form')">+ Добавить задачу</button>
+    </div>
+    <div class="card" id="task-form" style="display:none">
+      <div class="field"><label>Название задачи</label><input id="task-t" placeholder="Например: смета на объект №12"></div>
+      <div class="field"><label>Исполнитель (экономист)</label><input id="task-w" placeholder="Фамилия И."></div>
+      <div class="field"><label>Дедлайн</label><input id="task-d" type="date"></div>
+      <button class="btn" onclick="addTask()">Сохранить</button>
+      <button class="btn secondary" onclick="hideForm('task-form')">Отмена</button>
+    </div>
+  </section>
+
+  <!-- Калькулятор -->
+  <section class="screen" id="screen-calc">
+    <div class="card">
+      <h2>🧮 Калькулятор цены</h2>
+      <div class="field"><label>Материалы, руб</label><input id="c-mat" type="number" inputmode="decimal" placeholder="0"></div>
+      <div class="field"><label>Зарплата, руб</label><input id="c-sal" type="number" inputmode="decimal" placeholder="0"></div>
+      <div class="field"><label>Оборудование, руб</label><input id="c-eq" type="number" inputmode="decimal" placeholder="0"></div>
+      <div class="field"><label>Транспорт, руб</label><input id="c-tr" type="number" inputmode="decimal" placeholder="0"></div>
+      <div class="field"><label>Накладные расходы, %</label><input id="c-ov" type="number" inputmode="decimal" value="15"></div>
+      <div class="field"><label>Рентабельность, %</label><input id="c-pr" type="number" inputmode="decimal" value="20"></div>
+      <button class="btn" onclick="calcPrice()">Рассчитать</button>
+      <div class="result" id="calc-result" style="display:none"></div>
+    </div>
+  </section>
+</main>
+
+<nav>
+  <button class="active" id="nav-faq" onclick="go('faq')"><span class="icon">❓</span>Вопрос-ответ</button>
+  <button id="nav-tasks" onclick="go('tasks')"><span class="icon">📋</span>Задачи</button>
+  <button id="nav-calc" onclick="go('calc')"><span class="icon">🧮</span>Калькулятор</button>
+</nav>
+
+<script>
+var FAQ = 'strazh_faq';
+var TASKS = 'strazh_tasks';
+
+function store(key, def) {
+  try {
+    var v = localStorage.getItem(key);
+    return v ? JSON.parse(v) : def;
+  } catch (e) { return def; }
+}
+function save(key, val) {
+  try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) {}
+}
+
+var faq = store(FAQ, []);
+var tasks = store(TASKS, []);
+
+function go(name) {
+  document.querySelectorAll('.screen').forEach(function (s) { s.classList.remove('active'); });
+  document.getElementById('screen-' + name).classList.add('active');
+  document.querySelectorAll('nav button').forEach(function (b) { b.classList.remove('active'); });
+  document.getElementById('nav-' + name).classList.add('active');
+}
+
+function showForm(id) { document.getElementById(id).style.display = 'block'; }
+function hideForm(id) {
+  document.getElementById(id).style.display = 'none';
+  document.querySelectorAll('#' + id + ' input, #' + id + ' textarea').forEach(function (el) { el.value = ''; });
+}
+
+function renderFaq() {
+  var box = document.getElementById('faq-list');
+  if (!faq.length) {
+    box.innerHTML = '<div class="empty">Пока нет вопросов. Добавьте первый!</div>';
+    return;
+  }
+  box.innerHTML = faq.map(function (f, i) {
+    return '<div class="item" onclick="this.classList.toggle(\'open\')">' +
+      '<div class="q">' + (i + 1) + '. ' + escapeHtml(f.q) + '</div>' +
+      '<div class="a">' + escapeHtml(f.a) + '</div></div>';
+  }).join('');
+}
+function addFaq() {
+  var q = document.getElementById('faq-q').value.trim();
+  var a = document.getElementById('faq-a').value.trim();
+  if (!q || !a) { alert('Заполните и вопрос, и ответ'); return; }
+  faq.push({ q: q, a: a });
+  save(FAQ, faq);
+  hideForm('faq-form');
+  renderFaq();
+}
+
+function daysLeft(d) {
+  var now = new Date();
+  var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  var dl = new Date(d + 'T00:00:00');
+  return Math.round((dl - today) / 86400000);
+}
+function taskTag(d, done) {
+  if (done) return ['done', 'Закрыто'];
+  var dd = daysLeft(d);
+  if (dd < 0) return ['over', 'Просрочено'];
+  if (dd <= 3) return ['soon', 'Скоро дедлайн'];
+  return ['work', 'В работе'];
+}
+function renderTasks() {
+  var box = document.getElementById('task-list');
+  if (!tasks.length) {
+    box.innerHTML = '<div class="empty">Задач пока нет. Добавьте первую!</div>';
+    return;
+  }
+  box.innerHTML = tasks.map(function (t, i) {
+    var tag = taskTag(t.d, t.done);
+    return '<div class="item"><div class="task">' +
+      '<div class="info">' +
+      '<span class="tag ' + tag[0] + '">' + tag[1] + '</span>' +
+      '<div class="title">' + escapeHtml(t.t) + '</div>' +
+      '<div class="who">' + escapeHtml(t.w) + ' · до ' + t.d + '</div>' +
+      '</div>' +
+      (t.done ? '' : '<button class="iconbtn" title="Закрыть" onclick="doneTask(' + i + ')">✔️</button>') +
+      '<button class="iconbtn" title="Удалить" onclick="delTask(' + i + ')">🗑</button>' +
+      '</div></div>';
+  }).join('');
+}
+function addTask() {
+  var t = document.getElementById('task-t').value.trim();
+  var w = document.getElementById('task-w').value.trim();
+  var d = document.getElementById('task-d').value;
+  if (!t || !w || !d) { alert('Заполните все поля'); return; }
+  tasks.push({ t: t, w: w, d: d, done: false });
+  save(TASKS, tasks);
+  hideForm('task-form');
+  renderTasks();
+}
+function doneTask(i) {
+  tasks[i].done = true;
+  save(TASKS, tasks);
+  renderTasks();
+}
+function delTask(i) {
+  if (!confirm('Удалить задачу?')) return;
+  tasks.splice(i, 1);
+  save(TASKS, tasks);
+  renderTasks();
+}
+
+function fmt(n) {
+  return n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+}
+function calcPrice() {
+  function num(id) { return parseFloat(document.getElementById(id).value.replace(',', '.')) || 0; }
+  var mat = num('c-mat'), sal = num('c-sal'), eq = num('c-eq'), tr = num('c-tr');
+  var ov = num('c-ov'), pr = num('c-pr');
+  var cost = mat + sal + eq + tr;
+  var overhead = cost * ov / 100;
+  var totalCost = cost + overhead;
+  var profit = totalCost * pr / 100;
+  var price = totalCost + profit;
+  var vat = price * 0.20;
+  var priceVat = price + vat;
+  var box = document.getElementById('calc-result');
+  box.style.display = 'block';
+  box.textContent =
+    'Себестоимость прямых затрат: ' + fmt(cost) + ' руб\n' +
+    'Накладные (' + ov + '%): ' + fmt(overhead) + ' руб\n' +
+    'Итого себестоимость: ' + fmt(totalCost) + ' руб\n' +
+    'Рентабельность (' + pr + '%): ' + fmt(profit) + ' руб\n' +
+    'Цена без НДС: ' + fmt(price) + ' руб\n' +
+    'НДС 20%: ' + fmt(vat) + ' руб\n' +
+    'ЦЕНА С НДС: ' + fmt(priceVat) + ' руб';
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+renderFaq();
+renderTasks();
+</script>
+</body>
+</html>
