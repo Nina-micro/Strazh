@@ -134,7 +134,7 @@
 
   .hot-title { color: #ef4444; }
 
-  /* ===== строка задачи ===== */
+  /* ===== строка задачи/договора ===== */
   .task {
     display: flex;
     justify-content: space-between;
@@ -172,6 +172,13 @@
   .ss-mv     { color: #a16207; border-color: rgba(234, 179, 8, 0.65);  background: rgba(253, 224, 71, 0.35); }
   .ss-rework { color: #ea580c; border-color: rgba(234, 88, 12, 0.5);   background: rgba(234, 88, 12, 0.08); }
   .ss-done   { color: #16a34a; border-color: rgba(22, 163, 74, 0.5);   background: rgba(22, 163, 74, 0.08); }
+
+  /* пиллы статусов договоров (красная палитра) */
+  .ss-project      { color: #64748b; border-color: rgba(148, 163, 184, 0.6); background: rgba(148, 163, 184, 0.12); }
+  .ss-on-approval  { color: #b45309; border-color: rgba(245, 158, 11, 0.65); background: rgba(253, 224, 71, 0.35); }
+  .ss-signed       { color: #dc2626; border-color: rgba(220, 38, 38, 0.5);   background: rgba(220, 38, 38, 0.12); }
+  .ss-in-work      { color: #7f1d1d; border-color: rgba(127, 29, 29, 0.5);   background: rgba(127, 29, 29, 0.1); }
+  .ss-closed       { color: #16a34a; border-color: rgba(22, 163, 74, 0.5);   background: rgba(22, 163, 74, 0.08); }
 
   /* всплывающее меню выбора статуса */
   .status-menu {
@@ -349,6 +356,25 @@
   .cal-chip.c-done { background: rgba(22, 163, 74, 0.15); color: #15803d; }
 
   .hidden { display: none; }
+
+  /* ===== красная тема вкладки «Договорная работа» ===== */
+  body.red-mode .tabs button.on { background: #dc2626; }
+  body.red-mode .fab {
+    background: #dc2626;
+    box-shadow: 0 4px 14px rgba(220, 38, 38, 0.4);
+  }
+  body.red-mode .fab:active { background: #b91c1c; }
+  body.red-mode .fab::after {
+    border: 2px solid rgba(220, 38, 38, 0.45);
+    border-top-color: transparent;
+  }
+  body.red-mode .btn { background: #dc2626; }
+  body.red-mode .btn:active { background: #b91c1c; }
+  body.red-mode .btn.clear,
+  body.red-mode .btn.ghost { background: #fee2e2; color: #b91c1c; }
+  body.red-mode #secDoc .card h3 { color: #b91c1c; }
+  body.red-mode #secDoc .who { color: #dc2626; }
+  body.red-mode #secDoc .card { box-shadow: 0 1px 4px rgba(220, 38, 38, 0.12); }
 </style>
 </head>
 <body>
@@ -640,21 +666,21 @@ const STATUS_STRIP = {
   'выполнено':            '#16a34a'
 };
 
-// ===== СТАТУСЫ ДОГОВОРОВ =====
+// ===== СТАТУСЫ ДОГОВОРОВ (красная палитра) =====
 const DOC_STATUS = ['проект', 'на согласовании', 'подписан', 'в работе', 'закрыт'];
 const DOC_STRIP = {
   'проект':          '#94a3b8',
-  'на согласовании': '#eab308',
-  'подписан':        '#2563eb',
-  'в работе':        '#06b6d4',
+  'на согласовании': '#f59e0b',
+  'подписан':        '#dc2626',
+  'в работе':        '#7f1d1d',
   'закрыт':          '#16a34a'
 };
 const DOC_CLS = {
-  'проект':          'ss-queue',
-  'на согласовании': 'ss-ge',
-  'подписан':        'ss-work',
-  'в работе':        'ss-pause',
-  'закрыт':          'ss-done'
+  'проект':          'ss-project',
+  'на согласовании': 'ss-on-approval',
+  'подписан':        'ss-signed',
+  'в работе':        'ss-in-work',
+  'закрыт':          'ss-closed'
 };
 
 // раскрытые группы исполнителей (аккордеон)
@@ -674,9 +700,11 @@ function showTab(name) {
   document.getElementById('tabDoc').classList.toggle('on', name === 'doc');
   if (name === 'cal') renderCal();
   if (name === 'doc') renderDocs();
+  // красная тема для вкладки «Договорная работа»
+  document.body.classList.toggle('red-mode', name === 'doc');
 }
 
-// плавающая кнопка: на вкладке «Договорная работа» — договор, иначе — задача
+// плавающая кнопка: на вкладке договоров — договор, иначе — задача
 function fabClick() {
   if (currentTab === 'doc') openDocModal();
   else openTaskModal();
@@ -864,11 +892,11 @@ function closeStatusMenu() {
   menuDocId = null;
 }
 function renderStatusMenu() {
+  const menu = document.getElementById('statusMenu');
   if (menuTaskId) {
     const tasks = loadTasks();
     const t = tasks.find(x => x.id === menuTaskId);
     const status = t ? (t.status || 'в работе') : 'в работе';
-    const menu = document.getElementById('statusMenu');
     menu.innerHTML = STATUS_LIST.map(s => {
       const color = STATUS_STRIP[s] || '#64748b';
       return '<div class="opt" onclick="pickStatus(\'' + s + '\')">' +
@@ -880,7 +908,6 @@ function renderStatusMenu() {
     const docs = loadDocs();
     const d = docs.find(x => x.id === menuDocId);
     const status = d ? d.status : 'проект';
-    const menu = document.getElementById('statusMenu');
     menu.innerHTML = DOC_STATUS.map(s => {
       const color = DOC_STRIP[s] || '#64748b';
       return '<div class="opt" onclick="setDocStatus(\'' + menuDocId + '\', \'' + s + '\')">' +
@@ -1151,7 +1178,7 @@ function clearDocFilters() {
 }
 function docRow(d) {
   const strip = DOC_STRIP[d.status] || '#64748b';
-  const stCls = DOC_CLS[d.status] || 'ss-queue';
+  const stCls = DOC_CLS[d.status] || 'ss-project';
   const left = daysLeft(d.date);
   let badge = '';
   if (d.status === 'закрыт') badge = '';
