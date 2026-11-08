@@ -66,8 +66,8 @@
   .status-bar div { height: 100%; }
   .sb-work   { background: #2563eb; }
   .sb-pause  { background: #db2777; }
-  .sb-ge     { background: #ca8a04; }
-  .sb-mv     { background: #ca8a04; }
+  .sb-ge     { background: #eab308; }
+  .sb-mv     { background: #eab308; }
   .sb-rework { background: #ea580c; }
   .sb-done   { background: #16a34a; }
   .status-legend {
@@ -81,7 +81,7 @@
   }
   .lg-work::before   { background: #2563eb; }
   .lg-pause::before  { background: #db2777; }
-  .lg-ge::before     { background: #ca8a04; }
+  .lg-ge::before     { background: #eab308; }
   .lg-rework::before { background: #ea580c; }
   .lg-done::before   { background: #16a34a; }
 
@@ -165,8 +165,8 @@
   }
   .ss-work   { color: #2563eb; border-color: rgba(37, 99, 235, 0.5);  background: rgba(37, 99, 235, 0.08); }
   .ss-pause  { color: #db2777; border-color: rgba(219, 39, 119, 0.5); background: rgba(219, 39, 119, 0.08); }
-  .ss-ge     { color: #a16207; border-color: rgba(202, 138, 4, 0.55); background: rgba(202, 138, 4, 0.1); }
-  .ss-mv     { color: #a16207; border-color: rgba(202, 138, 4, 0.55); background: rgba(202, 138, 4, 0.1); }
+  .ss-ge     { color: #a16207; border-color: rgba(234, 179, 8, 0.65); background: rgba(253, 224, 71, 0.35); }
+  .ss-mv     { color: #a16207; border-color: rgba(234, 179, 8, 0.65); background: rgba(253, 224, 71, 0.35); }
   .ss-rework { color: #ea580c; border-color: rgba(234, 88, 12, 0.5);  background: rgba(234, 88, 12, 0.08); }
   .ss-done   { color: #16a34a; border-color: rgba(22, 163, 74, 0.5);  background: rgba(22, 163, 74, 0.08); }
 
@@ -229,8 +229,8 @@
   .group-head small { font-weight: 600; opacity: 0.9; }
   .g-work   { background: #2563eb; }
   .g-pause  { background: #db2777; }
-  .g-ge     { background: #ca8a04; }
-  .g-mv     { background: #ca8a04; }
+  .g-ge     { background: #eab308; }
+  .g-mv     { background: #eab308; }
   .g-rework { background: #ea580c; }
   .g-done   { background: #16a34a; }
   .g-who    { background: #475569; cursor: pointer; user-select: none; }
@@ -472,8 +472,8 @@ const STATUS_SEG = {
 const STATUS_STRIP = {
   'в работе':             '#2563eb',
   'на паузе':             '#db2777',
-  'на согласовании у ГЭ': '#ca8a04',
-  'на согласовании у МВ': '#ca8a04',
+  'на согласовании у ГЭ': '#eab308',
+  'на согласовании у МВ': '#eab308',
   'на доработке':         '#ea580c',
   'выполнено':            '#16a34a'
 };
@@ -592,7 +592,7 @@ function sortByChoice(arr) {
 }
 
 // ===== строка задачи (общая для всех видов) =====
-// цвет полосы слева: сначала срочность, потом статус
+// полоса слева всегда в цвете статуса; срочность видна по плашке дедлайна
 function taskRow(t, idx) {
   const cat = taskCat(t);
   const left = daysLeft(t.date);
@@ -606,12 +606,7 @@ function taskRow(t, idx) {
   const badgeCls = cat === 'over' ? 'over' : (cat === 'soon' ? 'soon' : (cat === 'done' ? '' : 'ok'));
   const status = t.status || 'в работе';
   const stCls = STATUS_CLS[status] || 'ss-work';
-
-  let strip;
-  if (cat === 'over')      strip = '#ef4444';            // просрочено — красная
-  else if (cat === 'soon') strip = '#f59e0b';            // скоро дедлайн — оранжевая
-  else if (cat === 'done') strip = '#16a34a';            // закрыто — зелёная
-  else strip = STATUS_STRIP[status] || '#64748b';        // иначе — цвет статуса
+  const strip = STATUS_STRIP[status] || '#64748b';
 
   return '<div class="task' + (cat === 'done' ? ' is-done' : '') + '" style="border-left-color:' + strip + '">' +
     '<div class="info"><div class="name">' + (cat === 'done' ? '✅ ' : '') + t.name + '</div>' +
@@ -701,7 +696,7 @@ function renderStats(tasks) {
   setCounter('cOver', over, 'c-red');
   setCounter('cDone', done, 'c-green');
 
-  // сегментированная диаграмма статусов (ГЭ и МВ — один жёлтый сегмент)
+  // сегментированная диаграмма статусов (ГЭ и МВ — один мягкий жёлтый сегмент)
   const total = tasks.length;
   const bar = document.getElementById('statusBar');
   if (!total) {
@@ -759,7 +754,7 @@ function render() {
   }
 
   if (view === 'status') {
-    // группы по статусам (ГЭ и МВ — одинаковый жёлтый цвет шапки)
+    // группы по статусам (ГЭ и МВ — одинаковый мягкий жёлтый цвет шапки)
     const groups = [
       { name: 'в работе',             cls: 'g-work',   key: 'в работе' },
       { name: 'на паузе',             cls: 'g-pause',  key: 'на паузе' },
