@@ -130,6 +130,7 @@
     margin-top: 0;
     font-size: 13px;
   }
+  .btn.ghost { background: #e2e8f0; color: #475569; }
 
   .hot-title { color: #ef4444; }
 
@@ -245,6 +246,65 @@
   .note { font-size: 12px; color: #94a3b8; text-align: center; margin-top: 4px; }
   .hidden { display: none; }
 
+  /* ===== плавающая кнопка «+» ===== */
+  .fab {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    font-size: 30px;
+    line-height: 1;
+    cursor: pointer;
+    z-index: 40;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .fab:active { background: #1d4ed8; }
+  /* вращающееся кольцо-индикатор вокруг плюса */
+  .fab::after {
+    content: '';
+    position: absolute;
+    top: -5px; left: -5px; right: -5px; bottom: -5px;
+    border-radius: 50%;
+    border: 2px solid rgba(37, 99, 235, 0.45);
+    border-top-color: transparent;
+    animation: fabspin 2.2s linear infinite;
+    pointer-events: none;
+  }
+  @keyframes fabspin { to { transform: rotate(360deg); } }
+
+  /* ===== всплывающее окно добавления задачи ===== */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    z-index: 60;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 16px;
+  }
+  .modal {
+    background: #fff;
+    border-radius: 16px;
+    padding: 18px;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 -4px 30px rgba(0,0,0,0.25);
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .modal h3 { font-size: 17px; margin-bottom: 12px; }
+  .modal-actions { display: flex; gap: 10px; }
+  .modal-actions .btn { margin-top: 10px; }
+
   /* ===== календарь ===== */
   .cal-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
   .cal-nav .mon { font-size: 16px; font-weight: 700; text-transform: capitalize; }
@@ -318,17 +378,6 @@
   <div class="card hidden" id="hotCard">
     <h3 class="hot-title">🔥 Горит сейчас</h3>
     <div id="hotList"></div>
-  </div>
-
-  <div class="card">
-    <h3>Новая задача</h3>
-    <label>Название <input type="text" id="tName" placeholder="Например: РКМ - изделие - ХХХП; ДС - ХХХП; НР - месяц.год"></label>
-    <label>Исполнитель
-      <select id="tWho" onchange="toggleCustomWho()"></select>
-    </label>
-    <label id="tWhoCustomWrap" class="hidden">Свой вариант <input type="text" id="tWhoCustom" placeholder="имя"></label>
-    <label>Дедлайн <input type="date" id="tDate"></label>
-    <button class="btn" onclick="addTask()">Добавить</button>
   </div>
 
   <div class="card">
@@ -437,6 +486,26 @@
 <!-- всплывающее меню выбора статуса (одно на всё приложение) -->
 <div id="statusMenu" class="status-menu hidden"></div>
 
+<!-- ===== плавающая кнопка «+» ===== -->
+<button class="fab" onclick="openTaskModal()" title="Новая задача">+</button>
+
+<!-- ===== всплывающее окно добавления задачи ===== -->
+<div id="taskOverlay" class="overlay hidden" onclick="if(event.target === this) closeTaskModal()">
+  <div class="modal">
+    <h3>Новая задача</h3>
+    <label>Название <input type="text" id="tName" placeholder="Например: РКМ - изделие - ХХХП; ДС - ХХХП; НР - месяц.год"></label>
+    <label>Исполнитель
+      <select id="tWho" onchange="toggleCustomWho()"></select>
+    </label>
+    <label id="tWhoCustomWrap" class="hidden">Свой вариант <input type="text" id="tWhoCustom" placeholder="имя"></label>
+    <label>Дедлайн <input type="date" id="tDate"></label>
+    <div class="modal-actions">
+      <button class="btn" onclick="addTask()">Добавить</button>
+      <button class="btn ghost" onclick="closeTaskModal()">Отмена</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ===== СПИСОК ИСПОЛНИТЕЛЕЙ =====
 const TEAM = ['Нина', 'Аня', 'Маша', 'Вика', 'Алина'];
@@ -520,6 +589,21 @@ function buildWhoSelect() {
 function toggleCustomWho() {
   const isOther = document.getElementById('tWho').value === '__other';
   document.getElementById('tWhoCustomWrap').classList.toggle('hidden', !isOther);
+}
+
+// ===== Всплывающее окно добавления задачи =====
+function openTaskModal() {
+  closeStatusMenu();
+  document.getElementById('taskOverlay').classList.remove('hidden');
+  document.getElementById('tName').focus();
+}
+function closeTaskModal() {
+  document.getElementById('taskOverlay').classList.add('hidden');
+  document.getElementById('tName').value = '';
+  document.getElementById('tWho').value = '';
+  document.getElementById('tWhoCustom').value = '';
+  document.getElementById('tWhoCustomWrap').classList.add('hidden');
+  document.getElementById('tDate').value = '';
 }
 
 // ===== Задачи =====
@@ -844,11 +928,7 @@ function addTask() {
     done: false
   });
   saveTasks(tasks);
-  document.getElementById('tName').value = '';
-  document.getElementById('tWho').value = '';
-  document.getElementById('tWhoCustom').value = '';
-  document.getElementById('tWhoCustomWrap').classList.add('hidden');
-  document.getElementById('tDate').value = '';
+  closeTaskModal();
   render();
 }
 function closeTask(i) {
