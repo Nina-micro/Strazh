@@ -45,8 +45,8 @@
   .card h3 { font-size: 17px; margin-bottom: 12px; }
   .card h4 { font-size: 14px; margin: 12px 0 8px; color: #475569; }
 
-  /* ===== счётчики, диаграмма статусов, нагрузка ===== */
-  .counters { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; text-align: center; }
+  /* ===== счётчики ===== */
+  .counters { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; text-align: center; }
   .counter .num { font-size: 22px; font-weight: 700; }
   .counter .lbl { font-size: 11px; color: #64748b; }
   .num.c-black  { color: #1e293b; }
@@ -54,6 +54,7 @@
   .num.c-orange { color: #f59e0b; }
   .num.c-red    { color: #ef4444; }
   .num.c-green  { color: #16a34a; }
+  .num.c-gray   { color: #94a3b8; }
 
   .status-bar {
     display: flex;
@@ -130,7 +131,6 @@
     font-size: 13px;
   }
 
-  /* ===== «горит сейчас» ===== */
   .hot-title { color: #ef4444; }
 
   /* ===== строка задачи ===== */
@@ -152,9 +152,8 @@
   .task.is-done { opacity: 0.65; }
   .task .meta { color: #64748b; font-size: 12px; margin-top: 3px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
   .who { color: #2563eb; font-weight: 600; }
-  .stdate { font-size: 10px; color: #94a3b8; }
+  .stdate { font-size: 8px; color: #94a3b8; }
 
-  /* капсула статуса: полупрозрачная обводка, тап — всплывающее меню */
   .status-pill {
     display: inline-block;
     padding: 2px 10px;
@@ -294,6 +293,7 @@
   <div class="card">
     <div class="counters">
       <div class="counter"><div class="num" id="cAll">0</div><div class="lbl">всего</div></div>
+      <div class="counter"><div class="num" id="cQueue">0</div><div class="lbl">в очереди</div></div>
       <div class="counter"><div class="num" id="cWork">0</div><div class="lbl">в работе</div></div>
       <div class="counter"><div class="num" id="cSoon">0</div><div class="lbl">скоро дедлайн</div></div>
       <div class="counter"><div class="num" id="cOver">0</div><div class="lbl">просрочено</div></div>
@@ -681,7 +681,7 @@ document.addEventListener('click', function(e) {
 
 // ===== рендер: счётчики + диаграмма + нагрузка + «горит сейчас» =====
 function renderStats(tasks) {
-  let all = 0, work = 0, soon = 0, over = 0, done = 0;
+  let all = 0, queue = 0, work = 0, soon = 0, over = 0, done = 0;
   const byStatus = {};
   STATUS_LIST.forEach(s => { byStatus[s] = 0; });
 
@@ -692,7 +692,7 @@ function renderStats(tasks) {
     if (c === 'done') done++;
     else if (c === 'over') { all++; over++; }
     else if (c === 'soon') { all++; soon++; }
-    else { all++; work++; }
+    else { all++; if (st === 'в очереди') queue++; else work++; }
   });
 
   const setCounter = (id, val, cls) => {
@@ -700,11 +700,12 @@ function renderStats(tasks) {
     el.textContent = val;
     el.className = 'num ' + cls;
   };
-  setCounter('cAll',  all + done, 'c-black');
-  setCounter('cWork', work, 'c-blue');
-  setCounter('cSoon', soon, 'c-orange');
-  setCounter('cOver', over, 'c-red');
-  setCounter('cDone', done, 'c-green');
+  setCounter('cAll',   all + done, 'c-black');
+  setCounter('cQueue', queue, 'c-gray');
+  setCounter('cWork',  work, 'c-blue');
+  setCounter('cSoon',  soon, 'c-orange');
+  setCounter('cOver',  over, 'c-red');
+  setCounter('cDone',  done, 'c-green');
 
   // сегментированная диаграмма статусов
   const total = tasks.length;
@@ -837,7 +838,7 @@ function addTask() {
     name: name,
     who: who,
     date: document.getElementById('tDate').value,
-    status: 'в работе',
+    status: 'в очереди',
     statusDate: new Date().toISOString(),
     createdAt: new Date().toISOString(),
     done: false
