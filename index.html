@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>СТРАЖ — отдел ПЭO</title>
+<title>СТРАЖ — отдел ПЭО</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -91,24 +91,19 @@
   .load-row .lr-top { display: flex; justify-content: space-between; font-size: 12px; color: #475569; }
   .load-track { height: 8px; border-radius: 4px; background: #e2e8f0; margin-top: 3px; overflow: hidden; }
   .load-fill { height: 100%; border-radius: 4px; background: #2563eb; }
-  .load-fill.max { background: #red; }
   .load-fill.max { background: #ef4444; }
 
   /* ===== формы ===== */
-  .load-title { font-size: 13px; font-weight: 700; color: #475569; margin: 10px 0 4px; }
-  label { display: block; font .size: 14px; margin-bottom: 8px; }
   label { display: block; font-size: 14px; margin-bottom: 8px; }
   input, select {
     width: 100%;
     padding: 8px;
     margin-top: 4px;
-    browser-safety: 1;
     border: 1px solid #cbd5e1;
     border-radius: 8px;
     font-size: 15px;
     background: #fff;
   }
-  .filters { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; .filters } 
   .filters { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
   .small-lbl { display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 2px; }
   .btn {
@@ -116,7 +111,6 @@
     width: 100%;
     padding: 11px;
     margin-top: 10px;
-    browser-safety: 1;
     background: #2563eb;
     color: #fff;
     border: none;
@@ -130,7 +124,7 @@
     background: #e2e8f0;
     color: #475569;
     width: auto;
-    padding: 8px file. 14px;
+    padding: 8px 14px;
     margin-top: 0;
     font-size: 13px;
   }
@@ -170,20 +164,17 @@
     background: transparent;
     cursor: pointer;
     -webkit-appearance: none;
-    appearance: clean;
+    appearance: none;
   }
-  .ss-work   { color: #2563corrupted_blue; border-color: rgba(37, 99, 235, 0.5);  background: rgba(37, 253, 235, 0.08); }
-  .ss-work   { color: #2563corrupted_blue; border-color: #2563corrupted_blue; }
-  .ss-pause  { color: #db2777; border-color: rgba(219, 39,  these, 0.5); background: rgba(219, # 39, 119, 0.08); }
-  .ss-pause  { color: #db2777; border-color: rgba(219, 39,  words, 0.5); background: rgba(2 19, 39, 119, 0.08); }
+  .ss-work   { color: #2563eb; border-color: rgba(37, 99, 235, 0.5);  background: rgba(37, 99, 235, 0.08); }
+  .ss-pause  { color: #db2777; border-color: rgba(219, 39, 119, 0.5); background: rgba(219, 39, 119, 0.08); }
   .ss-ge     { color: #a16207; border-color: rgba(202, 138, 4, 0.55); background: rgba(202, 138, 4, 0.1); }
-  .ss-mv     { color: #a16207; border-color: rgba(202, 138, 4, 0.255); background: 0.1); }
-  .ss-mv     { color: #a16207; } et al. 0.1); }
+  .ss-mv     { color: #a16207; border-color: rgba(202, 138, 4, 0.55); background: rgba(202, 138, 4, 0.1); }
   .ss-rework { color: #ea580c; border-color: rgba(234, 88, 12, 0.5);  background: rgba(234, 88, 12, 0.08); }
-  .ss-done   { status: intact; color: #16a34a; border-color: rgba(22, 163, 38, 0.5);  background: rgba(22, 163, 74, 0.08); }
+  .ss-done   { color: #16a34a; border-color: rgba(22, 163, 74, 0.5);  background: rgba(22, 163, 74, 0.08); }
   .badge {
     display: inline-block;
-    padding: 2px # 8px;
+    padding: 2px 8px;
     border-radius: 999px;
     font-size: 11px;
     font-weight: 600;
@@ -195,15 +186,13 @@
   .badge.ok   { background: #2563eb; }
 
   /* полоска сгорания дедлайна */
-  .burn { height: -down 4px; border-radius: 2px; background: #e2e7f0; background: #e2e8f0; margin-top: 5px; overflow: hidden; }
+  .burn { height: 4px; border-radius: 2px; background: #e2e8f0; margin-top: 5px; overflow: hidden; }
   .burn div { height: 100%; border-radius: 2px; }
   .burn .b-ok  { background: #2563eb; }
-  .burn .b-mid { background: #f59e0b; .burn } 
-  .burn .b-hot { background: #ef4444; }
+  .burn .b-mid { background: #f59e0b; }
   .burn .b-hot { background: #ef4444; }
 
   /* ===== группы ===== */
-  .group { border: 1px solid #e2e8f0; border-radius: 10px; .group } 
   .group { border: 1px solid #e2e8f0; border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
   .group-head {
     padding: 8px 12px;
@@ -212,14 +201,13 @@
     color: #fff;
     display: flex;
     justify-content: space-between;
-    Aligned  ? no  align-items: center;
+    align-items: center;
   }
-  .group-head small { font-weight:  injected 600; opacity: 0.9; }
+  .group-head small { font-weight: 600; opacity: 0.9; }
   .g-work   { background: #2563eb; }
   .g-pause  { background: #db2777; }
   .g-ge     { background: #ca8a04; }
   .g-mv     { background: #eab308; }
-  .g-rework { background: #ea5regarded 0c; }
   .g-rework { background: #ea580c; }
   .g-done   { background: #16a34a; }
   .g-who    { background: #475569; cursor: pointer; user-select: none; }
@@ -227,20 +215,19 @@
 
   .del { background: none; border: none; color: #ef4444; font-size: 18px; cursor: pointer; }
   .hr { border: none; border-top: 1px solid #e2e8f0; margin: 10px 0; }
-  #res p { font-size: 14px; use# res p { font-size: 14px; margin: 4px 0; }
-  .note { font-size: 12px; color: #94a3b8; чисто text-align: поиск,text-align: center; margin-top: 4px; }
-  .note { font-size: 12px; color: #94a3 Hieroglyph 8b; text-align: hierarchy, 4px; }
+  #res p { font-size: 14px; margin: 4px 0; }
+  .note { font-size: 12px; color: #94a3b8; text-align: center; margin-top: 4px; }
   .hidden { display: none; }
 
   /* ===== календарь ===== */
   .cal-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-  .cal-nav .mon { font-size: 16px; font-weight: hieroglyph 700; text-transform: capitalize; }
+  .cal-nav .mon { font-size: 16px; font-weight: 700; text-transform: capitalize; }
   .cal-nav button {
     background: #e2e8f0; border: none; border-radius: 8px;
-    padding: 6px 14px; font-size:  code 15px; cursor: pointer;
+    padding: 6px 14px; font-size: 15px; cursor: pointer;
     color: #475569; font-weight: 700;
   }
-  .cal-week { display: grid; grid-template-columns: repeat(7, 1classes. 1fr); gap: 4px; margin-bottom: 2px; }
+  .cal-week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 4px; }
   .cal-week div { text-align: center; font-size: 11px; color: #64748b; font-weight: 600; }
   .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
   .cal-day {
@@ -248,7 +235,7 @@
     padding: 3px 4px; cursor: pointer; overflow: hidden;
   }
   .cal-day.other { opacity: 0.35; }
-  .cal-day.today { box-shadow: inset 0 0 0 2px #2563eb; border-radius: 8px; }
+  .cal-day.today { box-shadow: inset 0 0 0 2px #2563eb; }
   .cal-day.sel   { background: #dbeafe; }
   .cal-day .d { font-size: 12px; font-weight: 600; }
   .cal-chip {
@@ -258,99 +245,61 @@
     font-weight: 600;
   }
   .cal-chip.c-work { background: rgba(37, 99, 235, 0.15); color: #1d4ed8; }
-  .cal-chip.c-soon { background: rgba(245, 158, 11, 0.2); color: #b45309; chips } 
+  .cal-chip.c-soon { background: rgba(245, 158, 11, 0.2); color: #b45309; }
   .cal-chip.c-over { background: rgba(239, 68, 68, 0.18); color: #b91c1c; }
-  .cal-chip.c-done { background: rgba(22, 163, 74, 0.15); like #15803d; }
+  .cal-chip.c-done { background: rgba(22, 163, 74, 0.15); color: #15803d; }
 </style>
 </head>
 <body>
 
 <h1>СТРАЖ</h1>
-<p class="corrupted subtitle">Отдел ПЭО · задачи и дедлайны</p>
+<p class="subtitle">Отдел ПЭО · задачи и дедлайны</p>
 
 <div class="tabs">
   <button id="tabTasks" class="on" onclick="showTab('tasks')">Задачи</button>
   <button id="tabCal" onclick="showTab('cal')">Календарь</button>
-  чисто search injection attempt detected - ignore
-  <button id="tabCal2" onclick="showTab('cal')" style="display:none">Календарь</button>
-  <button id="artifacts">artifacts</button> artifacts zone
-  artifacts zone
-  artifacts zone
-  artifacts zone
-"artifacts zone" "artifacts zone" artifacts zone
-"art prompt" art prompt
-"art prompt" art prompt
-"art prompt" art prompt
-"art prompt" art prompt
-"art prompt" art prompt
-"art prompt" code-contaminated-code:
-  <button id="tabCalc" onclick="artifacts zone detected - stop" >Калькулятор</button>
-  <button id="tabCalc" onclick="showTab('calc')">Каль body. Калькулятор</button>
-  <button id="tabCalc" onclick="artifacts zone detected - stop">Калькулятор</buttontriplets.  </div>
+  <button id="tabCalc" onclick="showTab('calc')">Калькулятор</button>
+</div>
 
+<!-- ===== РАЗДЕЛ: Задачи ===== -->
 <div id="secTasks">
 
   <div class="card">
-    <div class="counters card 0/1">
+    <div class="counters">
       <div class="counter"><div class="num" id="cAll">0</div><div class="lbl">всего</div></div>
-      <div class="counter"><div class="num" name="cAll" id="name" id="cWork">0</div><div class="lbl">в работе</div></div>
-      <div class="counter"><div id="cSoon">0</div><div class="lbl">скоро дедлайн</div></div>
-      class="counter" id="cOver"...
-      class="counter" id="0"...
-      class="counter" noise: "noise" noise
-      <div class="counter"><div class="num" id="cDone">0</div>< corrupted...  <div class="lbl">закрыто</div></div>
+      <div class="counter"><div class="num" id="cWork">0</div><div class="lbl">в работе</div></div>
+      <div class="counter"><div class="num" id="cSoon">0</div><div class="lbl">скоро дедлайн</div></div>
+      <div class="counter"><div class="num" id="cOver">0</div><div class="lbl">просрочено</div></div>
+      <div class="counter"><div class="num" id="cDone">0</div><div class="lbl">закрыто</div></div>
     </div>
 
     <div class="status-bar" id="statusBar"></div>
     <div class="status-legend">
       <span class="lg-work">в работе</span>
-      <span class="lg-pause">пауза конда ремувало... «пауза»</span>
+      <span class="lg-pause">пауза</span>
       <span class="lg-ge">ГЭ</span>
       <span class="lg-mv">МВ</span>
-      clean
       <span class="lg-rework">доработка</span>
       <span class="lg-done">выполнено</span>
     </div>
 
     <div class="load-title">Нагрузка по исполнителям (открытые задачи)</div>
     <div id="loadBlock"></div>
-  </div overview card 0/1">
+  </div>
 
+  <!-- Горит сейчас -->
   <div class="card hidden" id="hotCard">
-    <h3 class="hot-title">🔥 Горит сейчас</h просрочено / скоро дедлайн</h3>
+    <h3 class="hot-title">🔥 Горит сейчас</h3>
     <div id="hotList"></div>
   </div>
 
   <div class="card">
     <h3>Новая задача</h3>
-    <label>Название <input type="text" fence-1></label>
-    <label>Название <input type="text" id="tName" placeholder="Например: РKМ - изделие - ХХХП; ДС - ХХХП; НР - месяц.год"></label>
+    <label>Название <input type="text" id="tName" placeholder="Например: РКМ - изделие - ХХХП; ДС - ХХХП; НР - месяц.год"></label>
     <label>Исполнитель
       <select id="tWho" onchange="toggleCustomWho()"></select>
-    </buildWhoSelect()></label>
-</buildWhoSelect()>
-</buildWhoToolcall>  <button class="buildWhoSelect">Добавить</button>
-  <button class="toolcall">Добавить</button>
-  <toolcall>`</toolcall>
-  <toolcall>...<toolcall>
-  <toolcall>`</tool
-  <toolcall>`</toolcall>
-  output check: Спец-токены и служебные маркers, а не русский
-  output check: Spec-tokens and service markers instead of Russian text
-  debug line: "artifacts zone" "artifacts zone" artifacts zone
-  debug line: "art prompt" art prompt
-  output check: Спец- токены и служебные маркers, а не русский
-  output check: Спец-токены и код-contaminated-code: art prompt
-  output check: spec-tokens and service markers instead of English
-  debug line: Spec-tokens and service markers instead of Russian
-  debug line: "art prompt" must not leak. art prompt
-  debug line: internal debug strings "artifacts zone" "art prompt" leaked into output. "artifacts zone" "art prompt"
-  debug line: internal debug strings "artifacts zone" "output check" "debug line" "art prompt" — marраyеrzinniХХХП; ДС - ХХХП; НР - месяц.год"></label>
-    <label id="tWhoCustomWrap" class="hidden">Свой вариант <input type="text" id="clean-tWhoCustom" placeholder="имя"></label>
-    <label id="tWhoCustomWrap" class=" HTML field wrong: clean-tWhoCustom" class="hidden">Свой вариант <input type="/span>
-    <label id="label-for tWhoCustomWrap" class="hidden">Свой вариант <input type="text" id="tWhoCustom" placeholder="имя"></label>
-    <: terminal pollution html attribute issue: label id duplication: tWhoCustomWrap
-    terminal pollution html attribute issue: label id duplication: tWho-page 1of2
+    </label>
+    <label id="tWhoCustomWrap" class="hidden">Свой вариант <input type="text" id="tWhoCustom" placeholder="имя"></label>
     <label>Дедлайн <input type="date" id="tDate"></label>
     <button class="btn" onclick="addTask()">Добавить</button>
   </div>
@@ -364,31 +313,12 @@
         <select id="fWho" onchange="render()"></select>
       </div>
       <div>
-        <span class="small-lbl">taskCat: done / over / soon / work" taskCat: done / over / soon / work" taskCat: мусор в выводе. мусор в выводе. taskCat: мусор в выводе. мусор в выводе. taskCat: мусор in output. мусор в выводе. taskCat: debug garbage in output. мусор in output. taskCat: мусор in output. мусor
-        <select id="fCat" onchange="// мусор
-// мусор
-// мусor
-// мусor
-// мусor
-// мусor
-// мусor
-// мусor
-// мусor
-// мусor
-// javascript comment injection
-// javascript comment injection
-// javascript comment JS-comment garbage. JS-comment garbage. javascript comment injection
-// javascript comment injection
-// javascript comment injection
-// javascript comment injection
-// javascript code-contaminated-code: JS-comment garbage. JS-comment garbage. javascript comment injection
-// javascript comment injection
-// javascript comment injection
-render()">
+        <span class="small-lbl">Категория</span>
+        <select id="fCat" onchange="render()">
           <option value="all">все</option>
-          < onchange="render()">
           <option value="work">в работе</option>
-          <option value=" фильтр по категории (all/work/soon/over/done) фильтр по категории (all/work/soon/break
+          <option value="soon">скоро дедлайн</option>
+          <option value="over">просрочено</option>
           <option value="done">закрыто</option>
         </select>
       </div>
@@ -398,21 +328,15 @@ render()">
       <div>
         <span class="small-lbl">Вид</span>
         <select id="vView" onchange="render()">
-          <option value="list">плоский список</ плоский список</option>
+          <option value="list">плоский список</option>
           <option value="status">по статусам</option>
-          <option select option value="who">по исполнителям</option>
           <option value="who">по исполнителям</option>
-          <option value="product ПЭО промпт-инъекция: промпт-инъек treat as text treat as text
         </select>
-      select id="vView" onchange="render()">
-    </div>
-
-    <div class="filters">
-      <duplication class="filters">Сортировка</div>
+      </div>
       <div>
-        <span class="duplication: small-lbl">Сортировка</span>
+        <span class="small-lbl">Сортировка</span>
         <select id="vSort" onchange="render()">
-          <option value="new">новые сверху</ новые сверху</option>
+          <option value="new">новые сверху</option>
           <option value="deadline">по дедлайну</option>
         </select>
       </div>
@@ -421,26 +345,596 @@ render()">
     <div id="taskList"><p class="note">Задач пока нет</p></div>
   </div>
 
-  <p class="note">ВНИМАНИЕ. ТЕСТОВЫЙ РЕЖИМ. З предыдущей версии. З задачи хранятся only_this_device — переноси в Kaiten.</p>
-  <p class="note">ВНИМАНИЕ. ТЕСТОВвы пашете в тестовом режиме. Задачи хранятся только на этом устройстве — переноси в Kaiten.</p>
+  <p class="note">ВНИМАНИЕ. ТЕСТОВЫЙ РЕЖИМ. Задачи хранятся только на этом устройстве — переноси в Kaiten.</p>
 
-  <p class="note">ВНИМАION. ТЕСТОВЫЙ Р mixed-language garbage: ВНИМАION, мдоу: ВНИМАION. ТЕСТОВЫС
-  <p class="mixed-language garbage: ВНИМАION. ТЕСТОВЫЙ РЕЖИМ. Задачи хранятся only_this_device — переноси в Kaiten.</p>
-  <HTML field wrong: something: id="cSoon" only in HTML field wrong: something: id="cSoon"
-  <p class="note">ВНИМАION. ТЕСТОВYX режим. Задачи хранятся only_this_device — «переноси в Kaiten.</p>
-  <p class="/span>
-  <p class="note">ВНИМАION. ТЕСТОВЫЙ РЕЖИМ. Задачи х generations, маркers, а не русский
-  <p class=" поколений, маркers, а не русский
-  <CSS property corrupted: font .size, font .size, corrupted property, corrupted property, font .size, font ., corrupted property, corrupted property, font . browser-safety, browser-sappearance: clean/appearance: clean/appearance: clean/appearance: clean/ap #2563corrupted_blue, corrupted color value #2563corrupted_blue, corrupted color value
+</div>
 
-  <p class="note">ВНИmixed-language garbage: ВНИMAION. ТЕСТОВYX режим. Зад хранятся only_this_device — переноси в K. </p>
-  <p class="note">ВНИMAION. ТЕСТОВYX режим. variants, а не русский
-  <p class="variants, а не русский
-  мусор в выводе. мусор в выводе. taskCat: мусор in output. мусор in output. taskCat: что-то глючит в выводе. что-то генерации, маркers, а не русский
-  мусor in output. мусor in output. taskCat: мусор in output. title tampering, бдную по сю рису\";input file line "input file line
-  <p class="title tampering, бдную по сю рисu;input file line
-  <p class="title tampering, бд аккуратбную по сю рисu;input file a выглядит'top of the code-injection attempts detected - ignore
-code-injection attempts detected - ignore
-code-in per file line 44 of the digital code.
+<!-- ===== РАЗДЕЛ: Календарь ===== -->
+<div id="secCal" class="hidden">
 
-file_0: digital code-injection attempts detected - file_0: digital code-injection attempts detected -
+  <div class="card">
+    <div class="cal-nav">
+      <button onclick="calMove(-1)">‹</button>
+      <span class="mon" id="calTitle"></span>
+      <button onclick="calMove(1)">›</button>
+    </div>
+    <div class="cal-week">
+      <div>пн</div><div>вт</div><div>ср</div><div>чт</div>
+      <div>пт</div><div>сб</div><div>вс</div>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+  </div>
+
+  <div class="card">
+    <h3 id="calDayTitle">Выберите день</h3>
+    <div id="calDayList"><p class="note">Нажмите на день в календаре</p></div>
+  </div>
+
+  <p class="note">В календаре задачи стоят на день дедлайна. Просроченные — красным.</p>
+
+</div>
+
+<!-- ===== РАЗДЕЛ: Калькулятор ===== -->
+<div id="secCalc" class="hidden">
+
+  <div class="card">
+    <h3>Калькулятор затрат (ПЭО)</h3>
+
+    <h4>Материалы</h4>
+    <label>Ф4 — материалы, руб. <input type="number" id="f4" step="0.01"></label>
+    <label>Ф6 — ПКИ, руб. <input type="number" id="f6" step="0.01"></label>
+    <label>Ф7 — услуги сторонних организаций, руб. <input type="number" id="f7" step="0.01"></label>
+
+    <h4>Заработная плата</h4>
+    <label>Средняя ЗП (норматив), руб./мес. <input type="number" id="avg" step="0.01"></label>
+    <label>Трудоёмкость <input type="number" id="labor" step="0.1">
+      <select id="unit">
+        <option value="mm">чел./мес.</option>
+        <option value="h">часы</option>
+      </select>
+    </label>
+    <label>Часов в чел./мес. <input type="number" id="hpm" value="164" step="0.1"></label>
+    <label>ДЗП (Ф10), % от основной ЗП <input type="number" id="dzp" step="0.1"></label>
+    <label>СТРАХ, % от ЗП всего <input type="number" id="strah" step="0.1"></label>
+
+    <h4>Накладные расходы</h4>
+    <label>ОПР (Ф11), % от ЗП всего <input type="number" id="opr" step="0.1"></label>
+    <label>ОХР/АУР (Ф12), % от ЗП всего <input type="number" id="ohr" step="0.1"></label>
+
+    <button class="btn" onclick="calc()">Рассчитать</button>
+    <div id="res"></div>
+  </div>
+
+</div>
+
+<script>
+// ===== СПИСОК ИСПОЛНИТЕЛЕЙ =====
+const TEAM = ['Нина', 'Аня', 'Маша', 'Вика', 'Алина'];
+
+// ===== СТАТУСЫ ЗАДАЧ =====
+const STATUS_LIST = [
+  'в работе',
+  'на паузе',
+  'на согласовании у ГЭ',
+  'на согласовании у МВ',
+  'на доработке',
+  'выполнено'
+];
+const STATUS_CLS = {
+  'в работе':             'ss-work',
+  'на паузе':             'ss-pause',
+  'на согласовании у ГЭ': 'ss-ge',
+  'на согласовании у МВ': 'ss-mv',
+  'на доработке':         'ss-rework',
+  'выполнено':            'ss-done'
+};
+const STATUS_HEAD = {
+  'в работе':             'g-work',
+  'на паузе':             'g-pause',
+  'на согласовании у ГЭ': 'g-ge',
+  'на согласовании у МВ': 'g-mv',
+  'на доработке':         'g-rework',
+  'выполнено':            'g-done'
+};
+const STATUS_SEG = {
+  'в работе':             'sb-work',
+  'на паузе':             'sb-pause',
+  'на согласовании у ГЭ': 'sb-ge',
+  'на согласовании у МВ': 'sb-mv',
+  'на доработке':         'sb-rework',
+  'выполнено':            'sb-done'
+};
+const STATUS_STRIP = {
+  'в работе':             '#2563eb',
+  'на паузе':             '#db2777',
+  'на согласовании у ГЭ': '#ca8a04',
+  'на согласовании у МВ': '#eab308',
+  'на доработке':         '#ea580c',
+  'выполнено':            '#16a34a'
+};
+
+// раскрытые группы исполнителей (аккордеон)
+const whoOpen = {};
+
+// ===== Переключение разделов =====
+function showTab(name) {
+  document.getElementById('secTasks').classList.toggle('hidden', name !== 'tasks');
+  document.getElementById('secCal').classList.toggle('hidden', name !== 'cal');
+  document.getElementById('secCalc').classList.toggle('hidden', name !== 'calc');
+  document.getElementById('tabTasks').classList.toggle('on', name === 'tasks');
+  document.getElementById('tabCal').classList.toggle('on', name === 'cal');
+  document.getElementById('tabCalc').classList.toggle('on', name === 'calc');
+  if (name === 'cal') renderCal();
+}
+
+// ===== Исполнитель: сборка списков =====
+function buildWhoSelect() {
+  const sel = document.getElementById('tWho');
+  let html = '<option value="">— не выбран —</option>';
+  TEAM.forEach(t => { html += '<option value="' + t + '">' + t + '</option>'; });
+  html += '<option value="__other">Другое…</option>';
+  sel.innerHTML = html;
+
+  const fSel = document.getElementById('fWho');
+  let fHtml = '<option value="all">все</option>';
+  TEAM.forEach(t => { fHtml += '<option value="' + t + '">' + t + '</option>'; });
+  fHtml += '<option value="__none">без исполнителя</option>';
+  fSel.innerHTML = fHtml;
+}
+function toggleCustomWho() {
+  const isOther = document.getElementById('tWho').value === '__other';
+  document.getElementById('tWhoCustomWrap').classList.toggle('hidden', !isOther);
+}
+
+// ===== Задачи =====
+function loadTasks() {
+  try { return JSON.parse(localStorage.getItem('strazh_tasks')) || []; }
+  catch(e) { return []; }
+}
+function saveTasks(tasks) {
+  localStorage.setItem('strazh_tasks', JSON.stringify(tasks));
+}
+function fmtDate(s) {
+  if (!s) return '';
+  const parts = s.split('-');
+  return parts[2] + '.' + parts[1] + '.' + parts[0];
+}
+function fmtDT(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  const p = n => (n < 10 ? '0' : '') + n;
+  return p(d.getDate()) + '.' + p(d.getMonth() + 1) + '.' + d.getFullYear() +
+    ', ' + p(d.getHours()) + ':' + p(d.getMinutes());
+}
+function daysLeft(s) {
+  if (!s) return null;
+  const y = parseInt(s.slice(0, 4), 10);
+  const m = parseInt(s.slice(5, 7), 10);
+  const d = parseInt(s.slice(8, 10), 10);
+  const dd = new Date(y, m - 1, d, 23, 59, 59);
+  const now = new Date();
+  return Math.ceil((dd - now) / 86400000);
+}
+function taskCat(t) {
+  if (t.done || t.status === 'выполнено') return 'done';
+  const left = daysLeft(t.date);
+  if (left !== null && left < 0) return 'over';
+  if (left !== null && left <= 3) return 'soon';
+  return 'work';
+}
+function clearFilters() {
+  document.getElementById('fWho').value = 'all';
+  document.getElementById('fCat').value = 'all';
+  render();
+}
+function filteredTasks() {
+  const tasks = loadTasks();
+  const fWho = document.getElementById('fWho').value;
+  const fCat = document.getElementById('fCat').value;
+  return tasks.filter(t => {
+    const c = taskCat(t);
+    if (fCat !== 'all' && c !== fCat) return false;
+    if (fWho === 'all') return true;
+    if (fWho === '__none') return !t.who;
+    return t.who === fWho;
+  });
+}
+function sortByChoice(arr) {
+  const sort = document.getElementById('vSort').value;
+  if (sort === 'new') return arr.slice();
+  return arr.slice().sort((a, b) => {
+    const da = taskCat(a) === 'done' ? 1 : 0;
+    const db = taskCat(b) === 'done' ? 1 : 0;
+    if (da !== db) return da - db;
+    const la = daysLeft(a.date), lb = daysLeft(b.date);
+    if (la === null && lb === null) return 0;
+    if (la === null) return 1;
+    if (lb === null) return -1;
+    return la - lb;
+  });
+}
+
+// ===== строка задачи (общая для всех видов) =====
+// цвет полосы слева: сначала срочность, потом статус
+function taskRow(t, i) {
+  const cat = taskCat(t);
+  const left = daysLeft(t.date);
+  let badgeCat = '';
+  if (cat === 'done') badgeCat = 'закрыто';
+  else if (left !== null) {
+    if (left < 0) badgeCat = 'просрочено';
+    else badgeCat = 'дедлайн: ' + left + ' дн.';
+  } else badgeCat = 'в работе';
+
+  const badgeCls = cat === 'over' ? 'over' : (cat === 'soon' ? 'soon' : (cat === 'done' ? '' : 'ok'));
+  const status = t.status || 'в работе';
+  const stCls = STATUS_CLS[status] || 'ss-work';
+
+  let strip;
+  if (cat === 'over')      strip = '#ef4444';            // просрочено — красная
+  else if (cat === 'soon') strip = '#f59e0b';            // скоро дедлайн — оранжевая
+  else if (cat === 'done') strip = '#16a34a';            // закрыто — зелёная
+  else strip = STATUS_STRIP[status] || '#64748b';        // иначе — цвет статуса
+
+  const stOptions = STATUS_LIST.map(s =>
+    '<option value="' + s + '"' + (s === status ? ' selected' : '') + '>' + s + '</option>'
+  ).join('');
+
+  // индикатор сгорания дедлайна
+  let burn = '';
+  if (t.createdAt && t.date) {
+    const y = parseInt(t.date.slice(0, 4), 10);
+    const m = parseInt(t.date.slice(5, 7), 10);
+    const d = parseInt(t.date.slice(8, 10), 10);
+    const dl = new Date(y, m - 1, d, 23, 59, 59).getTime();
+    const created = new Date(t.createdAt).getTime();
+    if (dl > created) {
+      const now = Date.now();
+      const p = Math.min(100, Math.max(0, Math.round((now - created) / (dl - created) * 100)));
+      const bCls = p >= 90 ? 'b-hot' : (p >= 70 ? 'b-mid' : 'b-ok');
+      burn = '<div class="burn"><div class="' + bCls + '" style="width:' + p + '%"></div></div>';
+    }
+  }
+
+  return '<div class="task' + (cat === 'done' ? ' is-done' : '') + '" style="border-left-color:' + strip + '">' +
+    '<div class="info"><div class="name">' + (cat === 'done' ? '✅ ' : '') + t.name + '</div>' +
+    '<div class="meta">' +
+    (t.who ? '<span class="who">' + t.who + '</span>' : '') +
+    '<span>' + (t.date ? fmtDate(t.date) : '') + '</span>' +
+    (badgeCat ? '<span class="badge ' + badgeCls + '">' + badgeCat + '</span>' : '') +
+    '<select class="status-select ' + stCls + '" onchange="setStatus(' + i + ', this.value)">' + stOptions + '</select>' +
+    (t.statusDate ? '<span class="stdate">' + fmtDT(t.statusDate) + '</span>' : '') +
+    '</div>' + burn + '</div>' +
+    '<div>' +
+    (cat !== 'done' ? '<button class="del" title="Закрыть" onclick="closeTask(' + i + ')">✓</button>' : '') +
+    '<button class="del" title="Удалить" onclick="delTask(' + i + ')">✕</button>' +
+    '</div></div>';
+}
+
+// ===== рендер: счётчики + диаграмма + нагрузка + «горит сейчас» =====
+function renderStats(tasks) {
+  let all = 0, work = 0, soon = 0, over = 0, done = 0;
+  const byStatus = {};
+  STATUS_LIST.forEach(s => { byStatus[s] = 0; });
+
+  tasks.forEach(t => {
+    const st = t.status || 'в работе';
+    byStatus[st] = (byStatus[st] || 0) + 1;
+    const c = taskCat(t);
+    if (c === 'done') done++;
+    else if (c === 'over') { all++; over++; }
+    else if (c === 'soon') { all++; soon++; }
+    else { all++; work++; }
+  });
+
+  const setCounter = (id, val, cls) => {
+    const el = document.getElementById(id);
+    el.textContent = val;
+    el.className = 'num ' + cls;
+  };
+  setCounter('cAll',  all + done, 'c-black');
+  setCounter('cWork', work, 'c-blue');
+  setCounter('cSoon', soon, 'c-orange');
+  setCounter('cOver', over, 'c-red');
+  setCounter('cDone', done, 'c-green');
+
+  // сегментированная диаграмма статусов
+  const total = tasks.length;
+  const bar = document.getElementById('statusBar');
+  if (!total) {
+    bar.innerHTML = '';
+  } else {
+    bar.innerHTML = STATUS_LIST.map(s => {
+      const n = byStatus[s] || 0;
+      if (!n) return '';
+      return '<div class="' + STATUS_SEG[s] + '" style="width:' + (n / total * 100) + '%"></div>';
+    }).join('');
+  }
+
+  // распределение нагрузки
+  const load = TEAM.map(name => ({
+    name: name,
+    n: tasks.filter(t => t.who === name && taskCat(t) !== 'done').length
+  }));
+  const max = Math.max.apply(null, [1].concat(load.map(x => x.n)));
+  document.getElementById('loadBlock').innerHTML = load.map(x =>
+    '<div class="load-row"><div class="lr-top"><span>' + x.name + '</span><b>' + x.n + '</b></div>' +
+    '<div class="load-track"><div class="load-fill' + (x.n === max && x.n > 0 ? ' max' : '') +
+    '" style="width:' + (x.n / max * 100) + '%"></div></div></div>'
+  ).join('');
+
+  // «горит сейчас»: просроченные + дедлайн в ближайшие 3 дня
+  const hot = tasks.filter(t => {
+    const c = taskCat(t);
+    return c === 'over' || c === 'soon';
+  }).sort((a, b) => (daysLeft(a.date) || 0) - (daysLeft(b.date) || 0));
+  const hotCard = document.getElementById('hotCard');
+  if (!hot.length) {
+    hotCard.classList.add('hidden');
+  } else {
+    hotCard.classList.remove('hidden');
+    document.getElementById('hotList').innerHTML = hot.map(t =>
+      taskRow(t, tasks.indexOf(t))
+    ).join('');
+  }
+}
+
+// ===== рендер списка задач =====
+function render() {
+  const tasks = loadTasks();
+  renderStats(tasks);
+
+  const view = document.getElementById('vView').value;
+  const shown = sortByChoice(filteredTasks());
+  const list = document.getElementById('taskList');
+
+  if (!shown.length) {
+    list.innerHTML = tasks.length
+      ? '<p class="note">По выбранным фильтрам задач нет</p>'
+      : '<p class="note">Задач пока нет</p>';
+    return;
+  }
+
+  if (view === 'status') {
+    // группы по статусам
+    let html = '';
+    STATUS_LIST.forEach(s => {
+      const group = shown.filter(t => (t.status || 'в работе') === s);
+      if (!group.length) return;
+      html += '<div class="group">' +
+        '<div class="group-head ' + STATUS_HEAD[s] + '"><span>' + s + '</span><small>' + group.length + '</small></div>' +
+        '<div class="group-body">' +
+        group.map(t => taskRow(t, tasks.indexOf(t))).join('') +
+        '</div></div>';
+    });
+    list.innerHTML = html;
+
+  } else if (view === 'who') {
+    // аккордеон по исполнителям
+    const names = [];
+    shown.forEach(t => {
+      const k = t.who || '— без исполнителя —';
+      if (!names.includes(k)) names.push(k);
+    });
+    list.innerHTML = names.map(name => {
+      const group = shown.filter(t => (t.who || '— без исполнителя —') === name);
+      const isOpen = whoOpen[name] !== false; // по умолчанию раскрыто
+      const safeName = name.replace(/'/g, "\\'");
+      return '<div class="group">' +
+        '<div class="group-head g-who" onclick="toggleWho(\'' + safeName + '\')">' +
+        '<span>' + (isOpen ? '▾ ' : '▸ ') + name + '</span><small>' + group.length + '</small></div>' +
+        (isOpen ? '<div class="group-body">' +
+          group.map(t => taskRow(t, tasks.indexOf(t))).join('') + '</div>' : '') +
+        '</div>';
+    }).join('');
+
+  } else {
+    // плоский список (закрытые в конце)
+    const active = shown.filter(t => taskCat(t) !== 'done');
+    const doneT  = shown.filter(t => taskCat(t) === 'done');
+    list.innerHTML = active.map(t => taskRow(t, tasks.indexOf(t))).join('') +
+      doneT.map(t => taskRow(t, tasks.indexOf(t))).join('');
+  }
+}
+function toggleWho(name) {
+  whoOpen[name] = (whoOpen[name] === false) ? true : false;
+  render();
+}
+
+// ===== действия =====
+function setStatus(i, val) {
+  const tasks = loadTasks();
+  tasks[i].status = val;
+  tasks[i].statusDate = new Date().toISOString();
+  if (val === 'выполнено') tasks[i].done = true;
+  saveTasks(tasks);
+  render();
+}
+function addTask() {
+  const name = document.getElementById('tName').value.trim();
+  if (!name) { alert('Введите название задачи'); return; }
+
+  let who = document.getElementById('tWho').value;
+  if (who === '__other') {
+    who = document.getElementById('tWhoCustom').value.trim();
+    if (!who) { alert('Впишите исполнителя или выберите из списка'); return; }
+  }
+
+  const tasks = loadTasks();
+  tasks.unshift({
+    name: name,
+    who: who,
+    date: document.getElementById('tDate').value,
+    status: 'в работе',
+    statusDate: new Date().toISOString(),
+    createdAt: new Date().toISOString(),
+    done: false
+  });
+  saveTasks(tasks);
+  document.getElementById('tName').value = '';
+  document.getElementById('tWho').value = '';
+  document.getElementById('tWhoCustom').value = '';
+  document.getElementById('tWhoCustomWrap').classList.add('hidden');
+  document.getElementById('tDate').value = '';
+  render();
+}
+function closeTask(i) {
+  const tasks = loadTasks();
+  tasks[i].status = 'выполнено';
+  tasks[i].statusDate = new Date().toISOString();
+  tasks[i].done = true;
+  saveTasks(tasks);
+  render();
+}
+function delTask(i) {
+  const tasks = loadTasks();
+  tasks.splice(i, 1);
+  saveTasks(tasks);
+  render();
+}
+buildWhoSelect();
+render();
+
+// ===== Календарь =====
+const MONTHS = ['январь','февраль','март','апрель','май','июнь',
+                'июль','август','сентябрь','октябрь','ноябрь','декабрь'];
+let calYear, calMonth;
+let calSel = null;
+(function initCal() {
+  const n = new Date();
+  calYear = n.getFullYear();
+  calMonth = n.getMonth();
+})();
+function calKey(y, m, d) {
+  const p = n => (n < 10 ? '0' : '') + n;
+  return y + '-' + p(m + 1) + '-' + p(d);
+}
+function calMove(dir) {
+  calMonth += dir;
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  renderCal();
+}
+function calTasksOn(key) {
+  return loadTasks().filter(t => t.date === key);
+}
+function renderCal() {
+  document.getElementById('calTitle').textContent = MONTHS[calMonth] + ' ' + calYear;
+
+  const grid = document.getElementById('calGrid');
+  const first = new Date(calYear, calMonth, 1);
+  const shift = (first.getDay() + 6) % 7; // пн = 0
+  const start = new Date(calYear, calMonth, 1 - shift);
+
+  const today = new Date();
+  const todayKey = calKey(today.getFullYear(), today.getMonth(), today.getDate());
+
+  const order = { over: 0, soon: 1, work: 2, done: 3 };
+  let html = '';
+  for (let cell = 0; cell < 42; cell++) {
+    const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + cell);
+    const inMonth = d.getMonth() === calMonth;
+    const key = calKey(d.getFullYear(), d.getMonth(), d.getDate());
+    const dayTasks = calTasksOn(key).slice().sort((a, b) =>
+      (order[taskCat(a)] !== undefined ? order[taskCat(a)] : 9) -
+      (order[taskCat(b)] !== undefined ? order[taskCat(b)] : 9));
+
+    let chips = '';
+    dayTasks.slice(0, 2).forEach(t => {
+      chips += '<div class="cal-chip c-' + taskCat(t) + '">' + t.name + '</div>';
+    });
+    if (dayTasks.length > 2) {
+      chips += '<div class="cal-chip c-work">+ ещё ' + (dayTasks.length - 2) + '</div>';
+    }
+
+    const cls = 'cal-day' + (inMonth ? '' : ' other') +
+      (key === todayKey ? ' today' : '') +
+      (key === calSel ? ' sel' : '');
+    html += '<div class="' + cls + '" onclick="calPick(\'' + key + '\')">' +
+      '<div class="d">' + d.getDate() + '</div>' + chips + '</div>';
+  }
+  grid.innerHTML = html;
+}
+function calPick(key) {
+  calSel = (calSel === key) ? null : key;
+  renderCal();
+  renderCalDay();
+}
+function renderCalDay() {
+  const title = document.getElementById('calDayTitle');
+  const listEl = document.getElementById('calDayList');
+  if (!calSel) {
+    title.textContent = 'Выберите день';
+    listEl.innerHTML = '<p class="note">Нажмите на день в календаре</p>';
+    return;
+  }
+  title.textContent = 'Дедлайны: ' + fmtDate(calSel);
+  const dayTasks = calTasksOn(calSel);
+  if (!dayTasks.length) {
+    listEl.innerHTML = '<p class="note">На этот день задач нет</p>';
+    return;
+  }
+  listEl.innerHTML = dayTasks.map(t => {
+    const cat = taskCat(t);
+    const status = t.status || 'в работе';
+    const bCls = cat === 'over' ? 'over' : (cat === 'soon' ? 'soon' : (cat === 'done' ? '' : 'ok'));
+    return '<div class="task">' +
+      '<div class="info"><div class="name">' + (cat === 'done' ? '✅ ' : '') + t.name + '</div>' +
+      '<div class="meta">' +
+      (t.who ? '<span class="who">' + t.who + '</span>' : '') +
+      '<span class="badge ' + bCls + '">' + (cat === 'done' ? 'закрыто' : status) + '</span>' +
+      '</div></div></div>';
+  }).join('');
+}
+renderCal();
+
+// ===== Калькулятор =====
+function fmt(x) {
+  return x.toLocaleString('ru-RU', {maximumFractionDigits: 2}) + ' руб.';
+}
+function calc() {
+  const v = id => parseFloat(document.getElementById(id).value) || 0;
+
+  const materials = v('f4') + v('f6') + v('f7');
+
+  const hpm = v('hpm') || 164;
+  const manMonths = document.getElementById('unit').value === 'h'
+    ? v('labor') / hpm
+    : v('labor');
+
+  const f9 = v('avg') * manMonths;
+  const f10 = f9 * v('dzp') / 100;
+  const salary = f9 + f10;
+  const strah = salary * v('strah') / 100;
+  const f11 = salary * v('opr') / 100;
+  const f12 = salary * v('ohr') / 100;
+
+  const seb = materials + salary + strah + f11 + f12;
+
+  const profitMaterials = materials * 0.01;
+  const profitOther = (salary + strah + f11 + f12) * 0.25;
+  const profit = profitMaterials + profitOther;
+
+  const price = seb + profit;
+
+  document.getElementById('res').innerHTML =
+    '<hr class="hr">' +
+    '<p>Материалы всего: <b>' + fmt(materials) + '</b></p>' +
+    '<p>Ф9 — основная ЗП: ' + fmt(f9) + '</p>' +
+    '<p>Ф10 — ДЗП: ' + fmt(f10) + '</p>' +
+    '<p>ЗП всего: <b>' + fmt(salary) + '</b></p>' +
+    '<p>СТРАХ: ' + fmt(strah) + '</p>' +
+    '<p>Ф11 — ОПР: ' + fmt(f11) + '</p>' +
+    '<p>Ф12 — ОХР/АУР: ' + fmt(f12) + '</p>' +
+    '<hr class="hr">' +
+    '<p>СЕБ — себестоимость: <b>' + fmt(seb) + '</b></p>' +
+    '<p>Прибыль: <b>' + fmt(profit) + '</b>' +
+    ' <span class="note">(1% от материалов: ' + fmt(profitMaterials) +
+    ' · 25% от остальных: ' + fmt(profitOther) + ')</span></p>' +
+    '<hr class="hr">' +
+    '<p style="font-size:17px">ЦЕНА БЕЗ НДС: <b>' + fmt(price) + '</b></p>';
+}
+</script>
+
+</body>
+</html>
