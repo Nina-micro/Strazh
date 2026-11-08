@@ -5,358 +5,284 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Страж — отдел ПЭО</title>
 <style>
-  :root {
-    --bg: #f4f5f7;
-    --card: #ffffff;
-    --accent: #2f6fed;
-    --accent2: #4f8cff;
-    --text: #1c1d22;
-    --muted: #7a7e8a;
-    --danger: #e5484d;
-    --ok: #2fb344;
-    --warn: #e5a400;
-    --work: #3b7dd8;
-  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-  }
-  header {
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    color: #fff;
-    padding: 18px 16px 14px;
-  }
-  header h1 {
-    margin: 0;
-    font-size: 22px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  header p {
-    margin: 4px 0 0;
-    font-size: 13px;
-    opacity: .85;
-  }
-  main {
-    padding: 14px 14px 90px;
+    font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background: #f1f5f9;
+    color: #1e293b;
+    padding: 16px;
     max-width: 640px;
     margin: 0 auto;
   }
-  .screen { display: none; }
-  .screen.active { display: block; animation: fade .2s ease; }
-  @keyframes fade { from {opacity:0; transform: translateY(4px);} to {opacity:1;} }
+  h1 { font-size: 26px; text-align: center; margin-top: 8px; }
+  .subtitle { text-align: center; color: #64748b; margin-bottom: 20px; }
   .card {
-    background: var(--card);
+    background: #fff;
     border-radius: 14px;
-    padding: 14px;
-    margin-bottom: 12px;
-    box-shadow: 0 1px 3px rgba(0,0,0,.08);
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
   }
-  .card h2 { margin: 0 0 10px; font-size: 17px; }
-  .item {
-    border: 1px solid #e7e9ee;
-    border-radius: 10px;
-    padding: 10px 12px;
-    margin-bottom: 8px;
-    cursor: pointer;
-  }
-  .item .q { font-weight: 600; }
-  .item .a { display: none; margin-top: 8px; color: var(--text); white-space: pre-wrap; }
-  .item.open .a { display: block; }
-  .tag {
-    display: inline-block;
-    font-size: 12px;
-    padding: 2px 8px;
-    border-radius: 999px;
-    color: #fff;
-    margin-right: 6px;
-  }
-  .tag.work { background: var(--work); }
-  .tag.soon { background: var(--warn); }
-  .tag.over { background: var(--danger); }
-  .tag.done { background: var(--ok); }
-  .task {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .task .info { flex: 1; }
-  .task .title { font-weight: 600; }
-  .task .who { font-size: 13px; color: var(--muted); margin-top: 2px; }
-  .iconbtn {
-    border: none;
-    background: #eef1f6;
+  .card h3 { font-size: 17px; margin-bottom: 12px; }
+  .card h4 { font-size: 14px; margin: 12px 0 8px; color: #475569; }
+  .counters { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; text-align: center; }
+  .counter .num { font-size: 22px; font-weight: 700; }
+  .counter .lbl { font-size: 11px; color: #64748b; }
+  label { display: block; font-size: 14px; margin-bottom: 8px; }
+  input, select {
+    width: 100%;
+    padding: 8px;
+    margin-top: 4px;
+    border: 1px solid #cbd5e1;
     border-radius: 8px;
-    padding: 8px 10px;
     font-size: 15px;
-    cursor: pointer;
   }
   .btn {
-    display: block;
+    display: inline-block;
     width: 100%;
-    box-sizing: border-box;
+    padding: 11px;
+    margin-top: 10px;
+    background: #2563eb;
+    color: #fff;
     border: none;
     border-radius: 10px;
-    padding: 12px;
     font-size: 15px;
     font-weight: 600;
     cursor: pointer;
-    background: var(--accent);
-    color: #fff;
-    margin-top: 6px;
   }
-  .btn.secondary { background: #eef1f6; color: var(--text); }
-  input, textarea {
-    width: 100%;
-    box-sizing: border-box;
-    border: 1px solid #dfe2e8;
-    border-radius: 10px;
-    padding: 10px 12px;
-    font-size: 15px;
-    margin-bottom: 10px;
-    font-family: inherit;
-    background: #fff;
-    color: var(--text);
-  }
-  .field label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 4px; }
-  .result {
-    background: #eef4ff;
-    border: 1px solid #d5e2ff;
-    border-radius: 10px;
-    padding: 12px;
-    margin-top: 10px;
-    white-space: pre-wrap;
-    font-size: 14px;
-    line-height: 1.5;
-  }
-  nav {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    background: var(--card);
+  .btn:active { background: #1d4ed8; }
+  .task {
     display: flex;
-    justify-content: space-around;
-    padding: 8px 0 max(8px, env(safe-area-inset-bottom));
-    box-shadow: 0 -1px 4px rgba(0,0,0,.08);
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 14px;
+    gap: 8px;
   }
-  nav button {
+  .task:last-child { border-bottom: none; }
+  .task .info { flex: 1; }
+  .task .name { font-weight: 600; }
+  .task .meta { color: #64748b; font-size: 12px; margin-top: 2px; }
+  .del {
     background: none;
     border: none;
-    font-size: 12px;
-    color: var(--muted);
+    color: #ef4444;
+    font-size: 18px;
     cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-    padding: 4px 12px;
   }
-  nav button span.icon { font-size: 20px; }
-  nav button.active { color: var(--accent); }
-  .empty { color: var(--muted); font-size: 14px; text-align: center; padding: 16px 0; }
+  .hr { border: none; border-top: 1px solid #e2e8f0; margin: 10px 0; }
+  #res p { font-size: 14px; margin: 4px 0; }
+  .note { font-size: 12px; color: #94a3b8; text-align: center; margin-top: 4px; }
 </style>
 </head>
 <body>
-<header>
-  <h1><span>🛡️</span> Страж</h1>
-  <p>Отдел ПЭО · вопрос-ответ · задачи · калькулятор цены</p>
-</header>
 
-<main>
-  <!-- Вопрос-ответ -->
-  <section class="screen active" id="screen-faq">
-    <div class="card">
-      <h2>❓ Вопрос-ответ</h2>
-      <div id="faq-list"></div>
-      <button class="btn secondary" onclick="showForm('faq-form')">+ Добавить вопрос</button>
-    </div>
-    <div class="card" id="faq-form" style="display:none">
-      <div class="field"><label>Вопрос</label><input id="faq-q" placeholder="Например: как оформить заявку на закупку?"></div>
-      <div class="field"><label>Ответ</label><textarea id="faq-a" rows="3" placeholder="Ответ..."></textarea></div>
-      <button class="btn" onclick="addFaq()">Сохранить</button>
-      <button class="btn secondary" onclick="hideForm('faq-form')">Отмена</button>
-    </div>
-  </section>
+<h1>Страж</h1>
+<p class="subtitle">Отдел ПЭО · задачи и дедлайны</p>
 
-  <!-- Задачи -->
-  <section class="screen" id="screen-tasks">
-    <div class="card">
-      <h2>📋 Задачи и дедлайны</h2>
-      <div id="task-list"></div>
-      <button class="btn secondary" onclick="showForm('task-form')">+ Добавить задачу</button>
-    </div>
-    <div class="card" id="task-form" style="display:none">
-      <div class="field"><label>Название задачи</label><input id="task-t" placeholder="Например: смета на объект №12"></div>
-      <div class="field"><label>Исполнитель (экономист)</label><input id="task-w" placeholder="Фамилия И."></div>
-      <div class="field"><label>Дедлайн</label><input id="task-d" type="date"></div>
-      <button class="btn" onclick="addTask()">Сохранить</button>
-      <button class="btn secondary" onclick="hideForm('task-form')">Отмена</button>
-    </div>
-  </section>
+<div class="card">
+  <div class="counters">
+    <div class="counter"><div class="num" id="cAll">0</div><div class="lbl">всего</div></div>
+    <div class="counter"><div class="num" id="cWork">0</div><div class="lbl">в работе</div></div>
+    <div class="counter"><div class="num" id="cSoon">0</div><div class="lbl">скоро дедлайн</div></div>
+    <div class="counter"><div class="num" id="cOver">0</div><div class="lbl">просрочено</div></div>
+    <div class="counter"><div class="num" id="cDone">0</div><div class="lbl">закрыто</div></div>
+  </div>
+</div>
 
-  <!-- Калькулятор -->
-  <section class="screen" id="screen-calc">
-    <div class="card">
-      <h2>🧮 Калькулятор цены</h2>
-      <div class="field"><label>Материалы, руб</label><input id="c-mat" type="number" inputmode="decimal" placeholder="0"></div>
-      <div class="field"><label>Зарплата, руб</label><input id="c-sal" type="number" inputmode="decimal" placeholder="0"></div>
-      <div class="field"><label>Оборудование, руб</label><input id="c-eq" type="number" inputmode="decimal" placeholder="0"></div>
-      <div class="field"><label>Транспорт, руб</label><input id="c-tr" type="number" inputmode="decimal" placeholder="0"></div>
-      <div class="field"><label>Накладные расходы, %</label><input id="c-ov" type="number" inputmode="decimal" value="15"></div>
-      <div class="field"><label>Рентабельность, %</label><input id="c-pr" type="number" inputmode="decimal" value="20"></div>
-      <button class="btn" onclick="calcPrice()">Рассчитать</button>
-      <div class="result" id="calc-result" style="display:none"></div>
-    </div>
-  </section>
-</main>
+<div class="card">
+  <h3>Новая задача</h3>
+  <label>Название <input type="text" id="tName" placeholder="Например: РКМ по проекту"></label>
+  <label>Ответственный <input type="text" id="tWho" placeholder="Фамилия"></label>
+  <label>Дедлайн <input type="date" id="tDate"></label>
+  <button class="btn" onclick="addTask()">Добавить</button>
+</div>
 
-<nav>
-  <button class="active" id="nav-faq" onclick="go('faq')"><span class="icon">❓</span>Вопрос-ответ</button>
-  <button id="nav-tasks" onclick="go('tasks')"><span class="icon">📋</span>Задачи</button>
-  <button id="nav-calc" onclick="go('calc')"><span class="icon">🧮</span>Калькулятор</button>
-</nav>
+<div class="card">
+  <h3>Задачи</h3>
+  <div id="taskList"><p class="note">Задач пока нет</p></div>
+</div>
+
+<div class="card">
+  <h3>Калькулятор затрат (ПЭО)</h3>
+
+  <h4>Материалы</h4>
+  <label>Ф4 — материалы, руб. <input type="number" id="f4" step="0.01"></label>
+  <label>Ф6 — ПКИ, руб. <input type="number" id="f6" step="0.01"></label>
+  <label>Ф7 — услуги сторонних организаций, руб. <input type="number" id="f7" step="0.01"></label>
+
+  <h4>Заработная плата</h4>
+  <label>Средняя ЗП (норматив), руб./мес. <input type="number" id="avg" step="0.01"></label>
+  <label>Трудоёмкость <input type="number" id="labor" step="0.1">
+    <select id="unit">
+      <option value="mm">чел./мес.</option>
+      <option value="h">часы</option>
+    </select>
+  </label>
+  <label>Часов в чел./мес. <input type="number" id="hpm" value="164" step="0.1"></label>
+  <label>ДЗП (Ф10), % от основной ЗП <input type="number" id="dzp" step="0.1"></label>
+  <label>СТРАХ, % от ЗП всего <input type="number" id="strah" step="0.1"></label>
+
+  <h4>Накладные расходы</h4>
+  <label>ОПР (Ф11), % от ЗП всего <input type="number" id="opr" step="0.1"></label>
+  <label>ОХР/АУР (Ф12), % от ЗП всего <input type="number" id="ohr" step="0.1"></label>
+
+  <button class="btn" onclick="calc()">Рассчитать</button>
+  <div id="res"></div>
+</div>
+
+<p class="note">Черновик. Задачи хранятся только на этом устройстве — переноши в Kaiten.</p>
 
 <script>
-var FAQ = 'strazh_faq';
-var TASKS = 'strazh_tasks';
+// ===== Задачи =====
+function loadTasks() {
+  try { return JSON.parse(localStorage.getItem('strazh_tasks')) || []; }
+  catch(e) { return []; }
+}
+function saveTasks(tasks) {
+  localStorage.setItem('strazh_tasks', JSON.stringify(tasks));
+}
+function fmtDate(s) {
+  if (!s) return '';
+  const d = new Date(s);
+  return d.toLocaleDateString('ru-RU');
+}
+function daysLeft(s) {
+  if (!s) return null;
+  const d = new Date(s);
+  const now = new Date();
+  d.setHours(23,59,59,0);
+  return Math.ceil((d - now) / 86400000);
+}
+function render() {
+  const tasks = loadTasks();
+  const now = new Date();
+  let all = 0, work = 0, soon = 0, over = 0, done = 0;
 
-function store(key, def) {
-  try {
-    var v = localStorage.getItem(key);
-    return v ? JSON.parse(v) : def;
-  } catch (e) { return def; }
-}
-function save(key, val) {
-  try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) {}
-}
+  tasks.forEach(t => {
+    if (t.status === 'done') { done++; return; }
+    all++;
+    const left = daysLeft(t.date);
+    if (left !== null && left < 0) over++;
+    else if (left !== null && left <= 3) soon++;
+    else work++;
+  });
 
-var faq = store(FAQ, []);
-var tasks = store(TASKS, []);
+  document.getElementById('cAll').textContent = all + done;
+  document.getElementById('cWork').textContent = work;
+  document.getElementById('cSoon').textContent = soon;
+  document.getElementById('cOver').textContent = over;
+  document.getElementById('cDone').textContent = done;
 
-function go(name) {
-  document.querySelectorAll('.screen').forEach(function (s) { s.classList.remove('active'); });
-  document.getElementById('screen-' + name).classList.add('active');
-  document.querySelectorAll('nav button').forEach(function (b) { b.classList.remove('active'); });
-  document.getElementById('nav-' + name).classList.add('active');
-}
-
-function showForm(id) { document.getElementById(id).style.display = 'block'; }
-function hideForm(id) {
-  document.getElementById(id).style.display = 'none';
-  document.querySelectorAll('#' + id + ' input, #' + id + ' textarea').forEach(function (el) { el.value = ''; });
-}
-
-function renderFaq() {
-  var box = document.getElementById('faq-list');
-  if (!faq.length) {
-    box.innerHTML = '<div class="empty">Пока нет вопросов. Добавьте первый!</div>';
-    return;
-  }
-  box.innerHTML = faq.map(function (f, i) {
-    return '<div class="item" onclick="this.classList.toggle(\'open\')">' +
-      '<div class="q">' + (i + 1) + '. ' + escapeHtml(f.q) + '</div>' +
-      '<div class="a">' + escapeHtml(f.a) + '</div></div>';
-  }).join('');
-}
-function addFaq() {
-  var q = document.getElementById('faq-q').value.trim();
-  var a = document.getElementById('faq-a').value.trim();
-  if (!q || !a) { alert('Заполните и вопрос, и ответ'); return; }
-  faq.push({ q: q, a: a });
-  save(FAQ, faq);
-  hideForm('faq-form');
-  renderFaq();
-}
-
-function daysLeft(d) {
-  var now = new Date();
-  var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  var dl = new Date(d + 'T00:00:00');
-  return Math.round((dl - today) / 86400000);
-}
-function taskTag(d, done) {
-  if (done) return ['done', 'Закрыто'];
-  var dd = daysLeft(d);
-  if (dd < 0) return ['over', 'Просрочено'];
-  if (dd <= 3) return ['soon', 'Скоро дедлайн'];
-  return ['work', 'В работе'];
-}
-function renderTasks() {
-  var box = document.getElementById('task-list');
+  const list = document.getElementById('taskList');
   if (!tasks.length) {
-    box.innerHTML = '<div class="empty">Задач пока нет. Добавьте первую!</div>';
+    list.innerHTML = '<p class="note">Задач пока нет</p>';
     return;
   }
-  box.innerHTML = tasks.map(function (t, i) {
-    var tag = taskTag(t.d, t.done);
-    return '<div class="item"><div class="task">' +
-      '<div class="info">' +
-      '<span class="tag ' + tag[0] + '">' + tag[1] + '</span>' +
-      '<div class="title">' + escapeHtml(t.t) + '</div>' +
-      '<div class="who">' + escapeHtml(t.w) + ' · до ' + t.d + '</div>' +
-      '</div>' +
-      (t.done ? '' : '<button class="iconbtn" title="Закрыть" onclick="doneTask(' + i + ')">✔️</button>') +
-      '<button class="iconbtn" title="Удалить" onclick="delTask(' + i + ')">🗑</button>' +
+  list.innerHTML = tasks.map((t, i) => {
+    const left = daysLeft(t.date);
+    let badge = '';
+    if (t.status !== 'done' && left !== null) {
+      if (left < 0) badge = ' — <b style="color:#ef4444">просрочено</b>';
+      else if (left <= 3) badge = ' — <b style="color:#f59e0b">дедлайн: ' + left + ' дн.</b>';
+      else badge = ' — дедлайн через ' + left + ' дн.';
+    }
+    const check = t.status === 'done' ? '✅ ' : '';
+    return '<div class="task">' +
+      '<div class="info"><div class="name">' + check + t.name +
+      (t.who ? ' · ' + t.who : '') + badge + '</div>' +
+      '<div class="meta">' + (t.date ? fmtDate(t.date) : '') + '</div></div>' +
+      '<div>' +
+      (t.status !== 'done' ? '<button class="del" title="Закрыть" onclick="closeTask(' + i + ')">✓</button>' : '') +
+      '<button class="del" title="Удалить" onclick="delTask(' + i + ')">✕</button>' +
       '</div></div>';
   }).join('');
 }
 function addTask() {
-  var t = document.getElementById('task-t').value.trim();
-  var w = document.getElementById('task-w').value.trim();
-  var d = document.getElementById('task-d').value;
-  if (!t || !w || !d) { alert('Заполните все поля'); return; }
-  tasks.push({ t: t, w: w, d: d, done: false });
-  save(TASKS, tasks);
-  hideForm('task-form');
-  renderTasks();
+  const name = document.getElementById('tName').value.trim();
+  if (!name) { alert('Введите название задачи'); return; }
+  const tasks = loadTasks();
+  tasks.unshift({
+    name: name,
+    who: document.getElementById('tWho').value.trim(),
+    date: document.getElementById('tDate').value,
+    status: 'work'
+  });
+  saveTasks(tasks);
+  document.getElementById('tName').value = '';
+  document.getElementById('tWho').value = '';
+  document.getElementById('tDate').value = '';
+  render();
 }
-function doneTask(i) {
-  tasks[i].done = true;
-  save(TASKS, tasks);
-  renderTasks();
+function closeTask(i) {
+  const tasks = loadTasks();
+  tasks[i].status = 'done';
+  saveTasks(tasks);
+  render();
 }
 function delTask(i) {
-  if (!confirm('Удалить задачу?')) return;
+  const tasks = loadTasks();
   tasks.splice(i, 1);
-  save(TASKS, tasks);
-  renderTasks();
+  saveTasks(tasks);
+  render();
 }
+render();
 
-function fmt(n) {
-  return n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+// ===== Калькулятор =====
+function fmt(x) {
+  return x.toLocaleString('ru-RU', {maximumFractionDigits: 2}) + ' руб.';
 }
-function calcPrice() {
-  function num(id) { return parseFloat(document.getElementById(id).value.replace(',', '.')) || 0; }
-  var mat = num('c-mat'), sal = num('c-sal'), eq = num('c-eq'), tr = num('c-tr');
-  var ov = num('c-ov'), pr = num('c-pr');
-  var cost = mat + sal + eq + tr;
-  var overhead = cost * ov / 100;
-  var totalCost = cost + overhead;
-  var profit = totalCost * pr / 100;
-  var price = totalCost + profit;
-  var vat = price * 0.20;
-  var priceVat = price + vat;
-  var box = document.getElementById('calc-result');
-  box.style.display = 'block';
-  box.textContent =
-    'Себестоимость прямых затрат: ' + fmt(cost) + ' руб\n' +
-    'Накладные (' + ov + '%): ' + fmt(overhead) + ' руб\n' +
-    'Итого себестоимость: ' + fmt(totalCost) + ' руб\n' +
-    'Рентабельность (' + pr + '%): ' + fmt(profit) + ' руб\n' +
-    'Цена без НДС: ' + fmt(price) + ' руб\n' +
-    'НДС 20%: ' + fmt(vat) + ' руб\n' +
-    'ЦЕНА С НДС: ' + fmt(priceVat) + ' руб';
-}
+function calc() {
+  const v = id => parseFloat(document.getElementById(id).value) || 0;
 
-function escapeHtml(s) {
-  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
+  // Материалы
+  const f4 = v('f4'), f6 = v('f6'), f7 = v('f7');
+  const materials = f4 + f6 + f7;
 
-renderFaq();
-renderTasks();
+  // Заработная плата
+  const avg = v('avg');
+  const labor = v('labor');
+  const unit = document.getElementById('unit').value;
+  const hpm = v('hpm') || 164;
+  const manMonths = unit === 'h' ? labor / hpm : labor;
+
+  const f9 = avg * manMonths;              // основная ЗП
+  const f10 = f9 * v('dzp') / 100;         // ДЗП
+  const salary = f9 + f10;                 // ЗП всего
+  const strah = salary * v('strah') / 100; // страховые взносы
+  const f11 = salary * v('opr') / 100;     // ОПР
+  const f12 = salary * v('ohr') / 100;     // ОХР/АУР
+
+  // Себестоимость (включая СТРАХ)
+  const seb = materials + salary + strah + f11 + f12;
+
+  // Прибыль: 1% от материалов всего, 25% от остальных статей
+  const profitMaterials = materials * 0.01;
+  const profitOther = (salary + strah + f11 + f12) * 0.25;
+  const profit = profitMaterials + profitOther;
+
+  // Цена без НДС
+  const price = seb + profit;
+
+  document.getElementById('res').innerHTML =
+    '<hr class="hr">' +
+    '<p>Материалы всего: <b>' + fmt(materials) + '</b></p>' +
+    '<p>Ф9 — основная ЗП: ' + fmt(f9) + '</p>' +
+    '<p>Ф10 — ДЗП: ' + fmt(f10) + '</p>' +
+    '<p>ЗП всего: <b>' + fmt(salary) + '</b></p>' +
+    '<p>СТРАХ: ' + fmt(strah) + '</p>' +
+    '<p>Ф11 — ОПР: ' + fmt(f11) + '</p>' +
+    '<p>Ф12 — ОХР/АУР: ' + fmt(f12) + '</p>' +
+    '<hr class="hr">' +
+    '<p>СЕБ — себестоимость: <b>' + fmt(seb) + '</b></p>' +
+    '<p>Прибыль: <b>' + fmt(profit) + '</b>' +
+    ' <span class="note">(1% от материалов: ' + fmt(profitMaterials) +
+    ' · 25% от остальных: ' + fmt(profitOther) + ')</span></p>' +
+    '<hr class="hr">' +
+    '<p style="font-size:17px">ЦЕНА БЕЗ НДС: <b>' + fmt(price) + '</b></p>';
+}
 </script>
+
 </body>
 </html>
