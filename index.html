@@ -107,6 +107,7 @@
     background: #fff;
   }
   .filters { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  .filters3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px; }
   .small-lbl { display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 2px; }
   .btn {
     display: inline-block;
@@ -182,13 +183,11 @@
   .ss-rework { color: #ea580c; border-color: rgba(234, 88, 12, 0.5);   background: rgba(234, 88, 12, 0.08); }
   .ss-done   { color: #16a34a; border-color: rgba(22, 163, 74, 0.5);   background: rgba(22, 163, 74, 0.08); }
 
-  /* пиллы статусов договоров (красная палитра) */
   .ss-project      { color: #64748b; border-color: rgba(148, 163, 184, 0.6); background: rgba(148, 163, 184, 0.12); }
   .ss-on-approval  { color: #b45309; border-color: rgba(245, 158, 11, 0.65); background: rgba(253, 224, 71, 0.35); }
   .ss-signed       { color: #dc2626; border-color: rgba(220, 38, 38, 0.5);   background: rgba(220, 38, 38, 0.12); }
   .ss-closed       { color: #16a34a; border-color: rgba(22, 163, 74, 0.5);   background: rgba(22, 163, 74, 0.08); }
 
-  /* всплывающее меню выбора статуса */
   .status-menu {
     position: fixed;
     z-index: 50;
@@ -235,7 +234,6 @@
   .badge.paid { background: #16a34a; }
   .badge.wait { background: #94a3b8; }
 
-  /* ===== группы ===== */
   .group { border: 1px solid #e2e8f0; border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
   .group-head {
     padding: 8px 12px;
@@ -245,6 +243,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
   }
   .group-head small { font-weight: 600; opacity: 0.9; }
   .g-queue  { background: #94a3b8; }
@@ -255,6 +255,7 @@
   .g-rework { background: #ea580c; }
   .g-done   { background: #16a34a; }
   .g-who    { background: #475569; cursor: pointer; user-select: none; }
+  .g-doc    { background: #7f1d1d; cursor: pointer; user-select: none; }
   .group-body { border-top: 1px solid #e2e8f0; }
 
   .del { background: none; border: none; color: #ef4444; font-size: 18px; cursor: pointer; }
@@ -262,7 +263,6 @@
   #res p, #swRes p { font-size: 14px; margin: 4px 0; }
   .note { font-size: 12px; color: #94a3b8; text-align: center; margin-top: 4px; }
 
-  /* блок «сумма прописью» */
   .sum-box {
     background: #f8fafc;
     border: 1px solid #e2e8f0;
@@ -274,7 +274,6 @@
   }
   .sum-box .sum-title { font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 4px; }
 
-  /* ===== плавающая кнопка «+» ===== */
   .fab {
     position: fixed;
     right: 20px;
@@ -307,7 +306,6 @@
   }
   @keyframes fabspin { to { transform: rotate(360deg); } }
 
-  /* ===== всплывающие окна ===== */
   .overlay {
     position: fixed;
     inset: 0;
@@ -335,16 +333,16 @@
   .modal-actions { display: flex; gap: 10px; flex-wrap: wrap; }
   .modal-actions .btn { margin-top: 10px; flex: 1; }
 
-  /* ===== ведомость поставки ===== */
-  .item-row {
+  /* ===== строки ведомости и ДС ===== */
+  .item-row, .ds-row {
     border: 1px solid #e2e8f0;
     border-radius: 10px;
     padding: 10px;
     margin-bottom: 8px;
     background: #f8fafc;
   }
-  .item-row .filters { margin-bottom: 6px; }
-  .item-row .remove-item {
+  .item-row .filters, .ds-row .filters { margin-bottom: 6px; }
+  .item-row .remove-item, .ds-row .remove-ds {
     background: none;
     border: none;
     color: #ef4444;
@@ -356,7 +354,7 @@
   .item-row .row-sum {
     font-size: 12px; color: #475569; margin-top: 4px; font-weight: 600;
   }
-  .btn.add-item {
+  .btn.add-item, .btn.add-ds {
     background: #e2e8f0;
     color: #475569;
     font-size: 13px;
@@ -366,17 +364,27 @@
   .mini-note { font-size: 11px; color: #94a3b8; margin: 4px 0 0; }
   .doc-extra { font-size: 11px; color: #64748b; margin-top: 4px; line-height: 1.5; }
 
-  /* ===== факт оплаты ===== */
+  /* ===== факт оплаты: счёт и платёжное поручение ===== */
   .pay-fact {
     display: flex; gap: 8px; margin-top: 8px;
     align-items: center; flex-wrap: wrap;
     font-size: 12px; color: #475569;
   }
   .pay-fact input {
-    width: auto; flex: 1; min-width: 110px;
+    width: auto; flex: 1; min-width: 90px;
     margin-top: 0; padding: 6px 8px; font-size: 13px;
   }
   .pay-fact .lbl2 { white-space: nowrap; font-weight: 600; }
+  .pay-block {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 8px;
+    margin-top: 6px;
+    background: #f8fafc;
+  }
+  .pay-block .pb-title {
+    font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px;
+  }
 
   /* ===== календарь экономиста ===== */
   .cal-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
@@ -424,8 +432,9 @@
   body.red-mode .btn { background: #dc2626; }
   body.red-mode .btn:active { background: #b91c1c; }
   body.red-mode .btn.clear,
-  body.red-mode .btn.ghost { background: #fee2e2; color: #b91c1c; }
-  body.red-mode .btn.add-item { background: #fee2e2; color: #b91c1c; }
+  body.red-mode .btn.ghost,
+  body.red-mode .btn.add-item,
+  body.red-mode .btn.add-ds { background: #fee2e2; color: #b91c1c; }
   body.red-mode .btn.danger { background: #fff; color: #ef4444; }
   body.red-mode #secDoc .card h3 { color: #b91c1c; }
   body.red-mode #secDoc .who { color: #dc2626; }
@@ -471,7 +480,6 @@
     <div id="loadBlock"></div>
   </div>
 
-  <!-- Горит сейчас -->
   <div class="card hidden" id="hotCard">
     <h3 class="hot-title">🔥 Горит сейчас</h3>
     <div id="hotList"></div>
@@ -578,7 +586,6 @@
     <div id="res"></div>
   </div>
 
-  <!-- ===== отдельный блок: сумма прописью ===== -->
   <div class="card">
     <h3>Сумма прописью</h3>
     <p class="note" style="text-align:left; margin-bottom:8px">
@@ -620,6 +627,18 @@
           </select>
         </div>
         <div>
+          <span class="small-lbl">Контрагент</span>
+          <select id="fContr" onchange="renderDocs()">
+            <option value="all">все</option>
+          </select>
+        </div>
+      </div>
+      <div class="filters">
+        <div>
+          <span class="small-lbl">Изделие / позиция (поиск)</span>
+          <input type="text" id="fItem" placeholder="например: ХХХП" oninput="renderDocs()">
+        </div>
+        <div>
           <span class="small-lbl">Сортировка</span>
           <select id="dSort" onchange="renderDocs()">
             <option value="new">новые сверху</option>
@@ -638,8 +657,8 @@
     <div class="card">
       <h3>Реестр оплаты</h3>
       <p class="mini-note" style="text-align:left; margin-bottom:8px">
-        Платежи формируются из карточек договоров. Плановые даты считаются от даты подписания
-        (аванс) и события окончательного расчёта. Вноси фактическую дату и сумму по счёту.
+        Платежи формируются из карточек договоров. Внеси данные счёта и факт оплаты
+        (платёжное поручение) — они сохранятся в договоре.
       </p>
       <div id="payList"><p class="note">Платежей пока нет</p></div>
     </div>
@@ -650,8 +669,7 @@
     <div class="card">
       <h3>График поставок</h3>
       <p class="mini-note" style="text-align:left; margin-bottom:8px">
-        Позиции собираются из ведомостей договоров. Если в карточке проставлена дата аванса
-        или давальческого сырья — срок поставки считается автоматически (месяцы от события).
+        Сводно по договорам. Нажми на шапку договора — раскроются все позиции ведомости.
       </p>
       <div id="schedList"><p class="note">Позиций пока нет</p></div>
     </div>
@@ -661,7 +679,7 @@
 
 </div>
 
-<!-- всплывающее меню выбора статуса (одно на всё приложение) -->
+<!-- всплывающее меню выбора статуса -->
 <div id="statusMenu" class="status-menu hidden"></div>
 
 <!-- ===== плавающая кнопка «+» ===== -->
@@ -764,7 +782,7 @@
   </div>
 </div>
 
-<!-- ===== карточка договора (просмотр и редактирование) ===== -->
+<!-- ===== карточка договора ===== -->
 <div id="docCardOverlay" class="overlay hidden" onclick="if(event.target === this) closeDocCard()">
   <div class="modal">
     <h3>Карточка договора</h3>
@@ -841,7 +859,11 @@
     <h4>Ведомость поставки</h4>
     <div id="cItemsWrap"></div>
     <button class="btn add-item" onclick="addCardItemRow()">+ Добавить позицию</button>
-    <p class="mini-note">Реестр оплаты и график поставок обновятся автоматически после сохранения.</p>
+
+    <h4>Дополнительные соглашения</h4>
+    <div id="cDsWrap"></div>
+    <button class="btn add-ds" onclick="addCardDsRow()">+ Добавить ДС</button>
+    <p class="mini-note">В ДС фиксируй изменения ведомости: позиция, новое количество, новая цена — в любую сторону. Изменения вноси и в саму ведомость выше.</p>
 
     <div class="modal-actions">
       <button class="btn" onclick="saveDocCard()">Сохранить</button>
@@ -855,18 +877,12 @@
 // ===== СПИСОК ИСПОЛНИТЕЛЕЙ =====
 const TEAM = ['Нина', 'Аня', 'Маша', 'Вика', 'Алина'];
 
-// текущая вкладка (для плавающей кнопки «+»)
 let currentTab = 'tasks';
 
 // ===== СТАТУСЫ ЗАДАЧ =====
 const STATUS_LIST = [
-  'в очереди',
-  'в работе',
-  'на паузе',
-  'на согласовании у ГЭ',
-  'на согласовании у МВ',
-  'на доработке',
-  'выполнено'
+  'в очереди', 'в работе', 'на паузе',
+  'на согласовании у ГЭ', 'на согласовании у МВ', 'на доработке', 'выполнено'
 ];
 const STATUS_CLS = {
   'в очереди':            'ss-queue',
@@ -905,7 +921,7 @@ const STATUS_STRIP = {
   'выполнено':            '#16a34a'
 };
 
-// ===== СТАТУСЫ ДОГОВОРОВ (красная палитра) =====
+// ===== СТАТУСЫ ДОГОВОРОВ =====
 const DOC_STATUS = ['проект', 'на согласовании', 'подписан', 'закрыт'];
 const DOC_STRIP = {
   'проект':          '#94a3b8',
@@ -931,8 +947,8 @@ const FINAL_EVENT_TEXT = {
   contract: 'после подписания договора'
 };
 
-// раскрытые группы исполнителей (аккордеон)
 const whoOpen = {};
+const schedOpen = {}; // раскрытые группы графика поставок
 
 // ===== Переключение разделов =====
 function showTab(name) {
@@ -953,17 +969,15 @@ function showTab(name) {
     renderSched();
     showDocSub(docSub);
   }
-  // красная тема для вкладки «Договорная работа»
   document.body.classList.toggle('red-mode', name === 'doc');
 }
 
-// плавающая кнопка: на вкладке договоров — договор, иначе — задача
 function fabClick() {
   if (currentTab === 'doc') openDocModal();
   else openTaskModal();
 }
 
-// ===== Исполнитель: сборка списков =====
+// ===== Исполнитель =====
 function buildWhoSelect() {
   const sel = document.getElementById('tWho');
   let html = '<option value="">— не выбран —</option>';
@@ -982,7 +996,7 @@ function toggleCustomWho() {
   document.getElementById('tWhoCustomWrap').classList.toggle('hidden', !isOther);
 }
 
-// ===== Всплывающее окно добавления задачи =====
+// ===== Задачи: окна =====
 function openTaskModal() {
   closeStatusMenu();
   document.getElementById('taskOverlay').classList.remove('hidden');
@@ -997,7 +1011,7 @@ function closeTaskModal() {
   document.getElementById('tDate').value = '';
 }
 
-// ===== Всплывающее окно добавления договора =====
+// ===== Договоры: окна =====
 function openDocModal() {
   closeStatusMenu();
   document.getElementById('docOverlay').classList.remove('hidden');
@@ -1021,7 +1035,7 @@ function closeDocModal() {
   document.getElementById('itemsWrap').innerHTML = '';
 }
 
-// ===== Задачи =====
+// ===== Задачи: хранение =====
 function loadTasks() {
   let tasks = [];
   try { tasks = JSON.parse(localStorage.getItem('strazh_tasks')) || []; }
@@ -1099,7 +1113,6 @@ function sortByChoice(arr) {
   });
 }
 
-// ===== строка задачи (общая для всех видов) =====
 function taskRow(t, idx) {
   const cat = taskCat(t);
   const left = daysLeft(t.date);
@@ -1130,9 +1143,9 @@ function taskRow(t, idx) {
     '</div></div>';
 }
 
-// ===== всплывающее меню выбора статуса =====
-let menuTaskId = null; // для задач
-let menuDocId = null;  // для договоров
+// ===== меню статуса =====
+let menuTaskId = null;
+let menuDocId = null;
 
 function openStatusMenu(ev, id) {
   ev.stopPropagation();
@@ -1191,7 +1204,7 @@ document.addEventListener('click', function(e) {
   }
 });
 
-// ===== рендер: счётчики + диаграмма + нагрузка + «горит сейчас» =====
+// ===== рендер задач =====
 function renderStats(tasks) {
   let all = 0, queue = 0, work = 0, soon = 0, over = 0, done = 0;
   const byStatus = {};
@@ -1257,7 +1270,6 @@ function renderStats(tasks) {
   }
 }
 
-// ===== рендер списка задач =====
 function render() {
   const tasks = loadTasks();
   renderStats(tasks);
@@ -1316,7 +1328,7 @@ function toggleWho(name) {
   render();
 }
 
-// ===== действия =====
+// ===== действия задач =====
 function setStatusById(id, val) {
   const tasks = loadTasks();
   const t = tasks.find(x => x.id === id);
@@ -1407,27 +1419,31 @@ function fmtNum(x) {
   return x.toLocaleString('ru-RU', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 }
 
-// платежи формируются из карточки договора; факт сохраняется при пересборке
+// платежи формируются из карточки договора; счёт, ПП и факт сохраняются
 function ensurePayments(d) {
   const prev = {};
   (d.payments || []).forEach(p => { prev[p.type] = p; });
   const list = [];
   const avans = d.prepay > 0 ? r2((d.sum || 0) * d.prepay / 100) : 0;
   if (avans > 0 || d.prepay > 0) {
+    const old = prev['аванс'] || {};
     list.push({
       type: 'аванс',
       planned: avans,
-      factDate: (prev['аванс'] && prev['аванс'].factDate) || '',
-      factSum: (prev['аванс'] && prev['аванс'].factSum) || ''
+      factDate: old.factDate || '', factSum: old.factSum || '',
+      invNum: old.invNum || '', invDate: old.invDate || '', invSum: old.invSum || '',
+      ppNum: old.ppNum || '', ppDate: old.ppDate || '', ppSum: old.ppSum || ''
     });
   }
   const finalSum = r2((d.sum || 0) - avans);
   if (d.finalDays > 0 || avans <= 0) {
+    const old = prev['окончательный расчёт'] || {};
     list.push({
       type: 'окончательный расчёт',
       planned: finalSum,
-      factDate: (prev['окончательный расчёт'] && prev['окончательный расчёт'].factDate) || '',
-      factSum: (prev['окончательный расчёт'] && prev['окончательный расчёт'].factSum) || ''
+      factDate: old.factDate || '', factSum: old.factSum || '',
+      invNum: old.invNum || '', invDate: old.invDate || '', invSum: old.invSum || '',
+      ppNum: old.ppNum || '', ppDate: old.ppDate || '', ppSum: old.ppSum || ''
     });
   }
   return list;
@@ -1446,20 +1462,18 @@ function addDoc() {
     cat: document.getElementById('dCat').value,
     sum: parseFloat(document.getElementById('dSum').value) || 0,
     date: document.getElementById('dDate').value,
-    // оплата
     prepay: parseFloat(document.getElementById('dPrepay').value) || 0,
     prepayDays: parseInt(document.getElementById('dPrepayDays').value, 10) || 0,
     prepayUnit: document.getElementById('dPrepayUnit').value,
     finalDays: parseInt(document.getElementById('dFinalDays').value, 10) || 0,
     finalUnit: document.getElementById('dFinalUnit').value,
     finalEvent: document.getElementById('dFinalEvent').value,
-    // факты-триггеры
     signDate: '',
     prepayFactDate: '',
     tollingDate: '',
     actDate: '',
-    // ведомость поставки
     items: collectItems('itemsWrap'),
+    ds: [],
     status: 'проект',
     statusDate: new Date().toISOString(),
     createdAt: new Date().toISOString()
@@ -1468,12 +1482,14 @@ function addDoc() {
   docs.unshift(d);
   saveDocs(docs);
   closeDocModal();
+  buildContrFilter();
   renderDocs();
   renderPays();
   renderSched();
 }
 function delDoc(id) {
   saveDocs(loadDocs().filter(d => d.id !== id));
+  buildContrFilter();
   renderDocs();
   renderPays();
   renderSched();
@@ -1503,11 +1519,27 @@ function openDocStatusMenu(ev, id) {
 }
 function clearDocFilters() {
   document.getElementById('dStatus').value = 'all';
+  document.getElementById('fContr').value = 'all';
+  document.getElementById('fItem').value = '';
   document.getElementById('dSort').value = 'new';
   renderDocs();
 }
+// построить список контрагентов для фильтра
+function buildContrFilter() {
+  const docs = loadDocs();
+  const names = [];
+  docs.forEach(d => {
+    if (d.contr && !names.includes(d.contr)) names.push(d.contr);
+  });
+  const sel = document.getElementById('fContr');
+  const cur = sel.value || 'all';
+  let html = '<option value="all">все</option>';
+  names.sort().forEach(n => { html += '<option value="' + n + '">' + n + '</option>'; });
+  sel.innerHTML = html;
+  if (names.includes(cur)) sel.value = cur;
+}
 
-// ===== строки ведомости (общая для окна создания и карточки) =====
+// ===== строки ведомости =====
 function itemRowHtml(s) {
   return '<div class="item-row">' +
     '<button class="remove-item" title="Убрать позицию" onclick="this.parentNode.remove()">✕</button>' +
@@ -1562,6 +1594,40 @@ function collectItems(wrapId) {
   return out;
 }
 
+// ===== строки ДС =====
+function dsRowHtml(s) {
+  return '<div class="ds-row">' +
+    '<button class="remove-ds" title="Убрать ДС" onclick="this.parentNode.remove()">✕</button>' +
+    '<input type="text" class="ds-num" placeholder="Номер ДС (например: ДС №1 от 12.01.2026)" value="' + (s ? (s.num || '') : '') + '">' +
+    '<input type="text" class="ds-subject" placeholder="Предмет ДС (например: изменение объёма поставки)" value="' + (s ? (s.subject || '') : '') + '">' +
+    '<input type="text" class="ds-item" placeholder="Позиция ведомости" value="' + (s ? (s.item || '') : '') + '">' +
+    '<div class="filters">' +
+    '<div><span class="small-lbl">Новое кол-во</span>' +
+    '<input type="number" class="ds-qty" step="0.01" value="' + (s && s.newQty ? s.newQty : '') + '"></div>' +
+    '<div><span class="small-lbl">Новая цена, руб.</span>' +
+    '<input type="number" class="ds-price" step="0.01" value="' + (s && s.newPrice ? s.newPrice : '') + '"></div>' +
+    '</div>' +
+    '<input type="text" class="ds-note" placeholder="Примечание (увеличение/уменьшение, иное)" value="' + (s ? (s.note || '') : '') + '">' +
+    '</div>';
+}
+function addCardDsRow(s) {
+  document.getElementById('cDsWrap').insertAdjacentHTML('beforeend', dsRowHtml(s));
+}
+function collectDs() {
+  const out = [];
+  document.querySelectorAll('#cDsWrap .ds-row').forEach(row => {
+    out.push({
+      num: row.querySelector('.ds-num').value.trim(),
+      subject: row.querySelector('.ds-subject').value.trim(),
+      item: row.querySelector('.ds-item').value.trim(),
+      newQty: parseFloat(row.querySelector('.ds-qty').value) || 0,
+      newPrice: parseFloat(row.querySelector('.ds-price').value) || 0,
+      note: row.querySelector('.ds-note').value.trim()
+    });
+  });
+  return out;
+}
+
 // ===== расчёт дат =====
 function addDays(from, n, unit) {
   const d = new Date(from);
@@ -1585,18 +1651,15 @@ function isoOf(d) {
   const p = n => (n < 10 ? '0' : '') + n;
   return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
 }
-// расчётная дата поставки позиции (или null, если база ещё не известна)
 function itemDueDate(d, it) {
   if (it.cond === 'fixed') return it.date || null;
   const base = it.cond === 'prepay' ? d.prepayFactDate : d.tollingDate;
   if (!base) return null;
   return isoOf(addMonths(base, it.months || 0));
 }
-// базовая дата для окончательного расчёта
 function finalBaseDate(d) {
   if (d.finalEvent === 'act') return d.actDate || null;
   if (d.finalEvent === 'contract') return d.signDate || null;
-  // delivery: последняя известная дата поставки
   let last = null;
   (d.items || []).forEach(it => {
     const dd = itemDueDate(d, it);
@@ -1604,7 +1667,6 @@ function finalBaseDate(d) {
   });
   return last;
 }
-// плановая дата платежа
 function payPlanDate(d, p) {
   if (p.type === 'аванс') {
     return (d.signDate && d.prepayDays) ? isoOf(addDays(d.signDate, d.prepayDays, d.prepayUnit)) : null;
@@ -1613,7 +1675,7 @@ function payPlanDate(d, p) {
   return (base && d.finalDays) ? isoOf(addDays(base, d.finalDays, d.finalUnit)) : null;
 }
 
-// ===== текст ведомости и оплаты для реестра =====
+// ===== тексты для реестра =====
 function itemsText(d) {
   if (!d.items || !d.items.length) return '';
   return d.items.map(it => {
@@ -1629,6 +1691,18 @@ function itemsText(d) {
 }
 function itemsTotal(d) {
   return r2((d.items || []).reduce((acc, it) => acc + (it.sum || 0), 0));
+}
+function dsText(d) {
+  if (!d.ds || !d.ds.length) return '';
+  return d.ds.map(x => {
+    let chg = [];
+    if (x.newQty) chg.push('кол-во → ' + x.newQty);
+    if (x.newPrice) chg.push('цена → ' + fmtNum(x.newPrice));
+    return '• ' + (x.num || 'ДС') + (x.subject ? ' — ' + x.subject : '') +
+      (x.item ? ' [' + x.item + ']' : '') +
+      (chg.length ? ': ' + chg.join(', ') : '') +
+      (x.note ? ' (' + x.note + ')' : '');
+  }).join('<br>');
 }
 function payText(d) {
   const parts = [];
@@ -1650,6 +1724,7 @@ function docRow(d) {
     if (left < 0) badge = '<span class="badge over">истёк</span>';
     else if (left <= 30) badge = '<span class="badge soon">' + left + ' дн.</span>';
   }
+  const nItems = (d.items || []).length;
   return '<div class="task' + (d.status === 'закрыт' ? ' is-done' : '') + '" style="border-left-color:' + strip + '">' +
     '<div class="info clickable" onclick="openDocCard(\'' + d.id + '\')">' +
     '<div class="name">' + d.num + ' <span style="font-weight:400;color:#64748b">· ' + (d.subjectType || '') + '</span></div>' +
@@ -1658,6 +1733,7 @@ function docRow(d) {
     (d.accept ? '<span>приёмка: ' + d.accept + '</span>' : '') +
     (d.cat ? '<span>' + d.cat + '</span>' : '') +
     (d.sum ? '<span>' + fmtNum(d.sum) + ' руб.</span>' : '') +
+    (nItems ? '<span>позиций: ' + nItems + ' на ' + fmtNum(itemsTotal(d)) + ' руб.</span>' : '') +
     (d.date ? '<span>до ' + fmtDate(d.date) + '</span>' : '') +
     badge +
     '<span class="status-pill ' + stCls + '" onclick="openDocStatusMenu(event, \'' + d.id + '\')">' + d.status + '</span>' +
@@ -1665,16 +1741,30 @@ function docRow(d) {
     '</div>' +
     (itemsText(d) ? '<div class="doc-extra">Ведомость поставки:<br>' + itemsText(d) + '</div>' : '') +
     (payText(d) ? '<div class="doc-extra">Оплата: ' + payText(d) + '</div>' : '') +
+    (dsText(d) ? '<div class="doc-extra">Допсоглашения:<br>' + dsText(d) + '</div>' : '') +
     '</div>' +
     '<div><button class="del" title="Удалить" onclick="delDoc(\'' + d.id + '\')">✕</button></div>' +
     '</div>';
 }
 function renderDocs() {
+  buildContrFilter();
   const docs = loadDocs();
   const f = document.getElementById('dStatus').value;
+  const fC = document.getElementById('fContr').value;
+  const fI = (document.getElementById('fItem').value || '').trim().toLowerCase();
   const sort = document.getElementById('dSort').value;
 
-  let shown = f === 'all' ? docs.slice() : docs.filter(d => d.status === f);
+  let shown = docs.filter(d => {
+    if (f !== 'all' && d.status !== f) return false;
+    if (fC !== 'all' && d.contr !== fC) return false;
+    if (fI) {
+      const hay = (d.num + ' ' + (d.contr || '') + ' ' + (d.subjectType || '')).toLowerCase() +
+        ' ' + (d.items || []).map(it => (it.name || '').toLowerCase()).join(' ') +
+        ' ' + (d.ds || []).map(x => ((x.item || '') + ' ' + (x.subject || '')).toLowerCase()).join(' ');
+      if (hay.indexOf(fI) === -1) return false;
+    }
+    return true;
+  });
   if (sort === 'end') {
     shown.sort((a, b) => (a.date || '9999-12-31').localeCompare(b.date || '9999-12-31'));
   }
@@ -1682,7 +1772,7 @@ function renderDocs() {
   const list = document.getElementById('docList');
   if (!shown.length) {
     list.innerHTML = docs.length
-      ? '<p class="note">По фильтру договоров нет</p>'
+      ? '<p class="note">По выбранным фильтрам договоров нет</p>'
       : '<p class="note">Договоров пока нет</p>';
     return;
   }
@@ -1722,6 +1812,9 @@ function openDocCard(id) {
   const wrap = document.getElementById('cItemsWrap');
   wrap.innerHTML = '';
   (d.items && d.items.length ? d.items : [null]).forEach(s => addCardItemRow(s));
+  const dsWrap = document.getElementById('cDsWrap');
+  dsWrap.innerHTML = '';
+  (d.ds || []).forEach(s => addCardDsRow(s));
   document.getElementById('docCardOverlay').classList.remove('hidden');
   document.getElementById('cNum').focus();
 }
@@ -1759,6 +1852,7 @@ function saveDocCard() {
   d.tollingDate = document.getElementById('cTollingDate').value;
   d.actDate = document.getElementById('cActDate').value;
   d.items = collectItems('cItemsWrap');
+  d.ds = collectDs();
   d.payments = ensurePayments(d);
   saveDocs(docs);
   closeDocCard();
@@ -1775,18 +1869,22 @@ function delDocFromCard() {
 }
 
 // ===== реестр оплаты =====
+// поле: factDate/factSum (факт), invNum/invDate/invSum (счёт), ppNum/ppDate/ppSum (платёжное поручение)
 function saveFact(id, i, field, val) {
   const docs = loadDocs();
   const d = docs.find(x => x.id === id);
   if (!d || !d.payments || !d.payments[i]) return;
-  if (field === 'factSum') d.payments[i].factSum = parseFloat(val) || 0;
-  else d.payments[i].factDate = val;
+  if (field === 'factSum' || field === 'invSum' || field === 'ppSum') {
+    d.payments[i][field] = parseFloat(val) || 0;
+  } else {
+    d.payments[i][field] = val;
+  }
   saveDocs(docs);
   renderPays();
 }
 function payRow(d, i, p) {
   const strip = DOC_STRIP[d.status] || '#64748b';
-  const isPaid = !!(p.factDate || p.factSum);
+  const isPaid = !!(p.factDate || p.factSum || p.ppNum || p.ppSum);
   const planDate = payPlanDate(d, p);
   let badge = isPaid
     ? '<span class="badge paid">оплачено</span>'
@@ -1807,10 +1905,21 @@ function payRow(d, i, p) {
     badge +
     (cond ? '<span>' + cond + '</span>' : '') +
     '</div>' +
+    '<div class="pay-block">' +
+    '<div class="pb-title">Счёт</div>' +
     '<div class="pay-fact">' +
-    '<span class="lbl2">Факт:</span>' +
-    '<input type="date" value="' + (p.factDate || '') + '" onchange="saveFact(\'' + d.id + '\', ' + i + ', \'factDate\', this.value)">' +
-    '<input type="number" step="0.01" placeholder="сумма по счёту" value="' + (p.factSum || '') + '" onchange="saveFact(\'' + d.id + '\', ' + i + ', \'factSum\', this.value)">' +
+    '<input type="text" placeholder="номер счёта" value="' + (p.invNum || '') + '" onchange="saveFact(\'' + d.id + '\', ' + i + ', \'invNum\', this.value)">' +
+    '<input type="date" value="' + (p.invDate || '') + '" onchange="saveFact(\'' + d.id + '\', ' + i + ', \'invDate\', this.value)">' +
+    '<input type="number" step="0.01" placeholder="сумма счёта" value="' + (p.invSum || '') + '" onchange="saveFact(\'' + d.id + '\', ' + i + ', \'invSum\', this.value)">' +
+    '</div>' +
+    '</div>' +
+    '<div class="pay-block">' +
+    '<div class="pb-title">Факт оплаты — платёжное поручение</div>' +
+    '<div class="pay-fact">' +
+    '<input type="text" placeholder="номер ПП" value="' + (p.ppNum || '') + '" onchange="saveFact(\'' + d.id + '\', ' + i + ', \'ppNum\', this.value)">' +
+    '<input type="date" value="' + (p.ppDate || '') + '" onchange="saveFact(\'' + d.id + '\', ' + i + ', \'ppDate\', this.value)">' +
+    '<input type="number" step="0.01" placeholder="сумма ПП" value="' + (p.ppSum || '') + '" onchange="saveFact(\'' + d.id + '\', ' + i + ', \'ppSum\', this.value)">' +
+    '</div>' +
     '</div>' +
     '</div>' +
     '</div>';
@@ -1826,10 +1935,9 @@ function renderPays() {
     list.innerHTML = '<p class="note">Платежей пока нет</p>';
     return;
   }
-  // неоплаченные и просроченные сверху
   rows.sort((a, b) => {
-    const pa = (a.p.factDate || a.p.factSum) ? 1 : 0;
-    const pb = (b.p.factDate || b.p.factSum) ? 1 : 0;
+    const pa = (a.p.factDate || a.p.factSum || a.p.ppNum || a.p.ppSum) ? 1 : 0;
+    const pb = (b.p.factDate || b.p.factSum || b.p.ppNum || b.p.ppSum) ? 1 : 0;
     if (pa !== pb) return pa - pb;
     const da = payPlanDate(a.d, a.p) || '9999-12-31';
     const db = payPlanDate(b.d, b.p) || '9999-12-31';
@@ -1839,7 +1947,7 @@ function renderPays() {
   list.innerHTML = rows.map(r => payRow(r.d, r.i, r.p)).join('');
 }
 
-// ===== график поставок =====
+// ===== график поставок: свод по договорам =====
 function schedRow(entry) {
   const d = entry.d;
   const it = entry.it;
@@ -1855,12 +1963,11 @@ function schedRow(entry) {
   }
   const when = due ? 'до ' + fmtDate(due) : (it.months ? it.months + ' мес. — ' + COND_TEXT[it.cond] : COND_TEXT[it.cond]);
   const sumTxt = it.sum ? ' · ' + fmtNum(it.sum) + ' руб.' : '';
+  const qtyTxt = it.qty ? ' (' + it.qty + ' шт.)' : '';
   return '<div class="task" style="border-left-color:' + strip + '">' +
     '<div class="info clickable" onclick="openDocCard(\'' + d.id + '\')">' +
-    '<div class="name">' + (it.name || 'позиция') + sumTxt + '</div>' +
+    '<div class="name">' + (it.name || 'позиция') + qtyTxt + sumTxt + '</div>' +
     '<div class="meta">' +
-    '<span class="who">' + d.num + '</span>' +
-    (d.contr ? '<span>' + d.contr + '</span>' : '') +
     '<span>' + when + '</span>' +
     badge +
     '</div>' +
@@ -1869,24 +1976,63 @@ function schedRow(entry) {
 }
 function renderSched() {
   const docs = loadDocs();
-  const entries = [];
+  const groups = [];
   docs.forEach(d => {
     if (d.status === 'закрыт') return;
-    (d.items || []).forEach(it => entries.push({ d: d, it: it }));
-    if (d.date) entries.push({ d: d, it: { name: 'Окончание договора', cond: 'fixed', date: d.date, months: 0, qty: 0, price: 0, sum: 0 } });
+    if (!(d.items || []).length) return;
+    // ближайшая известная дата поставки по договору
+    let nearest = null;
+    (d.items || []).forEach(it => {
+      const dd = itemDueDate(d, it);
+      if (dd && (!nearest || dd < nearest)) nearest = dd;
+    });
+    let overCount = 0;
+    (d.items || []).forEach(it => {
+      const dd = itemDueDate(d, it);
+      if (dd && d.status !== 'закрыт' && daysLeft(dd) < 0) overCount++;
+    });
+    groups.push({ d: d, nearest: nearest, overCount: overCount });
   });
+
   const list = document.getElementById('schedList');
-  if (!entries.length) {
+  if (!groups.length) {
     list.innerHTML = '<p class="note">Позиций пока нет</p>';
     return;
   }
-  entries.sort((a, b) => {
-    const da = itemDueDate(a.d, a.it) || '9999-12-31';
-    const db = itemDueDate(b.d, b.it) || '9999-12-31';
+  groups.sort((a, b) => {
+    const da = a.nearest || '9999-12-31';
+    const db = b.nearest || '9999-12-31';
     if (da !== db) return da < db ? -1 : 1;
     return a.d.num.localeCompare(b.d.num);
   });
-  list.innerHTML = entries.map(schedRow).join('');
+
+  list.innerHTML = groups.map(g => {
+    const d = g.d;
+    const isOpen = schedOpen[d.id] !== false;
+    let nearestBadge = '';
+    if (g.nearest) {
+      const left = daysLeft(g.nearest);
+      if (left < 0) nearestBadge = '<span class="badge over">ближайшая просрочена</span>';
+      else if (left <= 14) nearestBadge = '<span class="badge soon">через ' + left + ' дн.</span>';
+      else nearestBadge = '<span class="badge ok">ближайшая: ' + fmtDate(g.nearest) + '</span>';
+    }
+    const overBadge = g.overCount
+      ? '<span class="badge over">просрочено позиций: ' + g.overCount + '</span>' : '';
+    return '<div class="group">' +
+      '<div class="group-head g-doc" onclick="toggleSched(\'' + d.id + '\')">' +
+      '<span>' + (isOpen ? '▾ ' : '▸ ') + d.num +
+      (d.contr ? ' · ' + d.contr : '') + '</span>' +
+      '<small>позиций: ' + (d.items || []).length +
+      ' · на ' + fmtNum(itemsTotal(d)) + ' руб. ' + nearestBadge + overBadge + '</small>' +
+      '</div>' +
+      (isOpen ? '<div class="group-body">' +
+        (d.items || []).map(it => schedRow({ d: d, it: it })).join('') + '</div>' : '') +
+      '</div>';
+  }).join('');
+}
+function toggleSched(id) {
+  schedOpen[id] = (schedOpen[id] === false) ? true : false;
+  renderSched();
 }
 
 // ===== Календарь экономиста =====
@@ -1917,7 +2063,7 @@ function renderCal() {
 
   const grid = document.getElementById('calGrid');
   const first = new Date(calYear, calMonth, 1);
-  const shift = (first.getDay() + 6) % 7; // пн = 0
+  const shift = (first.getDay() + 6) % 7;
   const start = new Date(calYear, calMonth, 1 - shift);
 
   const today = new Date();
