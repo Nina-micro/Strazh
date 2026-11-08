@@ -110,6 +110,7 @@
   .task .info { flex: 1; }
   .task .name { font-weight: 600; }
   .task .meta { color: #64748b; font-size: 12px; margin-top: 3px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .who { color: #2563eb; font-weight: 600; }
   .badge {
     display: inline-block;
     padding: 2px 8px;
@@ -333,7 +334,122 @@ function render() {
       : '<p class="note">Задач пока нет</p>';
     return;
   }
-  const CAT_LABEL = { work: 'в работе', soon: 'дедлайн', over: 'просрочено', done: 'закрыто' };
   list.innerHTML = shown.map(t => {
     const i = tasks.indexOf(t);
-    const cat = taskCat
+    const cat = taskCat(t);
+    const left = daysLeft(t.date);
+    let badgeCat = '';
+    if (cat === 'done') badgeCat = 'закрыто';
+    else if (left !== null) {
+      if (left < 0) badgeCat = 'просрочено';
+      else badgeCat = 'дедлайн: ' + left + ' дн.';
+    } else badgeCat = 'в работе';
+
+    // цвет плашки СРОКА — по состоянию задачи
+    const badgeCls = cat === 'over' ? 'over' : (cat === 'soon' ? 'soon' : 'ok');
+    const check = cat === 'done' ? '✅ ' : '';
+    return '<div class="task">' +
+      '<div class="info"><div class="name">' + check + t.name + '</div>' +
+      '<div class="meta">' +
+      (t.who ? '<span class="who">' + t.who + '</span>' : '') +
+      '<span>' + (t.date ? fmtDate(t.date) : '') + '</span>' +
+      (badgeCat ? '<span class="badge ' + badgeCls + '">' + badgeCat + '</span>' : '') +
+      '</div></div>' +
+      '<div>' +
+      (cat !== 'done' ? '<button class="del" title="Закрыть" onclick="closeTask(' + i + ')">✓</button>' : '') +
+      '<button class="del" title="Удалить" onclick="delTask(' + i + ')">✕</button>' +
+      '</div></div>';
+  }).join('');
+}
+function addTask() {
+  const name = document.getElementById('tName').value.trim();
+  if (!name) { alert('Введите название задачи'); return; }
+
+  let who = document.getElementById('tWho').value;
+  if (who === '__other') {
+    who = document.getElementById('tWhoCustom').value.trim();
+    if (!who) { alert('Впишите исполнителя или выберите из списка'); return; }
+  }
+
+  const tasks = loadTasks();
+  tasks.unshift({
+    name: name,
+    who: who,
+    date: document.getElementById('tDate').value,
+    status: 'work'
+  });
+  saveTasks(tasks);
+  document.getElementById('tName').value = '';
+  document.getElementById('tWho').value = '';
+  document.getElementById('tWhoCustom').value = '';
+  document.getElementById('tWhoCustomWrap').classList.add('hidden');
+  document.getElementById('tDate').value = '';
+  render();
+}
+function closeTask(i) {
+  const tasks = loadTasks();
+  tasks[i].status = 'done';
+  saveTasks(tasks);
+  render();
+}
+function delTask(i) {
+  const tasks = loadTasks();
+  tasks.splice(i, 1);
+  saveTasks(tasks);
+  render();
+}
+buildWhoSelect();
+render();
+
+// ===== Калькулятор =====
+function fmt(x) {
+  return x.toLocaleString('ru-RU', {maximumFractionDigits: 2}) + ' руб.';
+}
+function calc() {
+  const v = id => parseFloat(document.getElementById(id).value) || 0;
+
+  const materials = v('f4') + v('f6') + v('f7');
+
+  const hpm = v('hpm') || 164;
+  const manMonths = document.getElementById('unit').value === 'h'
+    ? v('labor') / hpm
+    : v('labor');
+
+  const f9 = v('avg') * manMonths;         // основная ЗП
+  const f10 = f9 * v('dzp') / 100;         // ДЗП
+  const salary = f9 + f10;                 // ЗП всего
+  const strah = salary * v('strah') / 100; // страховые взносы
+  const f11 = salary * v('opr') / 100;     // ОПР
+  const f12 = salary * v('ohr') / 100;     // ОХР/АУР
+
+  // Себестоимость (включая СТРАХ)
+  const seb = materials + salary + strah + f11 + f12;
+
+  // Прибыль: 1% от материалов всего, 25% от остальных статей
+  const profitMaterials = materials * 0.01;
+  const profitOther = (salary + strah + f11 + f12) * 0.25;
+  const profit = profitMaterials + profitOther;
+
+  const price = seb + profit;
+
+  document.getElementById('res').innerHTML =
+    '<hr class="hr">' +
+    '<p>Материалы всего: <b>' + fmt(materials) + '</b></p>' +
+    '<p>Ф9 — основная ЗП: ' + fmt(f9) + '</p>' +
+    '<p>Ф10 — ДЗП: ' + fmt(f10) + '</p>' +
+    '<p>ЗП всего: <b>' + fmt(salary) + '</b></p>' +
+    '<p>СТРАХ: ' + fmt(strah) + '</p>' +
+    '<p>Ф11 — ОПР: ' + fmt(f11) + '</p>' +
+    '<p>Ф12 — ОХР/АУР: ' + fmt(f12) + '</p>' +
+    '<hr class="hr">' +
+    '<p>СЕБ — себестоимость: <b>' + fmt(seb) + '</b></p>' +
+    '<p>Прибыль: <b>' + fmt(profit) + '</b>' +
+    ' <span class="note">(1% от материалов: ' + fmt(profitMaterials) +
+    ' · 25% от остальных: ' + fmt(profitOther) + ')</span></p>' +
+    '<hr class="hr">' +
+    '<p style="font-size:17px">ЦЕНА БЕЗ НДС: <b>' + fmt(price) + '</b></p>';
+}
+</script>
+
+</body>
+</html>
