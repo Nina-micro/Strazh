@@ -1123,7 +1123,8 @@ function numToWords(n) {
   }
   return out.join(' ');
 }
-// сумма прописью: "12 345,67 (двенадцать тысяч триста сорок пять) рублей 67 копеек"
+// сумма прописью: "173 240 (Сто семьдесят три тысячи двести сорок) рублей 00 копеек"
+// перед скобкой — только целые рубли, без дробной части
 function sumInWords(amount) {
   const cents = Math.round(amount * 100);
   let rub = Math.floor(cents / 100);
@@ -1132,7 +1133,7 @@ function sumInWords(amount) {
   const rubWords = rub === 0 ? 'ноль' : numToWords(rub);
   const capitalized = rubWords.charAt(0).toUpperCase() + rubWords.slice(1);
   const kopStr = (kop < 10 ? '0' : '') + kop;
-  return fmtNum(amount) + ' (' + capitalized + ') ' +
+  return rub.toLocaleString('ru-RU') + ' (' + capitalized + ') ' +
     pluralForm(rub, 'рубль', 'рубля', 'рублей') + ' ' + kopStr + ' копеек';
 }
 
