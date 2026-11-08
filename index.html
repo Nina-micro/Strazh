@@ -60,6 +60,7 @@
     border: 1px solid #cbd5e1;
     border-radius: 8px;
     font-size: 15px;
+    background: #fff;
   }
   .btn {
     display: inline-block;
@@ -127,7 +128,10 @@
   <div class="card">
     <h3>Новая задача</h3>
     <label>Название <input type="text" id="tName" placeholder="Например: РКМ - изделие - ХХХП; ДС - ХХХП; НР - месяц.год"></label>
-    <label>Исполнитель <input type="text" id="tWho" placeholder="имя"></label>
+    <label>Исполнитель
+      <select id="tWho" onchange="toggleCustomWho()"></select>
+    </label>
+    <label id="tWhoCustomWrap" class="hidden">Свой вариант <input type="text" id="tWhoCustom" placeholder="имя"></label>
     <label>Дедлайн <input type="date" id="tDate"></label>
     <button class="btn" onclick="addTask()">Добавить</button>
   </div>
@@ -137,7 +141,7 @@
     <div id="taskList"><p class="note">Задач пока нет</p></div>
   </div>
 
-  <p class="note">ВНИМАНИЕ. ТЕТСТ РЕЖИМ. Задачи хранятся только на этом устройстве — переноси в Kaiten.</p>
+  <p class="note">ВНИМАНИЕ. ТЕСТОВЫЙ РЕЖИМ. Задачи хранятся только на этом устройстве — переноси в Kaiten.</p>
 
 </div>
 
@@ -175,12 +179,29 @@
 </div>
 
 <script>
+// ===== СПИСОК ИСПОЛНИТЕЛЕЙ =====
+// Впишите сюда фамилии через запятую — они появятся в выпадающем списке:
+const TEAM = ['Иванов', 'Петрова', 'Сидоров'];
+
 // ===== Переключение разделов =====
 function showTab(name) {
   document.getElementById('secTasks').classList.toggle('hidden', name !== 'tasks');
   document.getElementById('secCalc').classList.toggle('hidden', name !== 'calc');
   document.getElementById('tabTasks').classList.toggle('on', name === 'tasks');
   document.getElementById('tabCalc').classList.toggle('on', name === 'calc');
+}
+
+// ===== Исполнитель: сборка списка =====
+function buildWhoSelect() {
+  const sel = document.getElementById('tWho');
+  let html = '<option value="">— не выбран —</option>';
+  TEAM.forEach(t => { html += '<option value="' + t + '">' + t + '</option>'; });
+  html += '<option value="__other">Другое…</option>';
+  sel.innerHTML = html;
+}
+function toggleCustomWho() {
+  const isOther = document.getElementById('tWho').value === '__other';
+  document.getElementById('tWhoCustomWrap').classList.toggle('hidden', !isOther);
 }
 
 // ===== Задачи =====
@@ -253,16 +274,25 @@ function render() {
 function addTask() {
   const name = document.getElementById('tName').value.trim();
   if (!name) { alert('Введите название задачи'); return; }
+
+  let who = document.getElementById('tWho').value;
+  if (who === '__other') {
+    who = document.getElementById('tWhoCustom').value.trim();
+    if (!who) { alert('Впишите исполнителя или выберите из списка'); return; }
+  }
+
   const tasks = loadTasks();
   tasks.unshift({
     name: name,
-    who: document.getElementById('tWho').value.trim(),
+    who: who,
     date: document.getElementById('tDate').value,
     status: 'work'
   });
   saveTasks(tasks);
   document.getElementById('tName').value = '';
   document.getElementById('tWho').value = '';
+  document.getElementById('tWhoCustom').value = '';
+  document.getElementById('tWhoCustomWrap').classList.add('hidden');
   document.getElementById('tDate').value = '';
   render();
 }
@@ -278,6 +308,7 @@ function delTask(i) {
   saveTasks(tasks);
   render();
 }
+buildWhoSelect();
 render();
 
 // ===== Калькулятор =====
