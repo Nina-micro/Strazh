@@ -82,7 +82,6 @@
   .lg-work::before   { background: #2563eb; }
   .lg-pause::before  { background: #db2777; }
   .lg-ge::before     { background: #ca8a04; }
-  .lg-mv::before     { background: #ca8a04; }
   .lg-rework::before { background: #ea580c; }
   .lg-done::before   { background: #16a34a; }
 
@@ -215,13 +214,6 @@
   .badge.over { background: #ef4444; }
   .badge.soon { background: #f59e0b; }
   .badge.ok   { background: #2563eb; }
-
-  /* полоска сгорания дедлайна */
-  .burn { height: 4px; border-radius: 2px; background: #e2e8f0; margin-top: 5px; overflow: hidden; }
-  .burn div { height: 100%; border-radius: 2px; }
-  .burn .b-ok  { background: #2563eb; }
-  .burn .b-mid { background: #f59e0b; }
-  .burn .b-hot { background: #ef4444; }
 
   /* ===== группы ===== */
   .group { border: 1px solid #e2e8f0; border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
@@ -621,22 +613,6 @@ function taskRow(t, idx) {
   else if (cat === 'done') strip = '#16a34a';            // закрыто — зелёная
   else strip = STATUS_STRIP[status] || '#64748b';        // иначе — цвет статуса
 
-  // индикатор сгорания дедлайна
-  let burn = '';
-  if (t.createdAt && t.date) {
-    const y = parseInt(t.date.slice(0, 4), 10);
-    const m = parseInt(t.date.slice(5, 7), 10);
-    const d = parseInt(t.date.slice(8, 10), 10);
-    const dl = new Date(y, m - 1, d, 23, 59, 59).getTime();
-    const created = new Date(t.createdAt).getTime();
-    if (dl > created) {
-      const now = Date.now();
-      const p = Math.min(100, Math.max(0, Math.round((now - created) / (dl - created) * 100)));
-      const bCls = p >= 90 ? 'b-hot' : (p >= 70 ? 'b-mid' : 'b-ok');
-      burn = '<div class="burn"><div class="' + bCls + '" style="width:' + p + '%"></div></div>';
-    }
-  }
-
   return '<div class="task' + (cat === 'done' ? ' is-done' : '') + '" style="border-left-color:' + strip + '">' +
     '<div class="info"><div class="name">' + (cat === 'done' ? '✅ ' : '') + t.name + '</div>' +
     '<div class="meta">' +
@@ -645,7 +621,7 @@ function taskRow(t, idx) {
     (badgeCat ? '<span class="badge ' + badgeCls + '">' + badgeCat + '</span>' : '') +
     '<span class="status-pill ' + stCls + '" onclick="openStatusMenu(event, \'' + t.id + '\')">' + status + '</span>' +
     (t.statusDate ? '<span class="stdate">' + fmtDT(t.statusDate) + '</span>' : '') +
-    '</div>' + burn + '</div>' +
+    '</div></div>' +
     '<div>' +
     (cat !== 'done' ? '<button class="del" title="Закрыть" onclick="closeTask(' + idx + ')">✓</button>' : '') +
     '<button class="del" title="Удалить" onclick="delTask(' + idx + ')">✕</button>' +
@@ -783,7 +759,7 @@ function render() {
   }
 
   if (view === 'status') {
-    // группы по статусам (ГЭ и МВ объединены в одну группу «на согласовании»)
+    // группы по статусам (ГЭ и МВ — одинаковый жёлтый цвет шапки)
     const groups = [
       { name: 'в работе',             cls: 'g-work',   key: 'в работе' },
       { name: 'на паузе',             cls: 'g-pause',  key: 'на паузе' },
@@ -843,8 +819,7 @@ function setStatusById(id, val) {
   if (!t) return;
   t.status = val;
   t.statusDate = new Date().toISOString();
-  // флажок закрытия синхронизируется со статусом:
-  // любой статус кроме «выполнено» снимает done
+  // флажок закрытия синхронизируется со статусом в обе стороны
   t.done = (val === 'выполнено');
   saveTasks(tasks);
   render();
