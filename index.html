@@ -234,6 +234,14 @@
 // Впишите сюда фамилии через запятую — они появятся в выпадающем списке:
 const TEAM = ['Нина', 'Аня', 'Маша', 'Вика', 'Алина'];
 
+// Постоянные цвета плашек исполнителей (цвет не зависит от дедлайна)
+const WHO_COLORS = ['#2563eb', '#7c3aed', '#0d9488', '#db2777', '#ea580c', '#0284c7', '#65a30d', '#ca8a04'];
+function whoColor(name) {
+  let h = 0;
+  for (const ch of name) h = (h * 31 + ch.charCodeAt(0)) % 997;
+  return WHO_COLORS[h % WHO_COLORS.length];
+}
+
 // ===== Переключение разделов =====
 function showTab(name) {
   document.getElementById('secTasks').classList.toggle('hidden', name !== 'tasks');
@@ -340,18 +348,19 @@ function render() {
     const cat = taskCat(t);
     const left = daysLeft(t.date);
     let badgeCat = '';
-    if (cat === 'done') badgeCat = '';
+    if (cat === 'done') badgeCat = 'закрыто';
     else if (left !== null) {
       if (left < 0) badgeCat = 'просрочено';
       else badgeCat = 'дедлайн: ' + left + ' дн.';
     } else badgeCat = CAT_LABEL[cat];
 
-    const badgeCls = cat === 'over' ? 'over' : (cat === 'soon' ? 'soon' : (cat === 'done' ? '' : 'ok'));
+    // цвет плашки СРОКА — по состоянию задачи
+    const badgeCls = cat === 'over' ? 'over' : (cat === 'soon' ? 'soon' : 'ok');
     const check = cat === 'done' ? '✅ ' : '';
     return '<div class="task">' +
       '<div class="info"><div class="name">' + check + t.name + '</div>' +
       '<div class="meta">' +
-      (t.who ? '<span class="badge ' + badgeCls + '">' + t.who + '</span>' : '') +
+      (t.who ? '<span class="badge" style="background:' + whoColor(t.who) + '">' + t.who + '</span>' : '') +
       '<span>' + (t.date ? fmtDate(t.date) : '') + '</span>' +
       (badgeCat ? '<span class="badge ' + badgeCls + '">' + badgeCat + '</span>' : '') +
       '</div></div>' +
