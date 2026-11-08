@@ -152,19 +152,17 @@
   .task .meta { color: #64748b; font-size: 12px; margin-top: 3px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
   .who { color: #2563eb; font-weight: 600; }
   .stdate { font-size: 10px; color: #94a3b8; }
-  .status-select {
-    width: auto;
-    max-width: 190px;
-    padding: 2px 8px;
-    margin: 0;
+
+  /* капсула статуса: полупрозрачная обводка, тап — всплывающее меню */
+  .status-pill {
+    display: inline-block;
+    padding: 2px 10px;
     font-size: 11px;
     font-weight: 600;
     border-radius: 999px;
     border: 1px solid;
-    background: transparent;
     cursor: pointer;
-    -webkit-appearance: none;
-    appearance: none;
+    user-select: none;
   }
   .ss-work   { color: #2563eb; border-color: rgba(37, 99, 235, 0.5);  background: rgba(37, 99, 235, 0.08); }
   .ss-pause  { color: #db2777; border-color: rgba(219, 39, 119, 0.5); background: rgba(219, 39, 119, 0.08); }
@@ -172,6 +170,39 @@
   .ss-mv     { color: #a16207; border-color: rgba(202, 138, 4, 0.55); background: rgba(202, 138, 4, 0.1); }
   .ss-rework { color: #ea580c; border-color: rgba(234, 88, 12, 0.5);  background: rgba(234, 88, 12, 0.08); }
   .ss-done   { color: #16a34a; border-color: rgba(22, 163, 74, 0.5);  background: rgba(22, 163, 74, 0.08); }
+
+  /* всплывающее меню выбора статуса */
+  .status-menu {
+    position: fixed;
+    z-index: 50;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+    padding: 6px;
+    min-width: 230px;
+  }
+  .status-menu .opt {
+    padding: 9px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1e293b;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+  .status-menu .opt:active { background: #f1f5f9; }
+  .sdot {
+    display: inline-block;
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    margin-right: 7px;
+    vertical-align: middle;
+  }
+
   .badge {
     display: inline-block;
     padding: 2px 8px;
@@ -407,6 +438,9 @@
 
 </div>
 
+<!-- всплывающее меню выбора статуса (одно на всё приложение) -->
+<div id="statusMenu" class="status-menu hidden"></div>
+
 <script>
 // ===== СПИСОК ИСПОЛНИТЕЛЕЙ =====
 const TEAM = ['Нина', 'Аня', 'Маша', 'Вика', 'Алина'];
@@ -458,6 +492,7 @@ const whoOpen = {};
 
 // ===== Переключение разделов =====
 function showTab(name) {
+  closeStatusMenu();
   document.getElementById('secTasks').classList.toggle('hidden', name !== 'tasks');
   document.getElementById('secCal').classList.toggle('hidden', name !== 'cal');
   document.getElementById('secCalc').classList.toggle('hidden', name !== 'calc');
@@ -488,8 +523,19 @@ function toggleCustomWho() {
 
 // ===== Задачи =====
 function loadTasks() {
-  try { return JSON.parse(localStorage.getItem('strazh_tasks')) || []; }
-  catch(e) { return []; }
+  let tasks = [];
+  try { tasks = JSON.parse(localStorage.getItem('strazh_tasks')) || []; }
+  catch(e) { tasks = []; }
+  // выдаём каждой задаче стабильный id
+  let changed = false;
+  tasks.forEach(t => {
+    if (!t.id) {
+      t.id = 't' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+      changed = true;
+    }
+  });
+  if (changed) saveTasks(tasks);
+  return tasks;
 }
 function saveTasks(tasks) {
   localStorage.setItem('strazh_tasks', JSON.stringify(tasks));
@@ -556,7 +602,7 @@ function sortByChoice(arr) {
 
 // ===== строка задачи (общая для всех видов) =====
 // цвет полосы слева: сначала срочность, потом статус
-function taskRow(t, i) {
+function taskRow(t, idx) {
   const cat = taskCat(t);
   const left = daysLeft(t.date);
   let badgeCat = '';
@@ -575,10 +621,6 @@ function taskRow(t, i) {
   else if (cat === 'soon') strip = '#f59e0b';            // скоро дедлайн — оранжевая
   else if (cat === 'done') strip = '#16a34a';            // закрыто — зелёная
   else strip = STATUS_STRIP[status] || '#64748b';        // иначе — цвет статуса
-
-  const stOptions = STATUS_LIST.map(s =>
-    '<option value="' + s + '"' + (s === status ? ' selected' : '') + '>' + s + '</option>'
-  ).join('');
 
   // индикатор сгорания дедлайна
   let burn = '';
@@ -602,14 +644,60 @@ function taskRow(t, i) {
     (t.who ? '<span class="who">' + t.who + '</span>' : '') +
     '<span>' + (t.date ? fmtDate(t.date) : '') + '</span>' +
     (badgeCat ? '<span class="badge ' + badgeCls + '">' + badgeCat + '</span>' : '') +
-    '<select class="status-select ' + stCls + '" onchange="setStatus(' + i + ', this.value)">' + stOptions + '</select>' +
+    '<span class="status-pill ' + stCls + '" onclick="openStatusMenu(event, \'' + t.id + '\')">' + status + '</span>' +
     (t.statusDate ? '<span class="stdate">' + fmtDT(t.statusDate) + '</span>' : '') +
     '</div>' + burn + '</div>' +
     '<div>' +
-    (cat !== 'done' ? '<button class="del" title="Закрыть" onclick="closeTask(' + i + ')">✓</button>' : '') +
-    '<button class="del" title="Удалить" onclick="delTask(' + i + ')">✕</button>' +
+    (cat !== 'done' ? '<button class="del" title="Закрыть" onclick="closeTask(' + idx + ')">✓</button>' : '') +
+    '<button class="del" title="Удалить" onclick="delTask(' + idx + ')">✕</button>' +
     '</div></div>';
 }
+
+// ===== всплывающее меню выбора статуса =====
+let menuTaskId = null;
+
+function openStatusMenu(ev, id) {
+  ev.stopPropagation();
+  menuTaskId = id;
+  const menu = document.getElementById('statusMenu');
+  const r = ev.currentTarget.getBoundingClientRect();
+  const top = Math.min(r.bottom + 6, window.innerHeight - 300);
+  const left = Math.max(8, Math.min(r.left, window.innerWidth - 246));
+  menu.style.top = top + 'px';
+  menu.style.left = left + 'px';
+  renderStatusMenu();
+  menu.classList.remove('hidden');
+}
+function closeStatusMenu() {
+  const menu = document.getElementById('statusMenu');
+  if (menu) menu.classList.add('hidden');
+  menuTaskId = null;
+}
+function renderStatusMenu() {
+  const tasks = loadTasks();
+  const t = tasks.find(x => x.id === menuTaskId);
+  const status = t ? (t.status || 'в работе') : 'в работе';
+  const menu = document.getElementById('statusMenu');
+  menu.innerHTML = STATUS_LIST.map(s => {
+    const color = STATUS_STRIP[s] || '#64748b';
+    return '<div class="opt" onclick="pickStatus(\'' + s + '\')">' +
+      '<span><span class="sdot" style="background:' + color + '"></span>' + s + '</span>' +
+      (s === status ? '<b>✓</b>' : '') +
+      '</div>';
+  }).join('');
+}
+function pickStatus(s) {
+  const id = menuTaskId;
+  closeStatusMenu();
+  if (id) setStatusById(id, s);
+}
+// закрытие меню по тапу вне его
+document.addEventListener('click', function(e) {
+  const menu = document.getElementById('statusMenu');
+  if (!menu.classList.contains('hidden') && !menu.contains(e.target)) {
+    closeStatusMenu();
+  }
+});
 
 // ===== рендер: счётчики + диаграмма + нагрузка + «горит сейчас» =====
 function renderStats(tasks) {
@@ -742,11 +830,13 @@ function toggleWho(name) {
 }
 
 // ===== действия =====
-function setStatus(i, val) {
+function setStatusById(id, val) {
   const tasks = loadTasks();
-  tasks[i].status = val;
-  tasks[i].statusDate = new Date().toISOString();
-  if (val === 'выполнено') tasks[i].done = true;
+  const t = tasks.find(x => x.id === id);
+  if (!t) return;
+  t.status = val;
+  t.statusDate = new Date().toISOString();
+  if (val === 'выполнено') t.done = true;
   saveTasks(tasks);
   render();
 }
@@ -762,6 +852,7 @@ function addTask() {
 
   const tasks = loadTasks();
   tasks.unshift({
+    id: 't' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
     name: name,
     who: who,
     date: document.getElementById('tDate').value,
