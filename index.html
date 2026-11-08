@@ -245,6 +245,18 @@
   #res p { font-size: 14px; margin: 4px 0; }
   .note { font-size: 12px; color: #94a3b8; text-align: center; margin-top: 4px; }
 
+  /* блок «сумма прописью» */
+  .sum-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-top: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .sum-box .sum-title { font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 4px; }
+
   /* ===== плавающая кнопка «+» ===== */
   .fab {
     position: fixed;
@@ -306,7 +318,7 @@
   .modal-actions { display: flex; gap: 10px; }
   .modal-actions .btn { margin-top: 10px; }
 
-  /* ===== календарь экономиста ===== */
+  /* ===== календарь ===== */
   .cal-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
   .cal-nav .mon { font-size: 16px; font-weight: 700; text-transform: capitalize; }
   .cal-nav button {
@@ -346,7 +358,7 @@
 
 <div class="tabs">
   <button id="tabTasks" class="on" onclick="showTab('tasks')">Задачи</button>
-  <button id="tabCal" onclick="showTab('cal')">Календарь экономиста</button>
+  <button id="tabCal" onclick="showTab('cal')">Календарь</button>
   <button id="tabCalc" onclick="showTab('calc')">Калькулятор</button>
 </div>
 
@@ -428,7 +440,7 @@
 
 </div>
 
-<!-- ===== РАЗДЕЛ: Календарь экономиста ===== -->
+<!-- ===== РАЗДЕЛ: Календарь ===== -->
 <div id="secCal" class="hidden">
 
   <div class="card">
@@ -941,7 +953,7 @@ function delTask(i) {
 buildWhoSelect();
 render();
 
-// ===== Календарь экономиста =====
+// ===== Календарь =====
 const MONTHS = ['январь','февраль','март','апрель','май','июнь',
                 'июль','август','сентябрь','октябрь','ноябрь','декабрь'];
 let calYear, calMonth;
@@ -1038,6 +1050,80 @@ renderCal();
 function fmt(x) {
   return x.toLocaleString('ru-RU', {maximumFractionDigits: 2}) + ' руб.';
 }
+function fmtNum(x) {
+  return x.toLocaleString('ru-RU', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+}
+
+// ===== Число прописью =====
+const W_UNITS_M = ['', 'один', 'два', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять'];
+const W_UNITS_F = ['', 'одна', 'две', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять'];
+const W_TEEN = ['десять', 'одиннадцать', 'двенадцать', 'тринадцать', 'четырнадцать',
+                'пятнадцать', 'шестнадцать', 'семнадцать', 'восемнадцать', 'девятнадцать'];
+const W_TENS = ['', '', 'двадцать', 'тридцать', 'сорок', 'пятьдесят',
+                'шестьдесят', 'семьдесят', 'восемьдесят', 'девяносто'];
+const W_HUNDREDS = ['', 'сто', 'двести', 'триста', 'четыреста', 'пятьсот',
+                    'шестьсот', 'семьсот', 'восемьсот', 'девятьсот'];
+
+function wordsUpTo999(n, fem) {
+  const out = [];
+  const h = Math.floor(n / 100);
+  if (h) out.push(W_HUNDREDS[h]);
+  const rest = n % 100;
+  if (rest >= 10 && rest < 20) {
+    out.push(W_TEEN[rest - 10]);
+  } else {
+    const t = Math.floor(rest / 10);
+    if (t) out.push(W_TENS[t]);
+    const u = rest % 10;
+    if (u) out.push((fem ? W_UNITS_F : W_UNITS_M)[u]);
+  }
+  return out.join(' ');
+}
+function pluralForm(n, one, few, many) {
+  const m100 = n % 100;
+  const m10 = n % 10;
+  if (m10 === 1 && m100 !== 11) return one;
+  if (m10 >= 2 && m10 <= 4 && !(m100 >= 12 && m100 <= 14)) return few;
+  return many;
+}
+// целое число (рубли) прописью
+function numToWords(n) {
+  if (n === 0) return 'ноль';
+  const groups = [];
+  let x = n;
+  while (x > 0) { groups.push(x % 1000); x = Math.floor(x / 1000); }
+  // scale 1 = тысячи (жен. род), 2 = миллионы, 3 = миллиарды
+  const scales = [
+    null,
+    ['тысяча', 'тысячи', 'тысяч'],
+    ['миллион', 'миллиона', 'миллионов'],
+    ['миллиард', 'миллиарда', 'миллиардов']
+  ];
+  const out = [];
+  for (let i = groups.length - 1; i >= 0; i--) {
+    const g = groups[i];
+    if (!g) continue;
+    out.push(wordsUpTo999(g, i === 1));
+    if (i > 0) {
+      const f = scales[i];
+      out.push(pluralForm(g, f[0], f[1], f[2]));
+    }
+  }
+  return out.join(' ');
+}
+// сумма прописью: "12 345,67 (двенадцать тысяч триста сорок пять) рублей 67 копеек"
+function sumInWords(amount) {
+  const cents = Math.round(amount * 100);
+  let rub = Math.floor(cents / 100);
+  let kop = cents % 100;
+  if (kop === 100) { rub += 1; kop = 0; }
+  const rubWords = rub === 0 ? 'ноль' : numToWords(rub);
+  const capitalized = rubWords.charAt(0).toUpperCase() + rubWords.slice(1);
+  const kopStr = (kop < 10 ? '0' : '') + kop;
+  return fmtNum(amount) + ' (' + capitalized + ') ' +
+    pluralForm(rub, 'рубль', 'рубля', 'рублей') + ' ' + kopStr + ' копеек';
+}
+
 function calc() {
   const v = id => parseFloat(document.getElementById(id).value) || 0;
 
@@ -1067,6 +1153,10 @@ function calc() {
   const nds = price * 0.22;
   const priceWithNds = price + nds;
 
+  // сумма прописью: стоимость договора (цена с НДС) и НДС в том числе
+  const contractStr = sumInWords(priceWithNds);
+  const ndsStr = sumInWords(nds);
+
   document.getElementById('res').innerHTML =
     '<hr class="hr">' +
     '<p>Материалы всего: <b>' + fmt(materials) + '</b></p>' +
@@ -1079,16 +1169,19 @@ function calc() {
     '<hr class="hr">' +
     '<p>СЕБ — себестоимость: <b>' + fmt(seb) + '</b></p>' +
     '<p>Прибыль: <b>' + fmt(profit) + '</b>' +
-    ' <span class="note">(1% от привнесенных: ' + fmt(profitMaterials) +
+    ' <span class="note">(1% от материалов: ' + fmt(profitMaterials) +
     ' · 25% от собственных: ' + fmt(profitOwn) + ')</span></p>' +
     '<hr class="hr">' +
     '<p style="font-size:17px">ЦЕНА БЕЗ НДС: <b>' + fmt(price) + '</b></p>' +
     '<p>НДС 22%: <b>' + fmt(nds) + '</b></p>' +
     '<hr class="hr">' +
-    '<p style="font-size:19px">ЦЕНА С НДС: <b>' + fmt(priceWithNds) + '</b></p>';
+    '<p style="font-size:19px">ЦЕНА С НДС: <b>' + fmt(priceWithNds) + '</b></p>' +
+    '<div class="sum-box">' +
+    '<div class="sum-title">Сумма прописью</div>' +
+    '<p>' + contractStr + ', в том числе НДС 22% — ' + ndsStr + '</p>' +
+    '</div>';
 }
 </script>
 
 </body>
 </html>
-
