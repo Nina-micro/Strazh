@@ -47,6 +47,11 @@
   .counters { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; text-align: center; }
   .counter .num { font-size: 22px; font-weight: 700; }
   .counter .lbl { font-size: 11px; color: #64748b; }
+  .num.c-black  { color: #1e293b; }
+  .num.c-blue   { color: #2563eb; }
+  .num.c-orange { color: #f59e0b; }
+  .num.c-red    { color: #ef4444; }
+  .num.c-green  { color: #16a34a; }
   label { display: block; font-size: 14px; margin-bottom: 8px; }
   input, select {
     width: 100%;
@@ -132,7 +137,7 @@
     <div id="taskList"><p class="note">Задач пока нет</p></div>
   </div>
 
-  <p class="note">ВНИМАНИЕ!!! Идет тест режим. Задачи хранятся только на этом устройстве — переноси в Kaiten.</p>
+  <p class="note">Черновик. Задачи хранятся только на этом устройстве — переноши в Kaiten.</p>
 
 </div>
 
@@ -147,7 +152,7 @@
     <label>Ф6 — ПКИ, руб. <input type="number" id="f6" step="0.01"></label>
     <label>Ф7 — услуги сторонних организаций, руб. <input type="number" id="f7" step="0.01"></label>
 
-    <h4>Заработная плata</h4>
+    <h4>Заработная плата</h4>
     <label>Средняя ЗП (норматив), руб./мес. <input type="number" id="avg" step="0.01"></label>
     <label>Трудоёмкость <input type="number" id="labor" step="0.1">
       <select id="unit">
@@ -210,11 +215,16 @@ function render() {
     else work++;
   });
 
-  document.getElementById('cAll').textContent = all + done;
-  document.getElementById('cWork').textContent = work;
-  document.getElementById('cSoon').textContent = soon;
-  document.getElementById('cOver').textContent = over;
-  document.getElementById('cDone').textContent = done;
+  const setCounter = (id, val, cls) => {
+    const el = document.getElementById(id);
+    el.textContent = val;
+    el.className = 'num ' + cls;
+  };
+  setCounter('cAll',  all + done, 'c-black');
+  setCounter('cWork', work, 'c-blue');
+  setCounter('cSoon', soon, 'c-orange');
+  setCounter('cOver', over, 'c-red');
+  setCounter('cDone', done, 'c-green');
 
   const list = document.getElementById('taskList');
   if (!tasks.length) {
