@@ -25,11 +25,11 @@
   }
   .tabs button {
     flex: 1;
-    padding: 10px;
+    padding: 10px 2px;
     border: none;
     background: none;
     color: #475569;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 600;
     border-radius: 8px;
     cursor: pointer;
@@ -42,7 +42,7 @@
     margin-bottom: 16px;
     box-shadow: 0 1px 4px rgba(0,0,0,0.08);
   }
-  .card h3 { font-size: 17px; margin-bottom: 12px; }
+  .card h3 { font-size: 17px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
   .card h4 { font-size: 14px; margin: 12px 0 8px; color: #475569; }
 
   /* ===== счётчики ===== */
@@ -290,7 +290,7 @@
   }
   @keyframes fabspin { to { transform: rotate(360deg); } }
 
-  /* ===== всплывающее окно добавления задачи ===== */
+  /* ===== всплывающие окна ===== */
   .overlay {
     position: fixed;
     inset: 0;
@@ -314,7 +314,7 @@
     max-height: 90vh;
     overflow-y: auto;
   }
-  .modal h3 { font-size: 17px; margin-bottom: 12px; }
+  .modal h3 { font-size: 17px; margin-bottom: 12px; display: block; }
   .modal-actions { display: flex; gap: 10px; }
   .modal-actions .btn { margin-top: 10px; }
 
@@ -360,6 +360,7 @@
   <button id="tabTasks" class="on" onclick="showTab('tasks')">Задачи</button>
   <button id="tabCal" onclick="showTab('cal')">Календарь экономиста</button>
   <button id="tabCalc" onclick="showTab('calc')">Калькулятор</button>
+  <button id="tabDoc" onclick="showTab('doc')">Договорная работа</button>
 </div>
 
 <!-- ===== РАЗДЕЛ: Задачи ===== -->
@@ -510,11 +511,47 @@
 
 </div>
 
+<!-- ===== РАЗДЕЛ: Договорная работа ===== -->
+<div id="secDoc" class="hidden">
+
+  <div class="card">
+    <h3>Реестр договоров
+      <button class="btn clear" onclick="clearDocFilters()">сбросить</button>
+    </h3>
+
+    <div class="filters">
+      <div>
+        <span class="small-lbl">Статус</span>
+        <select id="dStatus" onchange="renderDocs()">
+          <option value="all">все</option>
+          <option value="проект">проект</option>
+          <option value="на согласовании">на согласовании</option>
+          <option value="подписан">подписан</option>
+          <option value="в работе">в работе</option>
+          <option value="закрыт">закрыт</option>
+        </select>
+      </div>
+      <div>
+        <span class="small-lbl">Сортировка</span>
+        <select id="dSort" onchange="renderDocs()">
+          <option value="new">новые сверху</option>
+          <option value="end">по окончанию срока</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="docList"><p class="note">Договоров пока нет</p></div>
+  </div>
+
+  <p class="note">ТЕСТОВЫЙ РЕЖИМ. Договоры хранятся только на этом устройстве — переноси в Kaiten.</p>
+
+</div>
+
 <!-- всплывающее меню выбора статуса (одно на всё приложение) -->
 <div id="statusMenu" class="status-menu hidden"></div>
 
 <!-- ===== плавающая кнопка «+» ===== -->
-<button class="fab" onclick="openTaskModal()" title="Новая задача">+</button>
+<button class="fab" onclick="fabClick()" title="Добавить">+</button>
 
 <!-- ===== всплывающее окно добавления задачи ===== -->
 <div id="taskOverlay" class="overlay hidden" onclick="if(event.target === this) closeTaskModal()">
@@ -533,9 +570,28 @@
   </div>
 </div>
 
+<!-- ===== всплывающее окно добавления договора ===== -->
+<div id="docOverlay" class="overlay hidden" onclick="if(event.target === this) closeDocModal()">
+  <div class="modal">
+    <h3>Новый договор</h3>
+    <label>Номер договора <input type="text" id="dNum" placeholder="Например: 2026-0142-П"></label>
+    <label>Контрагент <input type="text" id="dContr" placeholder="Организация"></label>
+    <label>Предмет договора <input type="text" id="dSubject" placeholder="Например: НИОКР - изделие - ХХХП"></label>
+    <label>Сумма с НДС, руб. <input type="number" id="dSum" step="0.01"></label>
+    <label>Окончание срока действия <input type="date" id="dDate"></label>
+    <div class="modal-actions">
+      <button class="btn" onclick="addDoc()">Добавить</button>
+      <button class="btn ghost" onclick="closeDocModal()">Отмена</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ===== СПИСОК ИСПОЛНИТЕЛЕЙ =====
 const TEAM = ['Нина', 'Аня', 'Маша', 'Вика', 'Алина'];
+
+// текущая вкладка (для плавающей кнопки «+»)
+let currentTab = 'tasks';
 
 // ===== СТАТУСЫ ЗАДАЧ =====
 const STATUS_LIST = [
@@ -584,19 +640,46 @@ const STATUS_STRIP = {
   'выполнено':            '#16a34a'
 };
 
+// ===== СТАТУСЫ ДОГОВОРОВ =====
+const DOC_STATUS = ['проект', 'на согласовании', 'подписан', 'в работе', 'закрыт'];
+const DOC_STRIP = {
+  'проект':          '#94a3b8',
+  'на согласовании': '#eab308',
+  'подписан':        '#2563eb',
+  'в работе':        '#06b6d4',
+  'закрыт':          '#16a34a'
+};
+const DOC_CLS = {
+  'проект':          'ss-queue',
+  'на согласовании': 'ss-ge',
+  'подписан':        'ss-work',
+  'в работе':        'ss-pause',
+  'закрыт':          'ss-done'
+};
+
 // раскрытые группы исполнителей (аккордеон)
 const whoOpen = {};
 
 // ===== Переключение разделов =====
 function showTab(name) {
   closeStatusMenu();
+  currentTab = name;
   document.getElementById('secTasks').classList.toggle('hidden', name !== 'tasks');
   document.getElementById('secCal').classList.toggle('hidden', name !== 'cal');
   document.getElementById('secCalc').classList.toggle('hidden', name !== 'calc');
+  document.getElementById('secDoc').classList.toggle('hidden', name !== 'doc');
   document.getElementById('tabTasks').classList.toggle('on', name === 'tasks');
   document.getElementById('tabCal').classList.toggle('on', name === 'cal');
   document.getElementById('tabCalc').classList.toggle('on', name === 'calc');
+  document.getElementById('tabDoc').classList.toggle('on', name === 'doc');
   if (name === 'cal') renderCal();
+  if (name === 'doc') renderDocs();
+}
+
+// плавающая кнопка: на вкладке «Договорная работа» — договор, иначе — задача
+function fabClick() {
+  if (currentTab === 'doc') openDocModal();
+  else openTaskModal();
 }
 
 // ===== Исполнитель: сборка списков =====
@@ -631,6 +714,21 @@ function closeTaskModal() {
   document.getElementById('tWhoCustom').value = '';
   document.getElementById('tWhoCustomWrap').classList.add('hidden');
   document.getElementById('tDate').value = '';
+}
+
+// ===== Всплывающее окно добавления договора =====
+function openDocModal() {
+  closeStatusMenu();
+  document.getElementById('docOverlay').classList.remove('hidden');
+  document.getElementById('dNum').focus();
+}
+function closeDocModal() {
+  document.getElementById('docOverlay').classList.add('hidden');
+  document.getElementById('dNum').value = '';
+  document.getElementById('dContr').value = '';
+  document.getElementById('dSubject').value = '';
+  document.getElementById('dSum').value = '';
+  document.getElementById('dDate').value = '';
 }
 
 // ===== Задачи =====
@@ -743,10 +841,12 @@ function taskRow(t, idx) {
 }
 
 // ===== всплывающее меню выбора статуса =====
-let menuTaskId = null;
+let menuTaskId = null; // для задач
+let menuDocId = null;  // для договоров
 
 function openStatusMenu(ev, id) {
   ev.stopPropagation();
+  menuDocId = null;
   menuTaskId = id;
   const menu = document.getElementById('statusMenu');
   const r = ev.currentTarget.getBoundingClientRect();
@@ -761,19 +861,34 @@ function closeStatusMenu() {
   const menu = document.getElementById('statusMenu');
   if (menu) menu.classList.add('hidden');
   menuTaskId = null;
+  menuDocId = null;
 }
 function renderStatusMenu() {
-  const tasks = loadTasks();
-  const t = tasks.find(x => x.id === menuTaskId);
-  const status = t ? (t.status || 'в работе') : 'в работе';
-  const menu = document.getElementById('statusMenu');
-  menu.innerHTML = STATUS_LIST.map(s => {
-    const color = STATUS_STRIP[s] || '#64748b';
-    return '<div class="opt" onclick="pickStatus(\'' + s + '\')">' +
-      '<span><span class="sdot" style="background:' + color + '"></span>' + s + '</span>' +
-      (s === status ? '<b>✓</b>' : '') +
-      '</div>';
-  }).join('');
+  if (menuTaskId) {
+    const tasks = loadTasks();
+    const t = tasks.find(x => x.id === menuTaskId);
+    const status = t ? (t.status || 'в работе') : 'в работе';
+    const menu = document.getElementById('statusMenu');
+    menu.innerHTML = STATUS_LIST.map(s => {
+      const color = STATUS_STRIP[s] || '#64748b';
+      return '<div class="opt" onclick="pickStatus(\'' + s + '\')">' +
+        '<span><span class="sdot" style="background:' + color + '"></span>' + s + '</span>' +
+        (s === status ? '<b>✓</b>' : '') +
+        '</div>';
+    }).join('');
+  } else if (menuDocId) {
+    const docs = loadDocs();
+    const d = docs.find(x => x.id === menuDocId);
+    const status = d ? d.status : 'проект';
+    const menu = document.getElementById('statusMenu');
+    menu.innerHTML = DOC_STATUS.map(s => {
+      const color = DOC_STRIP[s] || '#64748b';
+      return '<div class="opt" onclick="setDocStatus(\'' + menuDocId + '\', \'' + s + '\')">' +
+        '<span><span class="sdot" style="background:' + color + '"></span>' + s + '</span>' +
+        (s === status ? '<b>✓</b>' : '') +
+        '</div>';
+    }).join('');
+  }
 }
 function pickStatus(s) {
   const id = menuTaskId;
@@ -964,6 +1079,119 @@ function delTask(i) {
 }
 buildWhoSelect();
 render();
+
+// ===== ДОГОВОРНАЯ РАБОТА =====
+function loadDocs() {
+  let docs = [];
+  try { docs = JSON.parse(localStorage.getItem('strazh_docs')) || []; }
+  catch(e) { docs = []; }
+  let changed = false;
+  docs.forEach(d => {
+    if (!d.id) {
+      d.id = 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+      changed = true;
+    }
+  });
+  if (changed) saveDocs(docs);
+  return docs;
+}
+function saveDocs(docs) {
+  localStorage.setItem('strazh_docs', JSON.stringify(docs));
+}
+function addDoc() {
+  const num = document.getElementById('dNum').value.trim();
+  if (!num) { alert('Введите номер договора'); return; }
+  const docs = loadDocs();
+  docs.unshift({
+    id: 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+    num: num,
+    contr: document.getElementById('dContr').value.trim(),
+    subject: document.getElementById('dSubject').value.trim(),
+    sum: parseFloat(document.getElementById('dSum').value) || 0,
+    date: document.getElementById('dDate').value,
+    status: 'проект',
+    statusDate: new Date().toISOString(),
+    createdAt: new Date().toISOString()
+  });
+  saveDocs(docs);
+  closeDocModal();
+  renderDocs();
+}
+function delDoc(id) {
+  saveDocs(loadDocs().filter(d => d.id !== id));
+  renderDocs();
+}
+function setDocStatus(id, val) {
+  const docs = loadDocs();
+  const d = docs.find(x => x.id === id);
+  if (!d) return;
+  d.status = val;
+  d.statusDate = new Date().toISOString();
+  saveDocs(docs);
+  closeStatusMenu();
+  renderDocs();
+}
+function openDocStatusMenu(ev, id) {
+  ev.stopPropagation();
+  menuTaskId = null;
+  menuDocId = id;
+  const menu = document.getElementById('statusMenu');
+  const r = ev.currentTarget.getBoundingClientRect();
+  const top = Math.min(r.bottom + 6, window.innerHeight - 240);
+  const left = Math.max(8, Math.min(r.left, window.innerWidth - 246));
+  menu.style.top = top + 'px';
+  menu.style.left = left + 'px';
+  renderStatusMenu();
+  menu.classList.remove('hidden');
+}
+function clearDocFilters() {
+  document.getElementById('dStatus').value = 'all';
+  document.getElementById('dSort').value = 'new';
+  renderDocs();
+}
+function docRow(d) {
+  const strip = DOC_STRIP[d.status] || '#64748b';
+  const stCls = DOC_CLS[d.status] || 'ss-queue';
+  const left = daysLeft(d.date);
+  let badge = '';
+  if (d.status === 'закрыт') badge = '';
+  else if (d.date && left !== null) {
+    if (left < 0) badge = '<span class="badge over">истёк</span>';
+    else if (left <= 30) badge = '<span class="badge soon">' + left + ' дн.</span>';
+  }
+  return '<div class="task' + (d.status === 'закрыт' ? ' is-done' : '') + '" style="border-left-color:' + strip + '">' +
+    '<div class="info"><div class="name">' + d.num + '</div>' +
+    '<div class="meta">' +
+    (d.contr ? '<span class="who">' + d.contr + '</span>' : '') +
+    (d.subject ? '<span>' + d.subject + '</span>' : '') +
+    (d.sum ? '<span>' + fmt(d.sum) + '</span>' : '') +
+    (d.date ? '<span>до ' + fmtDate(d.date) + '</span>' : '') +
+    badge +
+    '<span class="status-pill ' + stCls + '" onclick="openDocStatusMenu(event, \'' + d.id + '\')">' + d.status + '</span>' +
+    (d.statusDate ? '<span class="stdate">' + fmtDT(d.statusDate) + '</span>' : '') +
+    '</div></div>' +
+    '<div><button class="del" title="Удалить" onclick="delDoc(\'' + d.id + '\')">✕</button></div>' +
+    '</div>';
+}
+function renderDocs() {
+  const docs = loadDocs();
+  const f = document.getElementById('dStatus').value;
+  const sort = document.getElementById('dSort').value;
+
+  let shown = f === 'all' ? docs.slice() : docs.filter(d => d.status === f);
+  if (sort === 'end') {
+    shown.sort((a, b) => (a.date || '9999-12-31').localeCompare(b.date || '9999-12-31'));
+  }
+
+  const list = document.getElementById('docList');
+  if (!shown.length) {
+    list.innerHTML = docs.length
+      ? '<p class="note">По фильтру договоров нет</p>'
+      : '<p class="note">Договоров пока нет</p>';
+    return;
+  }
+  list.innerHTML = shown.map(docRow).join('');
+}
 
 // ===== Календарь экономиста =====
 const MONTHS = ['январь','февраль','март','апрель','май','июнь',
