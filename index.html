@@ -111,14 +111,6 @@
   .task .name { font-weight: 600; }
   .task .meta { color: #64748b; font-size: 12px; margin-top: 3px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
   .who { color: #2563eb; font-weight: 600; }
-  .status-select {
-    width: auto;
-    max-width: 200px;
-    padding: 2px 4px;
-    font-size: 11px;
-    margin: 0;
-    color: #475569;
-  }
   .badge {
     display: inline-block;
     padding: 2px 8px;
@@ -131,13 +123,27 @@
   .badge.over { background: #ef4444; }
   .badge.soon { background: #f59e0b; }
   .badge.ok   { background: #2563eb; }
-  .st { font-size: 11px; font-weight: 600; }
-  .st.s-work   { color: #2563eb; }
-  .st.s-pause  { color: #64748b; }
-  .st.s-ge     { color: #7c3aed; }
-  .st.s-mv     { color: #0d9488; }
-  .st.s-rework { color: #ea580c; }
-  .st.s-done   { color: #16a34a; }
+  /* Статус: полупрозрачная обводка-капсула, сама является выбором */
+  .status-select {
+    width: auto;
+    max-width: 190px;
+    padding: 2px 8px;
+    margin: 0;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 999px;
+    border: 1px solid;
+    background: transparent;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .ss-work   { color: #2563eb; border-color: rgba(37, 99, 235, 0.5);  background: rgba(37, 99, 235, 0.08); }
+  .ss-pause  { color: #db2777; border-color: rgba(219, 39, 119, 0.5); background: rgba(219, 39, 119, 0.08); }
+  .ss-ge     { color: #a16207; border-color: rgba(202, 138, 4, 0.55); background: rgba(202, 138, 4, 0.1); }
+  .ss-mv     { color: #a16207; border-color: rgba(202, 138, 4, 0.55); background: rgba(202, 138, 4, 0.1); }
+  .ss-rework { color: #ea580c; border-color: rgba(234, 88, 12, 0.5);  background: rgba(234, 88, 12, 0.08); }
+  .ss-done   { color: #16a34a; border-color: rgba(22, 163, 74, 0.5);  background: rgba(22, 163, 74, 0.08); }
   .del {
     background: none;
     border: none;
@@ -258,13 +264,14 @@ const STATUS_LIST = [
   'на доработке',
   'выполнено'
 ];
+// цветовая тема капсулы статуса
 const STATUS_CLS = {
-  'в работе':            's-work',
-  'на паузе':            's-pause',
-  'на согласовании у ГЭ': 's-ge',
-  'на согласовании у МВ': 's-mv',
-  'на доработке':        's-rework',
-  'выполнено':           's-done'
+  'в работе':             'ss-work',
+  'на паузе':             'ss-pause',
+  'на согласовании у ГЭ': 'ss-ge',
+  'на согласовании у МВ': 'ss-mv',
+  'на доработке':         'ss-rework',
+  'выполнено':            'ss-done'
 };
 
 // ===== Переключение разделов =====
@@ -381,7 +388,7 @@ function render() {
 
     const badgeCls = cat === 'over' ? 'over' : (cat === 'soon' ? 'soon' : 'ok');
     const status = t.status || 'в работе';
-    const stCls = STATUS_CLS[status] || 's-work';
+    const stCls = STATUS_CLS[status] || 'ss-work';
     const stOptions = STATUS_LIST.map(s =>
       '<option value="' + s + '"' + (s === status ? ' selected' : '') + '>' + s + '</option>'
     ).join('');
@@ -391,8 +398,7 @@ function render() {
       (t.who ? '<span class="who">' + t.who + '</span>' : '') +
       '<span>' + (t.date ? fmtDate(t.date) : '') + '</span>' +
       (badgeCat ? '<span class="badge ' + badgeCls + '">' + badgeCat + '</span>' : '') +
-      '<span class="st ' + stCls + '">' + status + '</span>' +
-      '<select class="status-select" onchange="setStatus(' + i + ', this.value)">' + stOptions + '</select>' +
+      '<select class="status-select ' + stCls + '" onchange="setStatus(' + i + ', this.value)">' + stOptions + '</select>' +
       '</div></div>' +
       '<div>' +
       (cat !== 'done' ? '<button class="del" title="Закрыть" onclick="closeTask(' + i + ')">✓</button>' : '') +
