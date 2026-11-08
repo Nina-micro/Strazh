@@ -244,7 +244,6 @@
   .hr { border: none; border-top: 1px solid #e2e8f0; margin: 10px 0; }
   #res p { font-size: 14px; margin: 4px 0; }
   .note { font-size: 12px; color: #94a3b8; text-align: center; margin-top: 4px; }
-  .hidden { display: none; }
 
   /* ===== плавающая кнопка «+» ===== */
   .fab {
@@ -267,7 +266,6 @@
     justify-content: center;
   }
   .fab:active { background: #1d4ed8; }
-  /* вращающееся кольцо-индикатор вокруг плюса */
   .fab::after {
     content: '';
     position: absolute;
@@ -290,6 +288,11 @@
     align-items: flex-end;
     justify-content: center;
     padding: 16px;
+  }
+  /* ключевое исправление: это правило сильнее display:flex у .overlay,
+     поэтому окно скрыто до нажатия плюса и закрывается кнопкой «Отмена» */
+  .overlay.hidden {
+    display: none !important;
   }
   .modal {
     background: #fff;
@@ -334,6 +337,8 @@
   .cal-chip.c-soon { background: rgba(245, 158, 11, 0.2); color: #b45309; }
   .cal-chip.c-over { background: rgba(239, 68, 68, 0.18); color: #b91c1c; }
   .cal-chip.c-done { background: rgba(22, 163, 74, 0.15); color: #15803d; }
+
+  .hidden { display: none; }
 </style>
 </head>
 <body>
@@ -461,7 +466,7 @@
     <label>Ф6 — ПКИ, руб. <input type="number" id="f6" step="0.01"></label>
     <label>Ф7 — услуги сторонних организаций, руб. <input type="number" id="f7" step="0.01"></label>
 
-    <h4>Заработная плата</h4>
+    <h4>Заработная плata</h4>
     <label>Средняя ЗП (норматив), руб./мес. <input type="number" id="avg" step="0.01"></label>
     <label>Трудоёмкость <input type="number" id="labor" step="0.1">
       <select id="unit">
@@ -611,7 +616,6 @@ function loadTasks() {
   let tasks = [];
   try { tasks = JSON.parse(localStorage.getItem('strazh_tasks')) || []; }
   catch(e) { tasks = []; }
-  // выдаём каждой задаче стабильный id
   let changed = false;
   tasks.forEach(t => {
     if (!t.id) {
@@ -686,7 +690,6 @@ function sortByChoice(arr) {
 }
 
 // ===== строка задачи (общая для всех видов) =====
-// полоса слева всегда в цвете статуса; срочность видна по плашке дедлайна
 function taskRow(t, idx) {
   const cat = taskCat(t);
   const left = daysLeft(t.date);
@@ -755,7 +758,6 @@ function pickStatus(s) {
   closeStatusMenu();
   if (id) setStatusById(id, s);
 }
-// закрытие меню по тапу вне его
 document.addEventListener('click', function(e) {
   const menu = document.getElementById('statusMenu');
   if (!menu.classList.contains('hidden') && !menu.contains(e.target)) {
@@ -791,7 +793,6 @@ function renderStats(tasks) {
   setCounter('cOver',  over, 'c-red');
   setCounter('cDone',  done, 'c-green');
 
-  // сегментированная диаграмма статусов
   const total = tasks.length;
   const bar = document.getElementById('statusBar');
   if (!total) {
@@ -804,7 +805,6 @@ function renderStats(tasks) {
     }).join('');
   }
 
-  // распределение нагрузки
   const load = TEAM.map(name => ({
     name: name,
     n: tasks.filter(t => t.who === name && taskCat(t) !== 'done').length
@@ -816,7 +816,6 @@ function renderStats(tasks) {
     '" style="width:' + (x.n / max * 100) + '%"></div></div></div>'
   ).join('');
 
-  // «горит сейчас»: просроченные + дедлайн в ближайшие 3 дня
   const hot = tasks.filter(t => {
     const c = taskCat(t);
     return c === 'over' || c === 'soon';
@@ -849,7 +848,6 @@ function render() {
   }
 
   if (view === 'status') {
-    // группы по статусам
     let html = '';
     STATUS_LIST.forEach(s => {
       const group = shown.filter(t => (t.status || 'в работе') === s);
@@ -863,7 +861,6 @@ function render() {
     list.innerHTML = html;
 
   } else if (view === 'who') {
-    // аккордеон по исполнителям
     const names = [];
     shown.forEach(t => {
       const k = t.who || '— без исполнителя —';
@@ -871,7 +868,7 @@ function render() {
     });
     list.innerHTML = names.map(name => {
       const group = shown.filter(t => (t.who || '— без исполнителя —') === name);
-      const isOpen = whoOpen[name] !== false; // по умолчанию раскрыто
+      const isOpen = whoOpen[name] !== false;
       const safeName = name.replace(/'/g, "\\'");
       return '<div class="group">' +
         '<div class="group-head g-who" onclick="toggleWho(\'' + safeName + '\')">' +
@@ -882,7 +879,6 @@ function render() {
     }).join('');
 
   } else {
-    // плоский список (закрытые в конце)
     const active = shown.filter(t => taskCat(t) !== 'done');
     const doneT  = shown.filter(t => taskCat(t) === 'done');
     list.innerHTML = active.map(t => taskRow(t, tasks.indexOf(t))).join('') +
@@ -901,7 +897,6 @@ function setStatusById(id, val) {
   if (!t) return;
   t.status = val;
   t.statusDate = new Date().toISOString();
-  // флажок закрытия синхронизируется со статусом в обе стороны
   t.done = (val === 'выполнено');
   saveTasks(tasks);
   render();
