@@ -64,8 +64,9 @@
     background: #e2e8f0;
   }
   .status-bar div { height: 100%; }
+  .sb-queue  { background: #94a3b8; }
   .sb-work   { background: #2563eb; }
-  .sb-pause  { background: #db2777; }
+  .sb-pause  { background: #06b6d4; }
   .sb-ge     { background: #eab308; }
   .sb-mv     { background: #eab308; }
   .sb-rework { background: #ea580c; }
@@ -79,8 +80,9 @@
     width: 8px; height: 8px; border-radius: 2px;
     margin-right: 3px; vertical-align: middle;
   }
+  .lg-queue::before  { background: #94a3b8; }
   .lg-work::before   { background: #2563eb; }
-  .lg-pause::before  { background: #db2777; }
+  .lg-pause::before  { background: #06b6d4; }
   .lg-ge::before     { background: #eab308; }
   .lg-rework::before { background: #ea580c; }
   .lg-done::before   { background: #16a34a; }
@@ -163,12 +165,13 @@
     cursor: pointer;
     user-select: none;
   }
-  .ss-work   { color: #2563eb; border-color: rgba(37, 99, 235, 0.5);  background: rgba(37, 99, 235, 0.08); }
-  .ss-pause  { color: #db2777; border-color: rgba(219, 39, 119, 0.5); background: rgba(219, 39, 119, 0.08); }
-  .ss-ge     { color: #a16207; border-color: rgba(234, 179, 8, 0.65); background: rgba(253, 224, 71, 0.35); }
-  .ss-mv     { color: #a16207; border-color: rgba(234, 179, 8, 0.65); background: rgba(253, 224, 71, 0.35); }
-  .ss-rework { color: #ea580c; border-color: rgba(234, 88, 12, 0.5);  background: rgba(234, 88, 12, 0.08); }
-  .ss-done   { color: #16a34a; border-color: rgba(22, 163, 74, 0.5);  background: rgba(22, 163, 74, 0.08); }
+  .ss-queue  { color: #64748b; border-color: rgba(148, 163, 184, 0.6); background: rgba(148, 163, 184, 0.12); }
+  .ss-work   { color: #2563eb; border-color: rgba(37, 99, 235, 0.5);   background: rgba(37, 99, 235, 0.08); }
+  .ss-pause  { color: #0891b2; border-color: rgba(6, 182, 212, 0.65);  background: rgba(6, 182, 212, 0.15); }
+  .ss-ge     { color: #a16207; border-color: rgba(234, 179, 8, 0.65);  background: rgba(253, 224, 71, 0.35); }
+  .ss-mv     { color: #a16207; border-color: rgba(234, 179, 8, 0.65);  background: rgba(253, 224, 71, 0.35); }
+  .ss-rework { color: #ea580c; border-color: rgba(234, 88, 12, 0.5);   background: rgba(234, 88, 12, 0.08); }
+  .ss-done   { color: #16a34a; border-color: rgba(22, 163, 74, 0.5);   background: rgba(22, 163, 74, 0.08); }
 
   /* всплывающее меню выбора статуса */
   .status-menu {
@@ -227,8 +230,9 @@
     align-items: center;
   }
   .group-head small { font-weight: 600; opacity: 0.9; }
+  .g-queue  { background: #94a3b8; }
   .g-work   { background: #2563eb; }
-  .g-pause  { background: #db2777; }
+  .g-pause  { background: #06b6d4; }
   .g-ge     { background: #eab308; }
   .g-mv     { background: #eab308; }
   .g-rework { background: #ea580c; }
@@ -298,6 +302,7 @@
 
     <div class="status-bar" id="statusBar"></div>
     <div class="status-legend">
+      <span class="lg-queue">в очереди</span>
       <span class="lg-work">в работе</span>
       <span class="lg-pause">пауза</span>
       <span class="lg-ge">согласование (ГЭ/МВ)</span>
@@ -438,6 +443,7 @@ const TEAM = ['Нина', 'Аня', 'Маша', 'Вика', 'Алина'];
 
 // ===== СТАТУСЫ ЗАДАЧ =====
 const STATUS_LIST = [
+  'в очереди',
   'в работе',
   'на паузе',
   'на согласовании у ГЭ',
@@ -446,6 +452,7 @@ const STATUS_LIST = [
   'выполнено'
 ];
 const STATUS_CLS = {
+  'в очереди':            'ss-queue',
   'в работе':             'ss-work',
   'на паузе':             'ss-pause',
   'на согласовании у ГЭ': 'ss-ge',
@@ -454,6 +461,7 @@ const STATUS_CLS = {
   'выполнено':            'ss-done'
 };
 const STATUS_HEAD = {
+  'в очереди':            'g-queue',
   'в работе':             'g-work',
   'на паузе':             'g-pause',
   'на согласовании у ГЭ': 'g-ge',
@@ -462,6 +470,7 @@ const STATUS_HEAD = {
   'выполнено':            'g-done'
 };
 const STATUS_SEG = {
+  'в очереди':            'sb-queue',
   'в работе':             'sb-work',
   'на паузе':             'sb-pause',
   'на согласовании у ГЭ': 'sb-ge',
@@ -470,8 +479,9 @@ const STATUS_SEG = {
   'выполнено':            'sb-done'
 };
 const STATUS_STRIP = {
+  'в очереди':            '#94a3b8',
   'в работе':             '#2563eb',
-  'на паузе':             '#db2777',
+  'на паузе':             '#06b6d4',
   'на согласовании у ГЭ': '#eab308',
   'на согласовании у МВ': '#eab308',
   'на доработке':         '#ea580c',
@@ -631,7 +641,7 @@ function openStatusMenu(ev, id) {
   menuTaskId = id;
   const menu = document.getElementById('statusMenu');
   const r = ev.currentTarget.getBoundingClientRect();
-  const top = Math.min(r.bottom + 6, window.innerHeight - 300);
+  const top = Math.min(r.bottom + 6, window.innerHeight - 320);
   const left = Math.max(8, Math.min(r.left, window.innerWidth - 246));
   menu.style.top = top + 'px';
   menu.style.left = left + 'px';
@@ -696,7 +706,7 @@ function renderStats(tasks) {
   setCounter('cOver', over, 'c-red');
   setCounter('cDone', done, 'c-green');
 
-  // сегментированная диаграмма статусов (ГЭ и МВ — один мягкий жёлтый сегмент)
+  // сегментированная диаграмма статусов
   const total = tasks.length;
   const bar = document.getElementById('statusBar');
   if (!total) {
@@ -754,21 +764,13 @@ function render() {
   }
 
   if (view === 'status') {
-    // группы по статусам (ГЭ и МВ — одинаковый мягкий жёлтый цвет шапки)
-    const groups = [
-      { name: 'в работе',             cls: 'g-work',   key: 'в работе' },
-      { name: 'на паузе',             cls: 'g-pause',  key: 'на паузе' },
-      { name: 'на согласовании у ГЭ', cls: 'g-ge',     key: 'на согласовании у ГЭ' },
-      { name: 'на согласовании у МВ', cls: 'g-ge',     key: 'на согласовании у МВ' },
-      { name: 'на доработке',         cls: 'g-rework', key: 'на доработке' },
-      { name: 'выполнено',            cls: 'g-done',   key: 'выполнено' }
-    ];
+    // группы по статусам
     let html = '';
-    groups.forEach(g => {
-      const group = shown.filter(t => (t.status || 'в работе') === g.key);
+    STATUS_LIST.forEach(s => {
+      const group = shown.filter(t => (t.status || 'в работе') === s);
       if (!group.length) return;
       html += '<div class="group">' +
-        '<div class="group-head ' + g.cls + '"><span>' + g.name + '</span><small>' + group.length + '</small></div>' +
+        '<div class="group-head ' + STATUS_HEAD[s] + '"><span>' + s + '</span><small>' + group.length + '</small></div>' +
         '<div class="group-body">' +
         group.map(t => taskRow(t, tasks.indexOf(t))).join('') +
         '</div></div>';
