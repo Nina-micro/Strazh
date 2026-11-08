@@ -62,6 +62,19 @@
     font-size: 15px;
     background: #fff;
   }
+  .filters {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .filters .lbl {
+    display: block;
+    font-size: 12px;
+    color: #475569;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
   .btn {
     display: inline-block;
     width: 100%;
@@ -76,6 +89,14 @@
     cursor: pointer;
   }
   .btn:active { background: #1d4ed8; }
+  .btn.clear {
+    background: #e2e8f0;
+    color: #475569;
+    width: auto;
+    padding: 8px 14px;
+    margin-top: 0;
+    font-size: 13px;
+  }
   .task {
     display: flex;
     justify-content: space-between;
@@ -88,7 +109,19 @@
   .task:last-child { border-bottom: none; }
   .task .info { flex: 1; }
   .task .name { font-weight: 600; }
-  .task .meta { color: #64748b; font-size: 12px; margin-top: 2px; }
+  .task .meta { color: #64748b; font-size: 12px; margin-top: 3px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #fff;
+    background: #64748b;
+  }
+  .badge.over { background: #ef4444; }
+  .badge.soon { background: #f59e0b; }
+  .badge.ok   { background: #2563eb; }
   .del {
     background: none;
     border: none;
@@ -137,7 +170,25 @@
   </div>
 
   <div class="card">
-    <h3>Задачи</h3>
+    <h3>Задачи <button class="btn clear" onclick="clearFilters()" title="Сбросить фильтры">сбросить</button></h3>
+
+    <div class="filters">
+      <div>
+        <span class="lbl">Исполнитель</span>
+        <select id="fWho" onchange="render()"></select>
+      </div>
+      <div>
+        <span class="lbl">Категория</span>
+        <select id="fCat" onchange="render()">
+          <option value="all">все</option>
+          <option value="work">в работе</option>
+          <option value="soon">скоро дедлайн</option>
+          <option value="over">просрочено</option>
+          <option value="done">закрыто</option>
+        </select>
+      </div>
+    </div>
+
     <div id="taskList"><p class="note">Задач пока нет</p></div>
   </div>
 
@@ -198,6 +249,12 @@ function buildWhoSelect() {
   TEAM.forEach(t => { html += '<option value="' + t + '">' + t + '</option>'; });
   html += '<option value="__other">Другое…</option>';
   sel.innerHTML = html;
+
+  const fSel = document.getElementById('fWho');
+  let fHtml = '<option value="all">все</option>';
+  TEAM.forEach(t => { fHtml += '<option value="' + t + '">' + t + '</option>'; });
+  fHtml += '<option value="__none">без исполнителя</option>';
+  fSel.innerHTML = fHtml;
 }
 function toggleCustomWho() {
   const isOther = document.getElementById('tWho').value === '__other';
@@ -223,17 +280,29 @@ function daysLeft(s) {
   d.setHours(23,59,59,0);
   return Math.ceil((d - now) / 86400000);
 }
+// категория задачи: done / over / soon / work
+function taskCat(t) {
+  if (t.status === 'done') return 'done';
+  const left = daysLeft(t.date);
+  if (left !== null && left < 0) return 'over';
+  if (left !== null && left <= 3) return 'soon';
+  return 'work';
+}
+function clearFilters() {
+  document.getElementById('fWho').value = 'all';
+  document.getElementById('fCat').value = 'all';
+  render();
+}
 function render() {
   const tasks = loadTasks();
   let all = 0, work = 0, soon = 0, over = 0, done = 0;
 
   tasks.forEach(t => {
-    if (t.status === 'done') { done++; return; }
-    all++;
-    const left = daysLeft(t.date);
-    if (left !== null && left < 0) over++;
-    else if (left !== null && left <= 3) soon++;
-    else work++;
+    const c = taskCat(t);
+    if (c === 'done') done++;
+    else if (c === 'over') { all++; over++; }
+    else if (c === 'soon') { all++; soon++; }
+    else { all++; work++; }
   });
 
   const setCounter = (id, val, cls) => {
@@ -247,26 +316,47 @@ function render() {
   setCounter('cOver', over, 'c-red');
   setCounter('cDone', done, 'c-green');
 
+  // фильтры
+  const fWho = document.getElementById('fWho').value;
+  const fCat = document.getElementById('fCat').value;
+  const shown = tasks.filter(t => {
+    const c = taskCat(t);
+    if (fCat !== 'all' && c !== fCat) return false;
+    if (fWho === 'all') return true;
+    if (fWho === '__none') return !t.who;
+    return t.who === fWho;
+  });
+
   const list = document.getElementById('taskList');
-  if (!tasks.length) {
-    list.innerHTML = '<p class="note">Задач пока нет</p>';
+  if (!shown.length) {
+    list.innerHTML = tasks.length
+      ? '<p class="note">По выбранным фильтрам задач нет</p>'
+      : '<p class="note">Задач пока нет</p>';
     return;
   }
-  list.innerHTML = tasks.map((t, i) => {
+  const CAT_LABEL = { work: 'в работе', soon: 'дедлайн', over: 'просрочено', done: 'закрыто' };
+  list.innerHTML = shown.map(t => {
+    const i = tasks.indexOf(t);
+    const cat = taskCat(t);
     const left = daysLeft(t.date);
-    let badge = '';
-    if (t.status !== 'done' && left !== null) {
-      if (left < 0) badge = ' — <b style="color:#ef4444">просрочено</b>';
-      else if (left <= 3) badge = ' — <b style="color:#f59e0b">дедлайн: ' + left + ' дн.</b>';
-      else badge = ' — дедлайн через ' + left + ' дн.';
-    }
-    const check = t.status === 'done' ? '✅ ' : '';
+    let badgeCat = '';
+    if (cat === 'done') badgeCat = '';
+    else if (left !== null) {
+      if (left < 0) badgeCat = 'просрочено';
+      else badgeCat = 'дедлайн: ' + left + ' дн.';
+    } else badgeCat = CAT_LABEL[cat];
+
+    const badgeCls = cat === 'over' ? 'over' : (cat === 'soon' ? 'soon' : (cat === 'done' ? '' : 'ok'));
+    const check = cat === 'done' ? '✅ ' : '';
     return '<div class="task">' +
-      '<div class="info"><div class="name">' + check + t.name +
-      (t.who ? ' · ' + t.who : '') + badge + '</div>' +
-      '<div class="meta">' + (t.date ? fmtDate(t.date) : '') + '</div></div>' +
+      '<div class="info"><div class="name">' + check + t.name + '</div>' +
+      '<div class="meta">' +
+      (t.who ? '<span class="badge ' + badgeCls + '">' + t.who + '</span>' : '') +
+      '<span>' + (t.date ? fmtDate(t.date) : '') + '</span>' +
+      (badgeCat ? '<span class="badge ' + badgeCls + '">' + badgeCat + '</span>' : '') +
+      '</div></div>' +
       '<div>' +
-      (t.status !== 'done' ? '<button class="del" title="Закрыть" onclick="closeTask(' + i + ')">✓</button>' : '') +
+      (cat !== 'done' ? '<button class="del" title="Закрыть" onclick="closeTask(' + i + ')">✓</button>' : '') +
       '<button class="del" title="Удалить" onclick="delTask(' + i + ')">✕</button>' +
       '</div></div>';
   }).join('');
