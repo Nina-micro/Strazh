@@ -16,36 +16,19 @@
   }
   h1 { font-size: 26px; text-align: center; margin-top: 8px; }
   .subtitle { text-align: center; color: #64748b; margin-bottom: 16px; }
-  .tabs {
-    display: flex;
-    background: #e2e8f0;
-    border-radius: 10px;
-    padding: 4px;
-    margin-bottom: 16px;
-  }
+  .tabs { display: flex; background: #e2e8f0; border-radius: 10px; padding: 4px; margin-bottom: 16px; }
   .tabs button {
-    flex: 1;
-    padding: 10px 2px;
-    border: none;
-    background: none;
-    color: #475569;
-    font-size: 12px;
-    font-weight: 600;
-    border-radius: 8px;
-    cursor: pointer;
+    flex: 1; padding: 10px 2px; border: none; background: none;
+    color: #475569; font-size: 12px; font-weight: 600; border-radius: 8px; cursor: pointer;
   }
   .tabs button.on { background: #2563eb; color: #fff; }
   .card {
-    background: #fff;
-    border-radius: 14px;
-    padding: 16px;
-    margin-bottom: 16px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    background: #fff; border-radius: 14px; padding: 16px;
+    margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);
   }
   .card h3 { font-size: 17px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
   .card h4 { font-size: 14px; margin: 12px 0 8px; color: #475569; }
 
-  /* ===== счётчики ===== */
   .counters { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; text-align: center; }
   .counter .num { font-size: 22px; font-weight: 700; }
   .counter .lbl { font-size: 11px; color: #64748b; }
@@ -56,14 +39,7 @@
   .num.c-green  { color: #16a34a; }
   .num.c-gray   { color: #94a3b8; }
 
-  .status-bar {
-    display: flex;
-    height: 10px;
-    border-radius: 5px;
-    overflow: hidden;
-    margin: 14px 0 4px;
-    background: #e2e8f0;
-  }
+  .status-bar { display: flex; height: 10px; border-radius: 5px; overflow: hidden; margin: 14px 0 4px; background: #e2e8f0; }
   .status-bar div { height: 100%; }
   .sb-queue  { background: #94a3b8; }
   .sb-work   { background: #2563eb; }
@@ -72,14 +48,10 @@
   .sb-mv     { background: #eab308; }
   .sb-rework { background: #ea580c; }
   .sb-done   { background: #16a34a; }
-  .status-legend {
-    display: flex; flex-wrap: wrap; gap: 8px;
-    font-size: 10px; color: #64748b; margin-bottom: 12px;
-  }
+  .status-legend { display: flex; flex-wrap: wrap; gap: 8px; font-size: 10px; color: #64748b; margin-bottom: 12px; }
   .status-legend span::before {
-    content: ''; display: inline-block;
-    width: 8px; height: 8px; border-radius: 2px;
-    margin-right: 3px; vertical-align: middle;
+    content: ''; display: inline-block; width: 8px; height: 8px;
+    border-radius: 2px; margin-right: 3px; vertical-align: middle;
   }
   .lg-queue::before  { background: #94a3b8; }
   .lg-work::before   { background: #2563eb; }
@@ -95,64 +67,31 @@
   .load-fill { height: 100%; border-radius: 4px; background: #2563eb; }
   .load-fill.max { background: #ef4444; }
 
-  /* ===== формы ===== */
   label { display: block; font-size: 14px; margin-bottom: 8px; }
   input, select {
-    width: 100%;
-    padding: 8px;
-    margin-top: 4px;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    font-size: 15px;
-    background: #fff;
+    width: 100%; padding: 8px; margin-top: 4px;
+    border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; background: #fff;
   }
   .filters { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
   .small-lbl { display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 2px; }
   .btn {
-    display: inline-block;
-    width: 100%;
-    padding: 11px;
-    margin-top: 10px;
-    background: #2563eb;
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
+    display: inline-block; width: 100%; padding: 11px; margin-top: 10px;
+    background: #2563eb; color: #fff; border: none; border-radius: 10px;
+    font-size: 15px; font-weight: 600; cursor: pointer;
   }
   .btn:active { background: #1d4ed8; }
-  .btn.clear {
-    background: #e2e8f0;
-    color: #475569;
-    width: auto;
-    padding: 8px 14px;
-    margin-top: 0;
-    font-size: 13px;
-  }
+  .btn.clear { background: #e2e8f0; color: #475569; width: auto; padding: 8px 14px; margin-top: 0; font-size: 13px; }
   .btn.ghost { background: #e2e8f0; color: #475569; }
   .btn.danger {
-    background: #fff;
-    color: #ef4444;
-    border: 1px solid rgba(239, 68, 68, 0.5);
-    width: 100%;
-    font-size: 13px;
-    padding: 9px;
+    background: #fff; color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.5);
+    width: 100%; font-size: 13px; padding: 9px;
   }
-
   .hot-title { color: #ef4444; }
 
-  /* ===== строка задачи/договора/платежа ===== */
   .task {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 10px 10px 10px 12px;
-    border-bottom: 1px solid #e2e8f0;
-    font-size: 14px;
-    gap: 8px;
-    border-left-width: 4px;
-    border-left-style: solid;
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding: 10px 10px 10px 12px; border-bottom: 1px solid #e2e8f0;
+    font-size: 14px; gap: 8px; border-left-width: 4px; border-left-style: solid;
   }
   .task:last-child { border-bottom: none; }
   .task .info { flex: 1; min-width: 0; }
@@ -165,14 +104,8 @@
   .task .clickable { cursor: pointer; }
 
   .status-pill {
-    display: inline-block;
-    padding: 2px 10px;
-    font-size: 11px;
-    font-weight: 600;
-    border-radius: 999px;
-    border: 1px solid;
-    cursor: pointer;
-    user-select: none;
+    display: inline-block; padding: 2px 10px; font-size: 11px; font-weight: 600;
+    border-radius: 999px; border: 1px solid; cursor: pointer; user-select: none;
   }
   .ss-queue  { color: #64748b; border-color: rgba(148, 163, 184, 0.6); background: rgba(148, 163, 184, 0.12); }
   .ss-work   { color: #2563eb; border-color: rgba(37, 99, 235, 0.5);   background: rgba(37, 99, 235, 0.08); }
@@ -181,84 +114,47 @@
   .ss-mv     { color: #a16207; border-color: rgba(234, 179, 8, 0.65);  background: rgba(253, 224, 71, 0.35); }
   .ss-rework { color: #ea580c; border-color: rgba(234, 88, 12, 0.5);   background: rgba(234, 88, 12, 0.08); }
   .ss-done   { color: #16a34a; border-color: rgba(22, 163, 74, 0.5);   background: rgba(22, 163, 74, 0.08); }
-
   .ss-project      { color: #64748b; border-color: rgba(148, 163, 184, 0.6); background: rgba(148, 163, 184, 0.12); }
   .ss-on-approval  { color: #b45309; border-color: rgba(245, 158, 11, 0.65); background: rgba(253, 224, 71, 0.35); }
   .ss-signed       { color: #dc2626; border-color: rgba(220, 38, 38, 0.5);   background: rgba(220, 38, 38, 0.12); }
   .ss-closed       { color: #16a34a; border-color: rgba(22, 163, 74, 0.5);   background: rgba(22, 163, 74, 0.08); }
 
   .status-menu {
-    position: fixed;
-    z-index: 50;
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
-    padding: 6px;
-    min-width: 230px;
+    position: fixed; z-index: 50; background: #fff; border: 1px solid #e2e8f0;
+    border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.18); padding: 6px; min-width: 230px;
   }
   .status-menu .opt {
-    padding: 9px 12px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 600;
-    color: #1e293b;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 10px;
+    padding: 9px 12px; border-radius: 8px; font-size: 13px; font-weight: 600;
+    color: #1e293b; cursor: pointer; display: flex; justify-content: space-between;
+    align-items: center; gap: 10px;
   }
   .status-menu .opt:active { background: #f1f5f9; }
-  .sdot {
-    display: inline-block;
-    width: 9px; height: 9px;
-    border-radius: 50%;
-    margin-right: 7px;
-    vertical-align: middle;
-  }
+  .sdot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 7px; vertical-align: middle; }
 
   .badge {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 999px;
-    font-size: 11px;
-    font-weight: 600;
-    color: #fff;
-    background: #64748b;
+    display: inline-block; padding: 2px 8px; border-radius: 999px;
+    font-size: 11px; font-weight: 600; color: #fff; background: #64748b;
   }
   .badge.over { background: #ef4444; }
   .badge.soon { background: #f59e0b; }
   .badge.ok   { background: #2563eb; }
   .badge.paid { background: #16a34a; }
   .badge.wait { background: #94a3b8; }
-  /* акценты по категории и приёмке */
   .badge.goz  { background: #dc2626; }
   .badge.kom  { background: #2563eb; }
   .badge.otk  { background: #f59e0b; }
   .badge.vp   { background: #64748b; }
   .cat-mark {
-    display: inline-block;
-    padding: 1px 7px;
-    border-radius: 6px;
-    font-size: 10px;
-    font-weight: 700;
-    color: #fff;
+    display: inline-block; padding: 1px 7px; border-radius: 6px;
+    font-size: 10px; font-weight: 700; color: #fff;
   }
   .cat-mark.goz { background: #dc2626; }
   .cat-mark.kom { background: #2563eb; }
 
   .group { border: 1px solid #e2e8f0; border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
   .group-head {
-    padding: 8px 12px;
-    font-size: 13px;
-    font-weight: 700;
-    color: #fff;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
+    padding: 8px 12px; font-size: 13px; font-weight: 700; color: #fff;
+    display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;
   }
   .group-head small { font-weight: 600; opacity: 0.9; }
   .g-queue  { background: #94a3b8; }
@@ -280,154 +176,82 @@
   .note { font-size: 12px; color: #94a3b8; text-align: center; margin-top: 4px; }
 
   .sum-box {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    padding: 10px 12px;
-    margin-top: 10px;
-    font-size: 13px;
-    line-height: 1.5;
+    background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;
+    padding: 10px 12px; margin-top: 10px; font-size: 13px; line-height: 1.5;
   }
   .sum-box .sum-title { font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 4px; }
 
   .fab {
-    position: fixed;
-    right: 20px;
-    bottom: 20px;
-    width: 58px;
-    height: 58px;
-    border-radius: 50%;
-    background: #2563eb;
-    color: #fff;
-    border: none;
-    font-size: 30px;
-    line-height: 1;
-    cursor: pointer;
-    z-index: 40;
+    position: fixed; right: 20px; bottom: 20px; width: 58px; height: 58px;
+    border-radius: 50%; background: #2563eb; color: #fff; border: none;
+    font-size: 30px; line-height: 1; cursor: pointer; z-index: 40;
     box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
   }
   .fab:active { background: #1d4ed8; }
   .fab::after {
-    content: '';
-    position: absolute;
-    top: -5px; left: -5px; right: -5px; bottom: -5px;
-    border-radius: 50%;
-    border: 2px solid rgba(37, 99, 235, 0.45);
-    border-top-color: transparent;
-    animation: fabspin 2.2s linear infinite;
-    pointer-events: none;
+    content: ''; position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px;
+    border-radius: 50%; border: 2px solid rgba(37, 99, 235, 0.45);
+    border-top-color: transparent; animation: fabspin 2.2s linear infinite; pointer-events: none;
   }
   @keyframes fabspin { to { transform: rotate(360deg); } }
 
   .overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.45);
-    z-index: 60;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    padding: 16px;
+    position: fixed; inset: 0; background: rgba(15, 23, 42, 0.45); z-index: 60;
+    display: flex; align-items: flex-end; justify-content: center; padding: 16px;
   }
-  .overlay.hidden {
-    display: none !important;
-  }
+  .overlay.hidden { display: none !important; }
   .modal {
-    background: #fff;
-    border-radius: 16px;
-    padding: 18px;
-    width: 100%;
-    max-width: 480px;
-    box-shadow: 0 -4px 30px rgba(0,0,0,0.25);
-    max-height: 90vh;
-    overflow-y: auto;
+    background: #fff; border-radius: 16px; padding: 18px; width: 100%;
+    max-width: 480px; box-shadow: 0 -4px 30px rgba(0,0,0,0.25);
+    max-height: 90vh; overflow-y: auto;
   }
   .modal h3 { font-size: 17px; margin-bottom: 12px; display: block; }
   .modal-actions { display: flex; gap: 10px; flex-wrap: wrap; }
   .modal-actions .btn { margin-top: 10px; flex: 1; }
 
-  /* ===== строки ведомости и ДС ===== */
   .item-row, .ds-row {
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    padding: 10px;
-    margin-bottom: 8px;
-    background: #f8fafc;
+    border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px;
+    margin-bottom: 8px; background: #f8fafc;
   }
   .item-row .filters, .ds-row .filters { margin-bottom: 6px; }
   .item-row .remove-item, .ds-row .remove-ds {
-    background: none;
-    border: none;
-    color: #ef4444;
-    font-size: 16px;
-    cursor: pointer;
-    float: right;
-    padding: 0 4px;
+    background: none; border: none; color: #ef4444; font-size: 16px;
+    cursor: pointer; float: right; padding: 0 4px;
   }
-  .item-row .row-sum {
-    font-size: 12px; color: #475569; margin-top: 4px; font-weight: 600;
-  }
+  .item-row .row-sum { font-size: 12px; color: #475569; margin-top: 4px; font-weight: 600; }
   .btn.add-item, .btn.add-ds, .btn.add-inv {
-    background: #e2e8f0;
-    color: #475569;
-    font-size: 13px;
-    padding: 8px;
-    margin-top: 4px;
+    background: #e2e8f0; color: #475569; font-size: 13px; padding: 8px; margin-top: 4px;
   }
   .mini-note { font-size: 11px; color: #94a3b8; margin: 4px 0 0; }
   .doc-extra { font-size: 11px; color: #64748b; margin-top: 4px; line-height: 1.5; }
   .auto-sum-line {
-    font-size: 13px;
-    color: #1e293b;
-    background: #f8fafc;
-    border: 1px dashed #cbd5e1;
-    border-radius: 8px;
-    padding: 8px 10px;
-    margin: 8px 0;
+    font-size: 13px; color: #1e293b; background: #f8fafc;
+    border: 1px dashed #cbd5e1; border-radius: 8px; padding: 8px 10px; margin: 8px 0;
   }
   .auto-sum-line b { font-size: 15px; }
 
-  /* ===== счёт в карточке и ПП ===== */
   .pay-fact {
-    display: flex; gap: 8px; margin-top: 8px;
-    align-items: center; flex-wrap: wrap;
-    font-size: 12px; color: #475569;
+    display: flex; gap: 8px; margin-top: 8px; align-items: center;
+    flex-wrap: wrap; font-size: 12px; color: #475569;
   }
-  .pay-fact input {
-    width: auto; flex: 1; min-width: 90px;
-    margin-top: 0; padding: 6px 8px; font-size: 13px;
-  }
+  .pay-fact input { width: auto; flex: 1; min-width: 90px; margin-top: 0; padding: 6px 8px; font-size: 13px; }
   .pay-fact .lbl2 { white-space: nowrap; font-weight: 600; }
   .pay-block {
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 8px;
-    margin-top: 6px;
-    background: #f8fafc;
+    border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px;
+    margin-top: 6px; background: #f8fafc;
   }
-  .pay-block .pb-title {
-    font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px;
-  }
+  .pay-block .pb-title { font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px; }
   .pay-block .remove-inv {
-    background: none;
-    border: none;
-    color: #ef4444;
-    font-size: 15px;
-    cursor: pointer;
-    float: right;
-    padding: 0 4px;
+    background: none; border: none; color: #ef4444; font-size: 15px;
+    cursor: pointer; float: right; padding: 0 4px;
   }
 
-  /* ===== календарь экономиста ===== */
   .cal-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
   .cal-nav .mon { font-size: 16px; font-weight: 700; text-transform: capitalize; }
   .cal-nav button {
-    background: #e2e8f0; border: none; border-radius: 8px;
-    padding: 6px 14px; font-size: 15px; cursor: pointer;
-    color: #475569; font-weight: 700;
+    background: #e2e8f0; border: none; border-radius: 8px; padding: 6px 14px;
+    font-size: 15px; cursor: pointer; color: #475569; font-weight: 700;
   }
   .cal-week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 4px; }
   .cal-week div { text-align: center; font-size: 11px; color: #64748b; font-weight: 600; }
@@ -441,10 +265,8 @@
   .cal-day.sel   { background: #dbeafe; }
   .cal-day .d { font-size: 12px; font-weight: 600; }
   .cal-chip {
-    font-size: 9px; line-height: 1.3; padding: 1px 4px;
-    border-radius: 4px; margin-top: 2px;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    font-weight: 600;
+    font-size: 9px; line-height: 1.3; padding: 1px 4px; border-radius: 4px;
+    margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600;
   }
   .cal-chip.c-work { background: rgba(37, 99, 235, 0.15); color: #1d4ed8; }
   .cal-chip.c-soon { background: rgba(245, 158, 11, 0.2); color: #b45309; }
@@ -453,17 +275,10 @@
 
   .hidden { display: none; }
 
-  /* ===== красная тема вкладки «Договорная работа» ===== */
   body.red-mode .tabs button.on { background: #dc2626; }
-  body.red-mode .fab {
-    background: #dc2626;
-    box-shadow: 0 4px 14px rgba(220, 38, 38, 0.4);
-  }
+  body.red-mode .fab { background: #dc2626; box-shadow: 0 4px 14px rgba(220, 38, 38, 0.4); }
   body.red-mode .fab:active { background: #b91c1c; }
-  body.red-mode .fab::after {
-    border: 2px solid rgba(220, 38, 38, 0.45);
-    border-top-color: transparent;
-  }
+  body.red-mode .fab::after { border: 2px solid rgba(220, 38, 38, 0.45); border-top-color: transparent; }
   body.red-mode .btn { background: #dc2626; }
   body.red-mode .btn:active { background: #b91c1c; }
   body.red-mode .btn.clear,
@@ -522,7 +337,7 @@
   </div>
 
   <div class="card">
-    <h3>Задачи <button class="btn clear" onclick="clearFilters()" title="Сбросить фильтры">сбросить</button></h3>
+    <h3>Задачи <button class="btn clear" onclick="clearFilters()">сбросить</button></h3>
 
     <div class="filters">
       <div>
@@ -644,7 +459,6 @@
     <button id="subDocSched" onclick="showDocSub('sched')">График поставок</button>
   </div>
 
-  <!-- подвкладка: реестр договоров -->
   <div id="docSubRegistry">
     <div class="card">
       <h3>Реестр договоров
@@ -708,19 +522,16 @@
     </div>
   </div>
 
-  <!-- подвкладка: реестр оплаты (по месяцам) -->
   <div id="docSubPay" class="hidden">
     <div class="card">
       <h3>Реестр оплаты</h3>
       <p class="mini-note" style="text-align:left; margin-bottom:8px">
-        Счета формируются из карточек договоров — как только вносишь счёт в карточку,
-        он появляется здесь. Рядом по счёту вноси факт оплаты: платёжное поручение.
+        Счета формируются из карточек договоров. Рядом по счёту вноси факт оплаты: платёжное поручение.
       </p>
       <div id="payList"><p class="note">Счетов пока нет</p></div>
     </div>
   </div>
 
-  <!-- подвкладка: график поставок (по месяцам) -->
   <div id="docSubSched" class="hidden">
     <div class="card">
       <h3>График поставок</h3>
@@ -741,7 +552,7 @@
 <!-- ===== плавающая кнопка «+» ===== -->
 <button class="fab" onclick="fabClick()" title="Добавить">+</button>
 
-<!-- ===== всплывающее окно добавления задачи ===== -->
+<!-- ===== окно добавления задачи ===== -->
 <div id="taskOverlay" class="overlay hidden" onclick="if(event.target === this) closeTaskModal()">
   <div class="modal">
     <h3>Новая задача</h3>
@@ -758,7 +569,7 @@
   </div>
 </div>
 
-<!-- ===== всплывающее окно добавления договора ===== -->
+<!-- ===== окно добавления договора ===== -->
 <div id="docOverlay" class="overlay hidden" onclick="if(event.target === this) closeDocModal()">
   <div class="modal">
     <h3>Новый договор</h3>
@@ -925,7 +736,7 @@
     <h4>Дополнительные соглашения</h4>
     <div id="cDsWrap"></div>
     <button class="btn add-ds" onclick="addCardDsRow()">+ Добавить ДС</button>
-    <p class="mini-note">В ДС фиксируй изменения ведомости: позиция, новое количество, новая цена — в любую сторону. Фактические изменения вноси и в саму ведомость — сумма пересчитается.</p>
+    <p class="mini-note">В ДС фиксируй изменения ведомости: позиция, новое количество, новая цена. Фактические изменения вноси и в саму ведомость — сумма пересчитается.</p>
 
     <div class="modal-actions">
       <button class="btn" onclick="saveDocCard()">Сохранить</button>
@@ -941,7 +752,7 @@ const TEAM = ['Нина', 'Аня', 'Маша', 'Вика', 'Алина'];
 
 let currentTab = 'tasks';
 
-// ===== экранирование пользовательского ввода в HTML =====
+// ===== экранирование ввода =====
 function esc(v) {
   return String(v === null || v === undefined ? '' : v)
     .replace(/&/g, '&amp;')
@@ -956,64 +767,44 @@ const STATUS_LIST = [
   'на согласовании у ГЭ', 'на согласовании у МВ', 'на доработке', 'выполнено'
 ];
 const STATUS_CLS = {
-  'в очереди':            'ss-queue',
-  'в работе':             'ss-work',
-  'на паузе':             'ss-pause',
-  'на согласовании у ГЭ': 'ss-ge',
-  'на согласовании у МВ': 'ss-mv',
-  'на доработке':         'ss-rework',
-  'выполнено':            'ss-done'
+  'в очереди': 'ss-queue', 'в работе': 'ss-work', 'на паузе': 'ss-pause',
+  'на согласовании у ГЭ': 'ss-ge', 'на согласовании у МВ': 'ss-mv',
+  'на доработке': 'ss-rework', 'выполнено': 'ss-done'
 };
 const STATUS_HEAD = {
-  'в очереди':            'g-queue',
-  'в работе':             'g-work',
-  'на паузе':             'g-pause',
-  'на согласовании у ГЭ': 'g-ge',
-  'на согласовании у МВ': 'g-mv',
-  'на доработке':         'g-rework',
-  'выполнено':            'g-done'
+  'в очереди': 'g-queue', 'в работе': 'g-work', 'на паузе': 'g-pause',
+  'на согласовании у ГЭ': 'g-ge', 'на согласовании у МВ': 'g-mv',
+  'на доработке': 'g-rework', 'выполнено': 'g-done'
 };
 const STATUS_SEG = {
-  'в очереди':            'sb-queue',
-  'в работе':             'sb-work',
-  'на паузе':             'sb-pause',
-  'на согласовании у ГЭ': 'sb-ge',
-  'на согласовании у МВ': 'sb-mv',
-  'на доработке':         'sb-rework',
-  'выполнено':            'sb-done'
+  'в очереди': 'sb-queue', 'в работе': 'sb-work', 'на паузе': 'sb-pause',
+  'на согласовании у ГЭ': 'sb-ge', 'на согласовании у МВ': 'sb-mv',
+  'на доработке': 'sb-rework', 'выполнено': 'sb-done'
 };
 const STATUS_STRIP = {
-  'в очереди':            '#94a3b8',
-  'в работе':             '#2563eb',
-  'на паузе':             '#06b6d4',
-  'на согласовании у ГЭ': '#eab308',
-  'на согласовании у МВ': '#eab308',
-  'на доработке':         '#ea580c',
-  'выполнено':            '#16a34a'
+  'в очереди': '#94a3b8', 'в работе': '#2563eb', 'на паузе': '#06b6d4',
+  'на согласовании у ГЭ': '#eab308', 'на согласовании у МВ': '#eab308',
+  'на доработке': '#ea580c', 'выполнено': '#16a34a'
 };
 
 // ===== СТАТУСЫ ДОГОВОРОВ =====
 const DOC_STATUS = ['проект', 'на согласовании', 'подписан', 'закрыт'];
 const DOC_STRIP = {
-  'проект':          '#94a3b8',
-  'на согласовании': '#f59e0b',
-  'подписан':        '#dc2626',
-  'закрыт':          '#16a34a'
+  'проект': '#94a3b8', 'на согласовании': '#f59e0b',
+  'подписан': '#dc2626', 'закрыт': '#16a34a'
 };
 const DOC_CLS = {
-  'проект':          'ss-project',
-  'на согласовании': 'ss-on-approval',
-  'подписан':        'ss-signed',
-  'закрыт':          'ss-closed'
+  'проект': 'ss-project', 'на согласовании': 'ss-on-approval',
+  'подписан': 'ss-signed', 'закрыт': 'ss-closed'
 };
 
 const COND_TEXT = {
-  prepay:  'с даты перечисления аванса',
+  prepay: 'с даты перечисления аванса',
   tolling: 'с даты получения давальческого сырья',
-  fixed:   'конкретная дата'
+  fixed: 'конкретная дата'
 };
 const FINAL_EVENT_TEXT = {
-  act:      'после подписания акта',
+  act: 'после подписания акта',
   delivery: 'после последней поставки',
   contract: 'после подписания договора'
 };
@@ -1249,8 +1040,7 @@ function renderStatusMenu() {
       const color = STATUS_STRIP[s] || '#64748b';
       return '<div class="opt" onclick="pickStatus(\'' + s + '\')">' +
         '<span><span class="sdot" style="background:' + color + '"></span>' + esc(s) + '</span>' +
-        (s === status ? '<b>✓</b>' : '') +
-        '</div>';
+        (s === status ? '<b>✓</b>' : '') + '</div>';
     }).join('');
   } else if (menuDocId) {
     const docs = loadDocs();
@@ -1260,8 +1050,7 @@ function renderStatusMenu() {
       const color = DOC_STRIP[s] || '#64748b';
       return '<div class="opt" onclick="setDocStatus(\'' + menuDocId + '\', \'' + s + '\')">' +
         '<span><span class="sdot" style="background:' + color + '"></span>' + esc(s) + '</span>' +
-        (s === status ? '<b>✓</b>' : '') +
-        '</div>';
+        (s === status ? '<b>✓</b>' : '') + '</div>';
     }).join('');
   }
 }
@@ -1496,7 +1285,6 @@ function fmtNum(x) {
 }
 
 // ===== автоматическая сумма договора из ведомости =====
-// цены в ведомости считаем уже с НДС; сумма договора = сумма позиций
 function itemsTotal(items) {
   return r2((items || []).reduce((acc, it) => acc + (it.sum || 0), 0));
 }
@@ -1506,7 +1294,6 @@ function updateSumLine(lineId, total) {
   const b = line.querySelector('b');
   if (b) b.textContent = fmtNum(total);
 }
-// пересчитать сумму в конкретном окне (по его ведомости и строке суммы)
 function recalcModalSum(wrapId, lineId) {
   const wrap = document.getElementById(wrapId);
   const line = document.getElementById(lineId);
@@ -1608,7 +1395,6 @@ function buildContrFilter() {
 }
 
 // ===== строки ведомости =====
-// wrapId/lineId передаются в строку явно: обработчик работает только со своим окном
 function itemRowHtml(s, wrapId, lineId) {
   return '<div class="item-row">' +
     '<button class="remove-item" title="Убрать позицию" onclick="removeItemRow(this, \'' + wrapId + '\', \'' + lineId + '\')">✕</button>' +
@@ -1704,7 +1490,7 @@ function collectDs() {
   return out;
 }
 
-// ===== счёт в карточке (номер, дата, сумма + платёжное поручение) =====
+// ===== счёт в карточке =====
 function invoiceRowHtml(inv) {
   return '<div class="pay-block">' +
     '<button class="remove-inv" title="Убрать счёт" onclick="this.parentNode.remove()">✕</button>' +
@@ -1962,7 +1748,7 @@ function saveDocCard() {
     d.statusDate = new Date().toISOString();
   }
   d.items = collectItems('cItemsWrap');
-  d.sum = itemsTotal(d.items); // сумма всегда из ведомости
+  d.sum = itemsTotal(d.items);
   d.invoices = collectInvoices();
   d.prepay = parseFloat(document.getElementById('cPrepay').value) || 0;
   d.prepayDays = parseInt(document.getElementById('cPrepayDays').value, 10) || 0;
@@ -1990,7 +1776,7 @@ function delDocFromCard() {
   delDoc(id);
 }
 
-// ===== реестр оплаты: счета из карточек, по месяцам =====
+// ===== реестр оплаты =====
 function saveInv(id, i, field, val) {
   const docs = loadDocs();
   const d = docs.find(x => x.id === id);
@@ -2066,7 +1852,7 @@ function renderPays() {
   }).join('');
 }
 
-// ===== график поставок: месяц → договор → позиции =====
+// ===== график поставок =====
 function schedItemRow(d, it) {
   const strip = DOC_STRIP[d.status] || '#64748b';
   const due = itemDueDate(d, it);
@@ -2189,3 +1975,225 @@ let calSel = null;
 function calKey(y, m, d) {
   const p = n => (n < 10 ? '0' : '') + n;
   return y + '-' + p(m + 1) + '-' + p(d);
+}
+function calMove(dir) {
+  calMonth += dir;
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  renderCal();
+}
+function calTasksOn(key) {
+  return loadTasks().filter(t => t.date === key);
+}
+function renderCal() {
+  document.getElementById('calTitle').textContent = MONTHS[calMonth] + ' ' + calYear;
+
+  const grid = document.getElementById('calGrid');
+  const first = new Date(calYear, calMonth, 1);
+  const shift = (first.getDay() + 6) % 7;
+  const start = new Date(calYear, calMonth, 1 - shift);
+
+  const today = new Date();
+  const todayKey = calKey(today.getFullYear(), today.getMonth(), today.getDate());
+
+  const order = { over: 0, soon: 1, work: 2, done: 3 };
+  let html = '';
+  for (let cell = 0; cell < 42; cell++) {
+    const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + cell);
+    const inMonth = d.getMonth() === calMonth;
+    const key = calKey(d.getFullYear(), d.getMonth(), d.getDate());
+    const dayTasks = calTasksOn(key).slice().sort((a, b) =>
+      (order[taskCat(a)] !== undefined ? order[taskCat(a)] : 9) -
+      (order[taskCat(b)] !== undefined ? order[taskCat(b)] : 9));
+
+    let chips = '';
+    dayTasks.slice(0, 2).forEach(t => {
+      chips += '<div class="cal-chip c-' + taskCat(t) + '">' + esc(t.name) + '</div>';
+    });
+    if (dayTasks.length > 2) {
+      chips += '<div class="cal-chip c-work">+ ещё ' + (dayTasks.length - 2) + '</div>';
+    }
+
+    const cls = 'cal-day' + (inMonth ? '' : ' other') +
+      (key === todayKey ? ' today' : '') +
+      (key === calSel ? ' sel' : '');
+    html += '<div class="' + cls + '" onclick="calPick(\'' + key + '\')">' +
+      '<div class="d">' + d.getDate() + '</div>' + chips + '</div>';
+  }
+  grid.innerHTML = html;
+}
+function calPick(key) {
+  calSel = (calSel === key) ? null : key;
+  renderCal();
+  renderCalDay();
+}
+function renderCalDay() {
+  const title = document.getElementById('calDayTitle');
+  const listEl = document.getElementById('calDayList');
+  if (!calSel) {
+    title.textContent = 'Выберите день';
+    listEl.innerHTML = '<p class="note">Нажмите на день в календаре</p>';
+    return;
+  }
+  title.textContent = 'Дедлайны: ' + fmtDate(calSel);
+  const dayTasks = calTasksOn(calSel);
+  if (!dayTasks.length) {
+    listEl.innerHTML = '<p class="note">На этот день задач нет</p>';
+    return;
+  }
+  listEl.innerHTML = dayTasks.map(t => {
+    const cat = taskCat(t);
+    const status = t.status || 'в работе';
+    const bCls = cat === 'over' ? 'over' : (cat === 'soon' ? 'soon' : (cat === 'done' ? '' : 'ok'));
+    return '<div class="task">' +
+      '<div class="info"><div class="name">' + (cat === 'done' ? '✅ ' : '') + esc(t.name) + '</div>' +
+      '<div class="meta">' +
+      (t.who ? '<span class="who">' + esc(t.who) + '</span>' : '') +
+      '<span class="badge ' + bCls + '">' + (cat === 'done' ? 'закрыто' : esc(status)) + '</span>' +
+      '</div></div></div>';
+  }).join('');
+}
+renderCal();
+
+// ===== Калькулятор =====
+function fmt(x) {
+  return x.toLocaleString('ru-RU', {maximumFractionDigits: 2}) + ' руб.';
+}
+
+// ===== Число прописью =====
+const W_UNITS_M = ['', 'один', 'два', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять'];
+const W_UNITS_F = ['', 'одна', 'две', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять'];
+const W_TEEN = ['десять', 'одиннадцать', 'двенадцать', 'тринадцать', 'четырнадцать',
+                'пятнадцать', 'шестнадцать', 'семнадцать', 'восемнадцать', 'девятнадцать'];
+const W_TENS = ['', '', 'двадцать', 'тридцать', 'сорок', 'пятьдесят',
+                'шестьдесят', 'семьдесят', 'восемьдесят', 'девяносто'];
+const W_HUNDREDS = ['', 'сто', 'двести', 'триста', 'четыреста', 'пятьсот',
+                    'шестьсот', 'семьсот', 'восемьсот', 'девятьсот'];
+
+function wordsUpTo999(n, fem) {
+  const out = [];
+  const h = Math.floor(n / 100);
+  if (h) out.push(W_HUNDREDS[h]);
+  const rest = n % 100;
+  if (rest >= 10 && rest < 20) {
+    out.push(W_TEEN[rest - 10]);
+  } else {
+    const t = Math.floor(rest / 10);
+    if (t) out.push(W_TENS[t]);
+    const u = rest % 10;
+    if (u) out.push((fem ? W_UNITS_F : W_UNITS_M)[u]);
+  }
+  return out.join(' ');
+}
+function pluralForm(n, one, few, many) {
+  const m100 = n % 100;
+  const m10 = n % 10;
+  if (m10 === 1 && m100 !== 11) return one;
+  if (m10 >= 2 && m10 <= 4 && !(m100 >= 12 && m100 <= 14)) return few;
+  return many;
+}
+function numToWords(n) {
+  if (n === 0) return 'ноль';
+  const groups = [];
+  let x = n;
+  while (x > 0) { groups.push(x % 1000); x = Math.floor(x / 1000); }
+  const scales = [
+    null,
+    ['тысяча', 'тысячи', 'тысяч'],
+    ['миллион', 'миллиона', 'миллионов'],
+    ['миллиард', 'миллиарда', 'миллиардов']
+  ];
+  const out = [];
+  for (let i = groups.length - 1; i >= 0; i--) {
+    const g = groups[i];
+    if (!g) continue;
+    out.push(wordsUpTo999(g, i === 1));
+    if (i > 0) {
+      const f = scales[i];
+      out.push(pluralForm(g, f[0], f[1], f[2]));
+    }
+  }
+  return out.join(' ');
+}
+function sumInWords(amount) {
+  const cents = Math.round(amount * 100);
+  let rub = Math.floor(cents / 100);
+  let kop = cents % 100;
+  if (kop === 100) { rub += 1; kop = 0; }
+  const rubWords = rub === 0 ? 'ноль' : numToWords(rub);
+  const capitalized = rubWords.charAt(0).toUpperCase() + rubWords.slice(1);
+  const kopStr = (kop < 10 ? '0' : '') + kop;
+  return rub.toLocaleString('ru-RU') + ' (' + capitalized + ') ' +
+    pluralForm(rub, 'рубль', 'рубля', 'рублей') + ' ' + kopStr + ' копеек';
+}
+
+function calc() {
+  const v = id => parseFloat(document.getElementById(id).value) || 0;
+
+  const materials = v('f4') + v('f6') + v('f7');
+
+  const hpm = v('hpm') || 164;
+  const manMonths = document.getElementById('unit').value === 'h'
+    ? v('labor') / hpm
+    : v('labor');
+
+  const f9 = v('avg') * manMonths;
+  const f10 = f9 * v('dzp') / 100;
+  const salary = f9 + f10;
+  const strah = salary * v('strah') / 100;
+  const f11 = salary * v('opr') / 100;
+  const f12 = salary * v('ohr') / 100;
+
+  const seb = materials + salary + strah + f11 + f12;
+
+  const profitMaterials = materials * 0.01;
+  const profitOwn = (salary + strah + f11 + f12) * 0.25;
+  const profit = profitMaterials + profitOwn;
+
+  const price = seb + profit;
+
+  const nds = price * 0.22;
+  const priceWithNds = price + nds;
+
+  document.getElementById('res').innerHTML =
+    '<hr class="hr">' +
+    '<p>Материалы всего: <b>' + fmt(materials) + '</b></p>' +
+    '<p>Ф9 — основная ЗП: ' + fmt(f9) + '</p>' +
+    '<p>Ф10 — ДЗП: ' + fmt(f10) + '</p>' +
+    '<p>ЗП всего: <b>' + fmt(salary) + '</b></p>' +
+    '<p>СТРАХ: ' + fmt(strah) + '</p>' +
+    '<p>Ф11 — ОПР: ' + fmt(f11) + '</p>' +
+    '<p>Ф12 — ОХР/АУР: ' + fmt(f12) + '</p>' +
+    '<hr class="hr">' +
+    '<p>СЕБ — себестоимость: <b>' + fmt(seb) + '</b></p>' +
+    '<p>Прибыль: <b>' + fmt(profit) + '</b>' +
+    ' <span class="note">(1% от материалов: ' + fmt(profitMaterials) +
+    ' · 25% от собственных: ' + fmt(profitOwn) + ')</span></p>' +
+    '<hr class="hr">' +
+    '<p style="font-size:17px">ЦЕНА БЕЗ НДС: <b>' + fmt(price) + '</b></p>' +
+    '<p>НДС 22%: <b>' + fmt(nds) + '</b></p>' +
+    '<hr class="hr">' +
+    '<p style="font-size:19px">ЦЕНА С НДС: <b>' + fmt(priceWithNds) + '</b></p>';
+}
+
+// ===== отдельный блок: сумма прописью =====
+function sumWords() {
+  const s = parseFloat(document.getElementById('swSum').value) || 0;
+  if (s <= 0) { alert('Введите стоимость договора с НДС'); return; }
+
+  const nds = s * 22 / 122;
+  const priceNoNds = s - nds;
+
+  document.getElementById('swRes').innerHTML =
+    '<hr class="hr">' +
+    '<p>Цена без НДС: <b>' + fmtNum(priceNoNds) + '</b></p>' +
+    '<p>в том числе НДС 22%: <b>' + fmtNum(nds) + '</b></p>' +
+    '<div class="sum-box">' +
+    '<div class="sum-title">Стоимость договора</div>' +
+    '<p>' + sumInWords(s) + ', в том числе НДС 22% — ' + sumInWords(nds) + '</p>' +
+    '</div>';
+}
+</script>
+
+</body>
+</html>
