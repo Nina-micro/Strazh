@@ -62,10 +62,6 @@
   .ss-mv { color: #a16207; border-color: rgba(234,179,8,0.65); background: rgba(253,224,71,0.35); }
   .ss-rework { color: #ea580c; border-color: rgba(234,88,12,0.5); background: rgba(234,88,12,0.08); }
   .ss-done { color: #16a34a; border-color: rgba(22,163,74,0.5); background: rgba(22,163,74,0.08); }
-  .ss-project { color: #64748b; border-color: rgba(148,163,184,0.6); background: rgba(148,163,184,0.12); }
-  .ss-on-approval { color: #b45309; border-color: rgba(245,158,11,0.65); background: rgba(253,224,71,0.35); }
-  .ss-signed { color: #dc2626; border-color: rgba(220,38,38,0.5); background: rgba(220,38,38,0.12); }
-  .ss-closed { color: #16a34a; border-color: rgba(22,163,74,0.5); background: rgba(22,163,74,0.08); }
   .status-menu { position: fixed; z-index: 50; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.18); padding: 6px; min-width: 230px; }
   .status-menu .opt { padding: 9px 12px; border-radius: 8px; font-size: 13px; font-weight: 600; color: #1e293b; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
   .status-menu .opt:active { background: #f1f5f9; }
@@ -73,18 +69,12 @@
   .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; color: #fff; background: #64748b; cursor: pointer; user-select: none; }
   .badge.over { background: #ef4444; } .badge.soon { background: #f59e0b; } .badge.ok { background: #2563eb; }
   .badge.paid { background: #16a34a; } .badge.wait { background: #94a3b8; }
-  .badge.otk { background: #f59e0b; } .badge.vp { background: #64748b; }
-  .cat-mark { display: inline-block; padding: 1px 7px; border-radius: 6px; font-size: 10px; font-weight: 700; color: #fff; }
-  .cat-mark.goz { background: #dc2626; } .cat-mark.kom { background: #2563eb; }
   .group { border: 1px solid #e2e8f0; border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
   .group-head { padding: 8px 12px; font-size: 13px; font-weight: 700; color: #fff; display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
   .group-head small { font-weight: 600; opacity: 0.9; }
   .g-queue { background: #94a3b8; } .g-work { background: #2563eb; } .g-pause { background: #06b6d4; }
   .g-ge { background: #eab308; } .g-mv { background: #eab308; } .g-rework { background: #ea580c; } .g-done { background: #16a34a; }
   .g-who { background: #475569; cursor: pointer; user-select: none; }
-  .g-doc { background: #7f1d1d; cursor: pointer; user-select: none; }
-  .g-month { background: #1e293b; cursor: pointer; user-select: none; }
-  .g-month .gm-sum { font-weight: 700; }
   .group-body { border-top: 1px solid #e2e8f0; }
   .del { background: none; border: none; color: #ef4444; font-size: 18px; cursor: pointer; }
   .hr { border: none; border-top: 1px solid #e2e8f0; margin: 10px 0; }
@@ -100,19 +90,7 @@
   .modal h3 { font-size: 17px; margin-bottom: 12px; display: block; }
   .modal-actions { display: flex; gap: 10px; flex-wrap: wrap; }
   .modal-actions .btn { margin-top: 10px; flex: 1; }
-  .item-row, .ds-row, .ship-row { border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; margin-bottom: 8px; background: #f8fafc; }
-  .item-row .filters, .ds-row .filters, .ship-row .filters { margin-bottom: 6px; }
-  .item-row .remove-item, .ds-row .remove-ds, .ship-row .remove-ship { background: none; border: none; color: #ef4444; font-size: 16px; cursor: pointer; float: right; padding: 0 4px; }
-  .btn.add-item, .btn.add-ds, .btn.add-inv, .btn.add-ship { background: #e2e8f0; color: #475569; font-size: 13px; padding: 8px; margin-top: 4px; }
   .mini-note { font-size: 11px; color: #94a3b8; margin: 4px 0 0; }
-  .doc-extra { font-size: 11px; color: #64748b; margin-top: 4px; line-height: 1.5; }
-  .auto-sum-line { font-size: 13px; color: #1e293b; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 8px 10px; margin: 8px 0; }
-  .auto-sum-line b { font-size: 15px; }
-  .pay-fact { display: flex; gap: 8px; margin-top: 8px; align-items: center; flex-wrap: wrap; font-size: 12px; color: #475569; }
-  .pay-fact input, .pay-fact select { width: auto; flex: 1; min-width: 90px; margin-top: 0; padding: 6px 8px; font-size: 13px; }
-  .pay-block { border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; margin-top: 6px; background: #f8fafc; }
-  .pay-block .pb-title { font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px; }
-  .pay-block .remove-inv { background: none; border: none; color: #ef4444; font-size: 15px; cursor: pointer; float: right; padding: 0 4px; }
   .cal-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
   .cal-nav .mon { font-size: 16px; font-weight: 700; text-transform: capitalize; }
   .cal-nav button { background: #e2e8f0; border: none; border-radius: 8px; padding: 6px 14px; font-size: 15px; cursor: pointer; color: #475569; font-weight: 700; }
@@ -133,11 +111,9 @@
   body.red-mode .tabs button.on { background: #dc2626; }
   body.red-mode .fab { background: #dc2626; box-shadow: 0 4px 14px rgba(220,38,38,0.4); }
   body.red-mode .btn { background: #dc2626; }
-  body.red-mode .btn.clear, body.red-mode .btn.ghost, body.red-mode .btn.add-item, body.red-mode .btn.add-ds, body.red-mode .btn.add-inv, body.red-mode .btn.add-ship { background: #fee2e2; color: #b91c1c; }
+  body.red-mode .btn.clear, body.red-mode .btn.ghost { background: #fee2e2; color: #b91c1c; }
   body.red-mode .btn.danger { background: #fff; color: #ef4444; }
   body.red-mode #secDoc .card h3 { color: #b91c1c; }
-  body.red-mode #secDoc .who { color: #dc2626; }
-  body.red-mode #secDoc .card { box-shadow: 0 1px 4px rgba(220,38,38,0.12); }
   .view-toggle { display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 12px; font-weight: 600; color: #475569; margin: 4px 0 10px; }
   .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
   .switch input { opacity: 0; width: 0; height: 0; }
@@ -145,41 +121,45 @@
   .slider::before { content: ''; position: absolute; width: 18px; height: 18px; border-radius: 50%; left: 3px; top: 3px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.25); transition: 0.2s; }
   .switch input:checked + .slider { background: #dc2626; }
   .switch input:checked + .slider::before { transform: translateX(20px); }
-  .task.compact .doc-extra { display: none; }
-  .g-year { background: #334155; cursor: pointer; user-select: none; }
-  .sched-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center; margin-bottom: 12px; }
-  .sched-summary .num { font-size: 20px; font-weight: 700; }
-  .sched-summary .lbl { font-size: 11px; color: #64748b; }
-  .sched-items { font-size: 11px; color: #64748b; line-height: 1.55; padding: 4px 12px 8px; }
-  .sched-items .done { color: #16a34a; font-weight: 600; }
-  .sched-items .part { color: #b45309; font-weight: 600; }
-  .sched-items .over { color: #b91c1c; font-weight: 600; }
   .month-now { outline: 2px solid #2563eb; outline-offset: -2px; }
-  .doc-card-layout { display: flex; gap: 12px; align-items: stretch; }
-  .dc-nav { width: 118px; flex-shrink: 0; border: 1px solid #e2e8f0; border-radius: 10px; background: #f8fafc; padding: 6px; display: flex; flex-direction: column; gap: 4px; align-self: flex-start; }
-  .dc-nav .dc-nav-title { font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.04em; padding: 4px 6px 2px; }
-  .dc-nav button { border: none; background: transparent; text-align: left; padding: 8px 8px; font-size: 12px; font-weight: 600; color: #475569; border-radius: 8px; cursor: pointer; line-height: 1.25; }
-  .dc-nav button:active { background: #e2e8f0; }
-  .dc-nav button.on { background: #dc2626; color: #fff; }
-  .dc-panel { flex: 1; min-width: 0; display: none; }
-  .dc-panel.on { display: block; }
-  .dc-panel h4 { margin-top: 0; }
-  @media (max-width: 420px) {
-    .doc-card-layout { flex-direction: column; }
-    .dc-nav { width: 100%; flex-direction: row; flex-wrap: wrap; }
-    .dc-nav .dc-nav-title { display: none; }
-    .dc-nav button { flex: 1 1 auto; text-align: center; }
-  }
-  /* ===== светлый вид графика ===== */
-  #docSubSched .g-year { background: #f8fafc; color: #334155; border-bottom: 1px solid #e2e8f0; padding: 7px 12px; font-size: 13px; }
-  #docSubSched .g-year small { color: #94a3b8; font-weight: 600; }
-  #docSubSched .g-year .gy-title { margin-left: auto; font-weight: 700; margin-right: 10px; }
-  #docSubSched .g-month { background: #f1f5f9; color: #475569; padding: 6px 12px; font-size: 12.5px; border-bottom: 1px solid #e2e8f0; }
-  #docSubSched .g-doc { background: #ffffff; color: #b91c1c; padding: 6px 12px; font-size: 12.5px; border-bottom: 1px solid #f1f5f9; }
-  .sched-switch { flex-shrink: 0; transform: scale(0.85); }
+  /* ===== экран входа ===== */
+  #loginOverlay { position: fixed; inset: 0; background: #f1f5f9; z-index: 100; display: flex; align-items: center; justify-content: center; padding: 16px; }
+  #loginOverlay.hidden { display: none !important; }
+  .login-box { background: #fff; border-radius: 16px; padding: 24px; width: 100%; max-width: 380px; box-shadow: 0 8px 30px rgba(0,0,0,0.15); }
+  .login-box h2 { font-size: 22px; text-align: center; margin-bottom: 4px; }
+  .login-box .sub { text-align: center; font-size: 12px; color: #94a3b8; margin-bottom: 14px; }
+  .login-err { color: #b91c1c; font-size: 13px; text-align: center; min-height: 18px; margin-top: 8px; }
+  .user-bar { display: flex; justify-content: space-between; align-items: center; background: #fff; border-radius: 10px; padding: 8px 12px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); font-size: 13px; }
+  .user-bar .who-now { font-weight: 700; color: #1e293b; }
+  .user-bar button { background: #e2e8f0; border: none; border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: 600; color: #475569; cursor: pointer; margin-left: 6px; }
+  .user-bar button.admin-btn { background: #1e293b; color: #fff; }
+  .user-list-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding: 8px 4px; font-size: 14px; gap: 8px; }
+  .user-list-row:last-child { border-bottom: none; }
+  .user-list-row .u-login { color: #64748b; font-size: 12px; }
 </style>
 </head>
 <body>
+
+<!-- ЭКРАН ВХОДА -->
+<div id="loginOverlay">
+  <form class="login-box" onsubmit="tryLogin(event)">
+    <h2>СТРАЖ</h2>
+    <div class="sub">Отдел ПЭО · вход по личному доступу</div>
+    <label>Логин <input type="text" id="inLogin" autocomplete="username"></label>
+    <label>Пароль <input type="password" id="inPass" autocomplete="current-password"></label>
+    <button class="btn" type="submit">Войти</button>
+    <div class="login-err" id="loginErr"></div>
+    <p class="note">Доступы выдаёт руководитель отдела.</p>
+  </form>
+</div>
+
+<div id="userBar" class="user-bar hidden">
+  <span>Вы вошли как: <span class="who-now" id="whoNow"></span></span>
+  <span>
+    <button id="btnAdmin" class="admin-btn hidden" onclick="openAdminModal()">Сотрудники</button>
+    <button onclick="doLogout()">Выйти</button>
+  </span>
+</div>
 
 <h1>СТРАЖ</h1>
 <p class="subtitle">Отдел ПЭО · задачи и дедлайны</p>
@@ -310,7 +290,28 @@
   </div>
 </div>
 
+<div id="adminOverlay" class="overlay hidden" onclick="if(event.target === this) closeAdminModal()">
+  <div class="modal">
+    <h3>Сотрудники и доступы</h3>
+    <div id="userList"></div>
+    <hr class="hr">
+    <h4>Выдать доступ</h4>
+    <label>Имя сотрудника <input type="text" id="aName" placeholder="Например: Нина"></label>
+    <label>Логин <input type="text" id="aLogin" placeholder="Например: nina"></label>
+    <label>Пароль <input type="text" id="aPass" placeholder="Придумайте пароль"></label>
+    <div class="modal-actions">
+      <button class="btn" onclick="addUser()">Выдать доступ</button>
+      <button class="btn ghost" onclick="closeAdminModal()">Закрыть</button>
+    </div>
+    <p class="mini-note">Выдайте логин и пароль сотруднику лично. Изменить пароль можно, удалив доступ и выдав его заново.</p>
+  </div>
+</div>
+
 <script>
+// ===== администратор: смени эти две строки на свои =====
+const ADMIN_LOGIN = 'admin';
+const ADMIN_PASS = 'strazh2026';
+
 const TEAM = ['Нина', 'Аня', 'Маша', 'Вика', 'Алина'];
 let currentTab = 'tasks';
 
@@ -319,6 +320,100 @@ function esc(v) {
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
+// ===== вход =====
+function hashStr(s) {
+  let h = 5381;
+  for (let i = 0; i < s.length; i++) { h = ((h << 5) + h + s.charCodeAt(i)) >>> 0; }
+  return h.toString(36);
+}
+function loadUsers() {
+  try { return JSON.parse(localStorage.getItem('strazh_users')) || []; } catch(e) { return []; }
+}
+function saveUsers(u) { localStorage.setItem('strazh_users', JSON.stringify(u)); }
+function getAuth() { try { return JSON.parse(localStorage.getItem('strazh_auth')); } catch(e) { return null; } }
+function setAuth(a) { if (a) localStorage.setItem('strazh_auth', JSON.stringify(a)); else localStorage.removeItem('strazh_auth'); }
+let currentUser = getAuth();
+
+function tryLogin(e) {
+  e.preventDefault();
+  const login = document.getElementById('inLogin').value.trim();
+  const pass = document.getElementById('inPass').value;
+  const err = document.getElementById('loginErr');
+  if (!login || !pass) { err.textContent = 'Введите логин и пароль'; return; }
+  if (login.toLowerCase() === ADMIN_LOGIN.toLowerCase() && pass === ADMIN_PASS) {
+    currentUser = { name: 'Администратор', admin: true };
+  } else {
+    const u = loadUsers().find(x => x.login.toLowerCase() === login.toLowerCase() && x.pass === hashStr(pass));
+    if (!u) { err.textContent = 'Неверный логин или пароль'; return; }
+    currentUser = { name: u.name, admin: false };
+  }
+  setAuth(currentUser);
+  err.textContent = '';
+  document.getElementById('inPass').value = '';
+  applyAuth();
+}
+function doLogout() {
+  closeStatusMenu();
+  currentUser = null; setAuth(null);
+  applyAuth();
+}
+function applyAuth() {
+  const overlay = document.getElementById('loginOverlay');
+  const bar = document.getElementById('userBar');
+  if (currentUser) {
+    overlay.classList.add('hidden');
+    bar.classList.remove('hidden');
+    document.getElementById('whoNow').textContent = currentUser.name;
+    document.getElementById('btnAdmin').classList.toggle('hidden', !currentUser.admin);
+  } else {
+    overlay.classList.remove('hidden');
+    bar.classList.add('hidden');
+    document.getElementById('inLogin').focus();
+  }
+}
+function openAdminModal() {
+  document.getElementById('adminOverlay').classList.remove('hidden');
+  document.getElementById('aName').value = '';
+  document.getElementById('aLogin').value = '';
+  document.getElementById('aPass').value = '';
+  renderUsersAdmin();
+}
+function closeAdminModal() { document.getElementById('adminOverlay').classList.add('hidden'); }
+function renderUsersAdmin() {
+  const users = loadUsers();
+  const list = document.getElementById('userList');
+  if (!users.length) { list.innerHTML = '<p class="note" style="text-align:left">Пока никого — выдайте первый доступ ниже</p>'; return; }
+  list.innerHTML = users.map((u, i) =>
+    '<div class="user-list-row"><div><b>' + esc(u.name) + '</b> <span class="u-login">· логин: ' + esc(u.login) + '</span></div>' +
+    '<button class="del" title="Отозвать доступ" onclick="delUser(' + i + ')">✕</button></div>'
+  ).join('');
+}
+function addUser() {
+  const name = document.getElementById('aName').value.trim();
+  const login = document.getElementById('aLogin').value.trim();
+  const pass = document.getElementById('aPass').value;
+  if (!name || !login || !pass) { alert('Заполните имя, логин и пароль'); return; }
+  if (login.toLowerCase() === ADMIN_LOGIN.toLowerCase()) { alert('Этот логин занят администратором'); return; }
+  const users = loadUsers();
+  if (users.some(u => u.login.toLowerCase() === login.toLowerCase())) { alert('Такой логин уже выдан — придумайте другой'); return; }
+  users.push({ name: name, login: login, pass: hashStr(pass) });
+  saveUsers(users);
+  document.getElementById('aName').value = '';
+  document.getElementById('aLogin').value = '';
+  document.getElementById('aPass').value = '';
+  renderUsersAdmin();
+  buildWhoSelect();
+}
+function delUser(i) {
+  if (!confirm('Отозвать доступ этому сотруднику? Его задачи останутся.')) return;
+  const users = loadUsers();
+  users.splice(i, 1);
+  saveUsers(users);
+  renderUsersAdmin();
+  buildWhoSelect();
+}
+
+// ===== статусы и данные =====
 const STATUS_LIST = ['в очереди', 'в работе', 'на паузе', 'на согласовании у ГЭ', 'на согласовании у МВ', 'на доработке', 'выполнено'];
 const STATUS_CLS = { 'в очереди':'ss-queue','в работе':'ss-work','на паузе':'ss-pause','на согласовании у ГЭ':'ss-ge','на согласовании у МВ':'ss-mv','на доработке':'ss-rework','выполнено':'ss-done' };
 const STATUS_HEAD = { 'в очереди':'g-queue','в работе':'g-work','на паузе':'g-pause','на согласовании у ГЭ':'g-ge','на согласовании у МВ':'g-mv','на доработке':'g-rework','выполнено':'g-done' };
@@ -343,17 +438,25 @@ function showTab(name) {
 }
 function fabClick() { if (currentTab === 'doc') return; openTaskModal(); }
 
+function allNames() {
+  const names = TEAM.slice();
+  loadUsers().forEach(u => { if (!names.includes(u.name)) names.push(u.name); });
+  return names;
+}
 function buildWhoSelect() {
+  const names = allNames();
   const sel = document.getElementById('tWho');
   let html = '<option value="">— не выбран —</option>';
-  TEAM.forEach(t => { html += '<option value="' + esc(t) + '">' + esc(t) + '</option>'; });
+  names.forEach(t => { html += '<option value="' + esc(t) + '">' + esc(t) + '</option>'; });
   html += '<option value="__other">Другое…</option>';
   sel.innerHTML = html;
+  if (currentUser && names.includes(currentUser.name)) sel.value = currentUser.name;
   const fSel = document.getElementById('fWho');
   let fHtml = '<option value="all">все</option>';
-  TEAM.forEach(t => { fHtml += '<option value="' + esc(t) + '">' + esc(t) + '</option>'; });
+  names.forEach(t => { fHtml += '<option value="' + esc(t) + '">' + esc(t) + '</option>'; });
   fHtml += '<option value="__none">без исполнителя</option>';
   fSel.innerHTML = fHtml;
+  fSel.value = 'all';
 }
 function toggleCustomWho() {
   const isOther = document.getElementById('tWho').value === '__other';
@@ -363,7 +466,7 @@ function openTaskModal() { closeStatusMenu(); document.getElementById('taskOverl
 function closeTaskModal() {
   document.getElementById('taskOverlay').classList.add('hidden');
   document.getElementById('tName').value = '';
-  document.getElementById('tWho').value = '';
+  buildWhoSelect();
   document.getElementById('tWhoCustom').value = '';
   document.getElementById('tWhoCustomWrap').classList.add('hidden');
   document.getElementById('tDate').value = '';
@@ -510,7 +613,7 @@ function renderStats(tasks) {
     const n = byStatus[s] || 0;
     return n ? '<div class="' + STATUS_SEG[s] + '" style="width:' + (n/total*100) + '%"></div>' : '';
   }).join('');
-  const load = TEAM.map(name => ({ name: name, n: tasks.filter(t => t.who === name && taskCat(t) !== 'done').length }));
+  const load = allNames().map(name => ({ name: name, n: tasks.filter(t => t.who === name && taskCat(t) !== 'done').length }));
   const max = Math.max.apply(null, [1].concat(load.map(x => x.n)));
   document.getElementById('loadBlock').innerHTML = load.map(x =>
     '<div class="load-row"><div class="lr-top"><span>' + esc(x.name) + '</span><b>' + x.n + '</b></div>' +
@@ -585,8 +688,6 @@ function closeTask(i) {
   saveTasks(tasks); render();
 }
 function delTask(i) { const tasks = loadTasks(); tasks.splice(i, 1); saveTasks(tasks); render(); }
-buildWhoSelect();
-render();
 
 // ===== календарь =====
 let calYear, calMonth, calSel = null;
@@ -742,6 +843,11 @@ function sumWords() {
     '<div class="sum-box"><div class="sum-title">Стоимость договора</div>' +
     '<p>' + sumInWords(s) + ', в том числе НДС 22% — ' + sumInWords(nds) + '</p></div>';
 }
+
+// старт
+buildWhoSelect();
+render();
+applyAuth();
 </script>
 </body>
 </html>
