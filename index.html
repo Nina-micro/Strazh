@@ -6,93 +6,45 @@
 <title>СТРАЖ — отдел ПЭО</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
-    background: #f1f5f9;
-    color: #1e293b;
-    padding: 16px;
-    max-width: 640px;
-    margin: 0 auto;
-  }
+  body { font-family: -apple-system, 'Segoe UI', Roboto, sans-serif; background: #f1f5f9; color: #1e293b; padding: 16px; max-width: 640px; margin: 0 auto; }
   h1 { font-size: 26px; text-align: center; margin-top: 8px; }
   .subtitle { text-align: center; color: #64748b; margin-bottom: 16px; }
   .tabs { display: flex; background: #e2e8f0; border-radius: 10px; padding: 4px; margin-bottom: 16px; }
-  .tabs button {
-    flex: 1; padding: 10px 2px; border: none; background: none;
-    color: #475569; font-size: 12px; font-weight: 600; border-radius: 8px; cursor: pointer;
-  }
+  .tabs button { flex: 1; padding: 10px 2px; border: none; background: none; color: #475569; font-size: 12px; font-weight: 600; border-radius: 8px; cursor: pointer; }
   .tabs button.on { background: #2563eb; color: #fff; }
-  .card {
-    background: #fff; border-radius: 14px; padding: 16px;
-    margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-  }
+  .card { background: #fff; border-radius: 14px; padding: 16px; margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
   .card h3 { font-size: 17px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
   .card h4 { font-size: 14px; margin: 12px 0 8px; color: #475569; }
-
   .counters { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; text-align: center; }
   .counter .num { font-size: 22px; font-weight: 700; }
   .counter .lbl { font-size: 11px; color: #64748b; }
-  .num.c-black  { color: #1e293b; }
-  .num.c-blue   { color: #2563eb; }
-  .num.c-orange { color: #f59e0b; }
-  .num.c-red    { color: #ef4444; }
-  .num.c-green  { color: #16a34a; }
-  .num.c-gray   { color: #94a3b8; }
-
+  .num.c-black { color: #1e293b; } .num.c-blue { color: #2563eb; } .num.c-orange { color: #f59e0b; }
+  .num.c-red { color: #ef4444; } .num.c-green { color: #16a34a; } .num.c-gray { color: #94a3b8; }
   .status-bar { display: flex; height: 10px; border-radius: 5px; overflow: hidden; margin: 14px 0 4px; background: #e2e8f0; }
   .status-bar div { height: 100%; }
-  .sb-queue  { background: #94a3b8; }
-  .sb-work   { background: #2563eb; }
-  .sb-pause  { background: #06b6d4; }
-  .sb-ge     { background: #eab308; }
-  .sb-mv     { background: #eab308; }
-  .sb-rework { background: #ea580c; }
-  .sb-done   { background: #16a34a; }
+  .sb-queue { background: #94a3b8; } .sb-work { background: #2563eb; } .sb-pause { background: #06b6d4; }
+  .sb-ge { background: #eab308; } .sb-mv { background: #eab308; } .sb-rework { background: #ea580c; } .sb-done { background: #16a34a; }
   .status-legend { display: flex; flex-wrap: wrap; gap: 8px; font-size: 10px; color: #64748b; margin-bottom: 12px; }
-  .status-legend span::before {
-    content: ''; display: inline-block; width: 8px; height: 8px;
-    border-radius: 2px; margin-right: 3px; vertical-align: middle;
-  }
-  .lg-queue::before  { background: #94a3b8; }
-  .lg-work::before   { background: #2563eb; }
-  .lg-pause::before  { background: #06b6d4; }
-  .lg-ge::before     { background: #eab308; }
-  .lg-rework::before { background: #ea580c; }
-  .lg-done::before   { background: #16a34a; }
-
+  .status-legend span::before { content: ''; display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 3px; vertical-align: middle; }
+  .lg-queue::before { background: #94a3b8; } .lg-work::before { background: #2563eb; } .lg-pause::before { background: #06b6d4; }
+  .lg-ge::before { background: #eab308; } .lg-rework::before { background: #ea580c; } .lg-done::before { background: #16a34a; }
   .load-title { font-size: 13px; font-weight: 700; color: #475569; margin: 10px 0 4px; }
   .load-row { margin: 6px 0; }
   .load-row .lr-top { display: flex; justify-content: space-between; font-size: 12px; color: #475569; }
   .load-track { height: 8px; border-radius: 4px; background: #e2e8f0; margin-top: 3px; overflow: hidden; }
   .load-fill { height: 100%; border-radius: 4px; background: #2563eb; }
   .load-fill.max { background: #ef4444; }
-
   label { display: block; font-size: 14px; margin-bottom: 8px; }
-  input, select {
-    width: 100%; padding: 8px; margin-top: 4px;
-    border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; background: #fff;
-  }
+  input, select { width: 100%; padding: 8px; margin-top: 4px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; background: #fff; }
   .filters { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
   .small-lbl { display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 2px; }
-  .btn {
-    display: inline-block; width: 100%; padding: 11px; margin-top: 10px;
-    background: #2563eb; color: #fff; border: none; border-radius: 10px;
-    font-size: 15px; font-weight: 600; cursor: pointer;
-  }
+  .btn { display: inline-block; width: 100%; padding: 11px; margin-top: 10px; background: #2563eb; color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; }
   .btn:active { background: #1d4ed8; }
   .btn.clear { background: #e2e8f0; color: #475569; width: auto; padding: 8px 14px; margin-top: 0; font-size: 13px; }
   .btn.ghost { background: #e2e8f0; color: #475569; }
-  .btn.danger {
-    background: #fff; color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.5);
-    width: 100%; font-size: 13px; padding: 9px;
-  }
+  .btn.danger { background: #fff; color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.5); width: 100%; font-size: 13px; padding: 9px; }
   .hot-title { color: #ef4444; }
-
-  .task {
-    display: flex; justify-content: space-between; align-items: flex-start;
-    padding: 10px 10px 10px 12px; border-bottom: 1px solid #e2e8f0;
-    font-size: 14px; gap: 8px; border-left-width: 4px; border-left-style: solid;
-  }
+  .task { display: flex; justify-content: space-between; align-items: flex-start; padding: 10px 10px 10px 12px; border-bottom: 1px solid #e2e8f0; font-size: 14px; gap: 8px; border-left-width: 4px; border-left-style: solid; }
   .task:last-child { border-bottom: none; }
   .task .info { flex: 1; min-width: 0; }
   .task .name { font-weight: 600; }
@@ -102,198 +54,125 @@
   .who { color: #2563eb; font-weight: 600; }
   .stdate { font-size: 8px; color: #94a3b8; }
   .task .clickable { cursor: pointer; }
-
-  .status-pill {
-    display: inline-block; padding: 2px 10px; font-size: 11px; font-weight: 600;
-    border-radius: 999px; border: 1px solid; cursor: pointer; user-select: none;
-  }
-  .ss-queue  { color: #64748b; border-color: rgba(148, 163, 184, 0.6); background: rgba(148, 163, 184, 0.12); }
-  .ss-work   { color: #2563eb; border-color: rgba(37, 99, 235, 0.5);   background: rgba(37, 99, 235, 0.08); }
-  .ss-pause  { color: #0891b2; border-color: rgba(6, 182, 212, 0.65);  background: rgba(6, 182, 212, 0.15); }
-  .ss-ge     { color: #a16207; border-color: rgba(234, 179, 8, 0.65);  background: rgba(253, 224, 71, 0.35); }
-  .ss-mv     { color: #a16207; border-color: rgba(234, 179, 8, 0.65);  background: rgba(253, 224, 71, 0.35); }
-  .ss-rework { color: #ea580c; border-color: rgba(234, 88, 12, 0.5);   background: rgba(234, 88, 12, 0.08); }
-  .ss-done   { color: #16a34a; border-color: rgba(22, 163, 74, 0.5);   background: rgba(22, 163, 74, 0.08); }
-  .ss-project      { color: #64748b; border-color: rgba(148, 163, 184, 0.6); background: rgba(148, 163, 184, 0.12); }
-  .ss-on-approval  { color: #b45309; border-color: rgba(245, 158, 11, 0.65); background: rgba(253, 224, 71, 0.35); }
-  .ss-signed       { color: #dc2626; border-color: rgba(220, 38, 38, 0.5);   background: rgba(220, 38, 38, 0.12); }
-  .ss-closed       { color: #16a34a; border-color: rgba(22, 163, 74, 0.5);   background: rgba(22, 163, 74, 0.08); }
-
-  .status-menu {
-    position: fixed; z-index: 50; background: #fff; border: 1px solid #e2e8f0;
-    border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.18); padding: 6px; min-width: 230px;
-  }
-  .status-menu .opt {
-    padding: 9px 12px; border-radius: 8px; font-size: 13px; font-weight: 600;
-    color: #1e293b; cursor: pointer; display: flex; justify-content: space-between;
-    align-items: center; gap: 10px;
-  }
+  .status-pill { display: inline-block; padding: 2px 10px; font-size: 11px; font-weight: 600; border-radius: 999px; border: 1px solid; cursor: pointer; user-select: none; }
+  .ss-queue { color: #64748b; border-color: rgba(148,163,184,0.6); background: rgba(148,163,184,0.12); }
+  .ss-work { color: #2563eb; border-color: rgba(37,99,235,0.5); background: rgba(37,99,235,0.08); }
+  .ss-pause { color: #0891b2; border-color: rgba(6,182,212,0.65); background: rgba(6,182,212,0.15); }
+  .ss-ge { color: #a16207; border-color: rgba(234,179,8,0.65); background: rgba(253,224,71,0.35); }
+  .ss-mv { color: #a16207; border-color: rgba(234,179,8,0.65); background: rgba(253,224,71,0.35); }
+  .ss-rework { color: #ea580c; border-color: rgba(234,88,12,0.5); background: rgba(234,88,12,0.08); }
+  .ss-done { color: #16a34a; border-color: rgba(22,163,74,0.5); background: rgba(22,163,74,0.08); }
+  .ss-project { color: #64748b; border-color: rgba(148,163,184,0.6); background: rgba(148,163,184,0.12); }
+  .ss-on-approval { color: #b45309; border-color: rgba(245,158,11,0.65); background: rgba(253,224,71,0.35); }
+  .ss-signed { color: #dc2626; border-color: rgba(220,38,38,0.5); background: rgba(220,38,38,0.12); }
+  .ss-closed { color: #16a34a; border-color: rgba(22,163,74,0.5); background: rgba(22,163,74,0.08); }
+  .status-menu { position: fixed; z-index: 50; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.18); padding: 6px; min-width: 230px; }
+  .status-menu .opt { padding: 9px 12px; border-radius: 8px; font-size: 13px; font-weight: 600; color: #1e293b; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
   .status-menu .opt:active { background: #f1f5f9; }
   .sdot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 7px; vertical-align: middle; }
-
-  .badge {
-    display: inline-block; padding: 2px 8px; border-radius: 999px;
-    font-size: 11px; font-weight: 600; color: #fff; background: #64748b;
-    cursor: pointer; user-select: none;
-  }
-  .badge.over { background: #ef4444; }
-  .badge.soon { background: #f59e0b; }
-  .badge.ok   { background: #2563eb; }
-  .badge.paid { background: #16a34a; }
-  .badge.wait { background: #94a3b8; }
-  .badge.goz  { background: #dc2626; }
-  .badge.kom  { background: #2563eb; }
-  .badge.otk  { background: #f59e0b; }
-  .badge.vp   { background: #64748b; }
-  .cat-mark {
-    display: inline-block; padding: 1px 7px; border-radius: 6px;
-    font-size: 10px; font-weight: 700; color: #fff;
-  }
-  .cat-mark.goz { background: #dc2626; }
-  .cat-mark.kom { background: #2563eb; }
-
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; color: #fff; background: #64748b; cursor: pointer; user-select: none; }
+  .badge.over { background: #ef4444; } .badge.soon { background: #f59e0b; } .badge.ok { background: #2563eb; }
+  .badge.paid { background: #16a34a; } .badge.wait { background: #94a3b8; }
+  .badge.goz { background: #dc2626; } .badge.kom { background: #2563eb; }
+  .badge.otk { background: #f59e0b; } .badge.vp { background: #64748b; }
+  .cat-mark { display: inline-block; padding: 1px 7px; border-radius: 6px; font-size: 10px; font-weight: 700; color: #fff; }
+  .cat-mark.goz { background: #dc2626; } .cat-mark.kom { background: #2563eb; }
   .group { border: 1px solid #e2e8f0; border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
-  .group-head {
-    padding: 8px 12px; font-size: 13px; font-weight: 700; color: #fff;
-    display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;
-  }
+  .group-head { padding: 8px 12px; font-size: 13px; font-weight: 700; color: #fff; display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
   .group-head small { font-weight: 600; opacity: 0.9; }
-  .g-queue  { background: #94a3b8; }
-  .g-work   { background: #2563eb; }
-  .g-pause  { background: #06b6d4; }
-  .g-ge     { background: #eab308; }
-  .g-mv     { background: #eab308; }
-  .g-rework { background: #ea580c; }
-  .g-done   { background: #16a34a; }
-  .g-who    { background: #475569; cursor: pointer; user-select: none; }
-  .g-doc    { background: #7f1d1d; cursor: pointer; user-select: none; }
-  .g-month  { background: #1e293b; cursor: pointer; user-select: none; }
+  .g-queue { background: #94a3b8; } .g-work { background: #2563eb; } .g-pause { background: #06b6d4; }
+  .g-ge { background: #eab308; } .g-mv { background: #eab308; } .g-rework { background: #ea580c; } .g-done { background: #16a34a; }
+  .g-who { background: #475569; cursor: pointer; user-select: none; }
+  .g-doc { background: #7f1d1d; cursor: pointer; user-select: none; }
+  .g-month { background: #1e293b; cursor: pointer; user-select: none; }
   .g-month .gm-sum { font-weight: 700; }
   .group-body { border-top: 1px solid #e2e8f0; }
-
   .del { background: none; border: none; color: #ef4444; font-size: 18px; cursor: pointer; }
   .hr { border: none; border-top: 1px solid #e2e8f0; margin: 10px 0; }
   #res p, #swRes p { font-size: 14px; margin: 4px 0; }
   .note { font-size: 12px; color: #94a3b8; text-align: center; margin-top: 4px; }
-
-  .sum-box {
-    background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;
-    padding: 10px 12px; margin-top: 10px; font-size: 13px; line-height: 1.5;
-  }
+  .sum-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 12px; margin-top: 10px; font-size: 13px; line-height: 1.5; }
   .sum-box .sum-title { font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 4px; }
-
-  .fab {
-    position: fixed; right: 20px; bottom: 20px; width: 58px; height: 58px;
-    border-radius: 50%; background: #2563eb; color: #fff; border: none;
-    font-size: 30px; line-height: 1; cursor: pointer; z-index: 40;
-    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
-    display: flex; align-items: center; justify-content: center;
-  }
+  .fab { position: fixed; right: 20px; bottom: 20px; width: 58px; height: 58px; border-radius: 50%; background: #2563eb; color: #fff; border: none; font-size: 30px; line-height: 1; cursor: pointer; z-index: 40; box-shadow: 0 4px 14px rgba(37,99,235,0.4); display: flex; align-items: center; justify-content: center; }
   .fab:active { background: #1d4ed8; }
-  .fab::after {
-    content: ''; position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px;
-    border-radius: 50%; border: 2px solid rgba(37, 99, 235, 0.45);
-    border-top-color: transparent; animation: fabspin 2.2s linear infinite; pointer-events: none;
-  }
+  .fab::after { content: ''; position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px; border-radius: 50%; border: 2px solid rgba(37,99,235,0.45); border-top-color: transparent; animation: fabspin 2.2s linear infinite; pointer-events: none; }
   @keyframes fabspin { to { transform: rotate(360deg); } }
-
-  .overlay {
-    position: fixed; inset: 0; background: rgba(15, 23, 42, 0.45); z-index: 60;
-    display: flex; align-items: flex-end; justify-content: center; padding: 16px;
-  }
+  .overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.45); z-index: 60; display: flex; align-items: flex-end; justify-content: center; padding: 16px; }
   .overlay.hidden { display: none !important; }
-  .modal {
-    background: #fff; border-radius: 16px; padding: 18px; width: 100%;
-    max-width: 480px; box-shadow: 0 -4px 30px rgba(0,0,0,0.25);
-    max-height: 90vh; overflow-y: auto;
-  }
+  .modal { background: #fff; border-radius: 16px; padding: 18px; width: 100%; max-width: 480px; box-shadow: 0 -4px 30px rgba(0,0,0,0.25); max-height: 90vh; overflow-y: auto; }
   .modal h3 { font-size: 17px; margin-bottom: 12px; display: block; }
   .modal-actions { display: flex; gap: 10px; flex-wrap: wrap; }
   .modal-actions .btn { margin-top: 10px; flex: 1; }
-
-  .item-row, .ds-row {
-    border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px;
-    margin-bottom: 8px; background: #f8fafc;
-  }
-  .item-row .filters, .ds-row .filters { margin-bottom: 6px; }
-  .item-row .remove-item, .ds-row .remove-ds {
-    background: none; border: none; color: #ef4444; font-size: 16px;
-    cursor: pointer; float: right; padding: 0 4px;
-  }
+  .item-row, .ds-row, .ship-row { border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; margin-bottom: 8px; background: #f8fafc; }
+  .item-row .filters, .ds-row .filters, .ship-row .filters { margin-bottom: 6px; }
+  .item-row .remove-item, .ds-row .remove-ds, .ship-row .remove-ship { background: none; border: none; color: #ef4444; font-size: 16px; cursor: pointer; float: right; padding: 0 4px; }
   .item-row .row-sum { font-size: 12px; color: #475569; margin-top: 4px; font-weight: 600; }
-  .btn.add-item, .btn.add-ds, .btn.add-inv {
-    background: #e2e8f0; color: #475569; font-size: 13px; padding: 8px; margin-top: 4px;
-  }
+  .btn.add-item, .btn.add-ds, .btn.add-inv, .btn.add-ship { background: #e2e8f0; color: #475569; font-size: 13px; padding: 8px; margin-top: 4px; }
   .mini-note { font-size: 11px; color: #94a3b8; margin: 4px 0 0; }
   .doc-extra { font-size: 11px; color: #64748b; margin-top: 4px; line-height: 1.5; }
-  .auto-sum-line {
-    font-size: 13px; color: #1e293b; background: #f8fafc;
-    border: 1px dashed #cbd5e1; border-radius: 8px; padding: 8px 10px; margin: 8px 0;
-  }
+  .auto-sum-line { font-size: 13px; color: #1e293b; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 8px 10px; margin: 8px 0; }
   .auto-sum-line b { font-size: 15px; }
-
-  .pay-fact {
-    display: flex; gap: 8px; margin-top: 8px; align-items: center;
-    flex-wrap: wrap; font-size: 12px; color: #475569;
-  }
-  .pay-fact input, .pay-fact select {
-    width: auto; flex: 1; min-width: 90px;
-    margin-top: 0; padding: 6px 8px; font-size: 13px;
-  }
-  .pay-fact .lbl2 { white-space: nowrap; font-weight: 600; }
-  .pay-block {
-    border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px;
-    margin-top: 6px; background: #f8fafc;
-  }
+  .pay-fact { display: flex; gap: 8px; margin-top: 8px; align-items: center; flex-wrap: wrap; font-size: 12px; color: #475569; }
+  .pay-fact input, .pay-fact select { width: auto; flex: 1; min-width: 90px; margin-top: 0; padding: 6px 8px; font-size: 13px; }
+  .pay-block { border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; margin-top: 6px; background: #f8fafc; }
   .pay-block .pb-title { font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px; }
-  .pay-block .remove-inv {
-    background: none; border: none; color: #ef4444; font-size: 15px;
-    cursor: pointer; float: right; padding: 0 4px;
-  }
-
+  .pay-block .remove-inv { background: none; border: none; color: #ef4444; font-size: 15px; cursor: pointer; float: right; padding: 0 4px; }
   .cal-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
   .cal-nav .mon { font-size: 16px; font-weight: 700; text-transform: capitalize; }
-  .cal-nav button {
-    background: #e2e8f0; border: none; border-radius: 8px; padding: 6px 14px;
-    font-size: 15px; cursor: pointer; color: #475569; font-weight: 700;
-  }
+  .cal-nav button { background: #e2e8f0; border: none; border-radius: 8px; padding: 6px 14px; font-size: 15px; cursor: pointer; color: #475569; font-weight: 700; }
   .cal-week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 4px; }
   .cal-week div { text-align: center; font-size: 11px; color: #64748b; font-weight: 600; }
   .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-  .cal-day {
-    min-height: 52px; background: #f8fafc; border-radius: 8px;
-    padding: 3px 4px; cursor: pointer; overflow: hidden;
-  }
+  .cal-day { min-height: 52px; background: #f8fafc; border-radius: 8px; padding: 3px 4px; cursor: pointer; overflow: hidden; }
   .cal-day.other { opacity: 0.35; }
   .cal-day.today { box-shadow: inset 0 0 0 2px #2563eb; }
-  .cal-day.sel   { background: #dbeafe; }
+  .cal-day.sel { background: #dbeafe; }
   .cal-day .d { font-size: 12px; font-weight: 600; }
-  .cal-chip {
-    font-size: 9px; line-height: 1.3; padding: 1px 4px; border-radius: 4px;
-    margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600;
-  }
-  .cal-chip.c-work { background: rgba(37, 99, 235, 0.15); color: #1d4ed8; }
-  .cal-chip.c-soon { background: rgba(245, 158, 11, 0.2); color: #b45309; }
-  .cal-chip.c-over { background: rgba(239, 68, 68, 0.18); color: #b91c1c; }
-  .cal-chip.c-done { background: rgba(22, 163, 74, 0.15); color: #15803d; }
-
+  .cal-chip { font-size: 9px; line-height: 1.3; padding: 1px 4px; border-radius: 4px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
+  .cal-chip.c-work { background: rgba(37,99,235,0.15); color: #1d4ed8; }
+  .cal-chip.c-soon { background: rgba(245,158,11,0.2); color: #b45309; }
+  .cal-chip.c-over { background: rgba(239,68,68,0.18); color: #b91c1c; }
+  .cal-chip.c-done { background: rgba(22,163,74,0.15); color: #15803d; }
   .hidden { display: none; }
-
   body.red-mode .tabs button.on { background: #dc2626; }
-  body.red-mode .fab { background: #dc2626; box-shadow: 0 4px 14px rgba(220, 38, 38, 0.4); }
+  body.red-mode .fab { background: #dc2626; box-shadow: 0 4px 14px rgba(220,38,38,0.4); }
   body.red-mode .fab:active { background: #b91c1c; }
-  body.red-mode .fab::after { border: 2px solid rgba(220, 38, 38, 0.45); border-top-color: transparent; }
+  body.red-mode .fab::after { border: 2px solid rgba(220,38,38,0.45); border-top-color: transparent; }
   body.red-mode .btn { background: #dc2626; }
   body.red-mode .btn:active { background: #b91c1c; }
-  body.red-mode .btn.clear,
-  body.red-mode .btn.ghost,
-  body.red-mode .btn.add-item,
-  body.red-mode .btn.add-ds,
-  body.red-mode .btn.add-inv { background: #fee2e2; color: #b91c1c; }
+  body.red-mode .btn.clear, body.red-mode .btn.ghost, body.red-mode .btn.add-item, body.red-mode .btn.add-ds, body.red-mode .btn.add-inv, body.red-mode .btn.add-ship { background: #fee2e2; color: #b91c1c; }
   body.red-mode .btn.danger { background: #fff; color: #ef4444; }
   body.red-mode #secDoc .card h3 { color: #b91c1c; }
   body.red-mode #secDoc .who { color: #dc2626; }
-  body.red-mode #secDoc .card { box-shadow: 0 1px 4px rgba(220, 38, 38, 0.12); }
+  body.red-mode #secDoc .card { box-shadow: 0 1px 4px rgba(220,38,38,0.12); }
+
+  /* ===== карточка договора по скетчу: содержание + активный раздел ===== */
+  .doc-card-layout { display: flex; gap: 12px; align-items: stretch; }
+  .dc-nav {
+    width: 118px; flex-shrink: 0;
+    border: 1px solid #e2e8f0; border-radius: 10px;
+    background: #f8fafc; padding: 6px;
+    display: flex; flex-direction: column; gap: 4px;
+    align-self: flex-start;
+  }
+  .dc-nav .dc-nav-title { font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.04em; padding: 4px 6px 2px; }
+  .dc-nav button {
+    border: none; background: transparent; text-align: left;
+    padding: 8px 8px; font-size: 12px; font-weight: 600; color: #475569;
+    border-radius: 8px; cursor: pointer; line-height: 1.25;
+  }
+  .dc-nav button:active { background: #e2e8f0; }
+  .dc-nav button.on { background: #dc2626; color: #fff; }
+  body:not(.red-mode) .dc-nav button.on { background: #dc2626; }
+  .dc-panel { flex: 1; min-width: 0; display: none; }
+  .dc-panel.on { display: block; }
+  .dc-panel h4 { margin-top: 0; }
+  @media (max-width: 420px) {
+    .doc-card-layout { flex-direction: column; }
+    .dc-nav { width: 100%; flex-direction: row; flex-wrap: wrap; }
+    .dc-nav .dc-nav-title { display: none; }
+    .dc-nav button { flex: 1 1 auto; text-align: center; }
+  }
 </style>
 </head>
 <body>
@@ -308,9 +187,7 @@
   <button id="tabDoc" onclick="showTab('doc')">Договорная работа</button>
 </div>
 
-<!-- ===== РАЗДЕЛ: Задачи ===== -->
 <div id="secTasks">
-
   <div class="card">
     <div class="counters">
       <div class="counter"><div class="num" id="cAll">0</div><div class="lbl">всего</div></div>
@@ -320,251 +197,151 @@
       <div class="counter"><div class="num" id="cOver">0</div><div class="lbl">просрочено</div></div>
       <div class="counter"><div class="num" id="cDone">0</div><div class="lbl">закрыто</div></div>
     </div>
-
     <div class="status-bar" id="statusBar"></div>
     <div class="status-legend">
-      <span class="lg-queue">в очереди</span>
-      <span class="lg-work">в работе</span>
-      <span class="lg-pause">пауза</span>
-      <span class="lg-ge">согласование (ГЭ/МВ)</span>
-      <span class="lg-rework">доработка</span>
-      <span class="lg-done">выполнено</span>
+      <span class="lg-queue">в очереди</span><span class="lg-work">в работе</span><span class="lg-pause">пауза</span>
+      <span class="lg-ge">согласование (ГЭ/МВ)</span><span class="lg-rework">доработка</span><span class="lg-done">выполнено</span>
     </div>
-
     <div class="load-title">Нагрузка по исполнителям (открытые задачи)</div>
     <div id="loadBlock"></div>
   </div>
-
   <div class="card hidden" id="hotCard">
     <h3 class="hot-title">🔥 Горит сейчас</h3>
     <div id="hotList"></div>
   </div>
-
   <div class="card">
     <h3>Задачи <button class="btn clear" onclick="clearFilters()">сбросить</button></h3>
-
     <div class="filters">
-      <div>
-        <span class="small-lbl">Исполнитель</span>
-        <select id="fWho" onchange="render()"></select>
-      </div>
-      <div>
-        <span class="small-lbl">Категория</span>
+      <div><span class="small-lbl">Исполнитель</span><select id="fWho" onchange="render()"></select></div>
+      <div><span class="small-lbl">Категория</span>
         <select id="fCat" onchange="render()">
-          <option value="all">все</option>
-          <option value="work">в работе</option>
-          <option value="soon">скоро дедлайн</option>
-          <option value="over">просрочено</option>
-          <option value="done">закрыто</option>
+          <option value="all">все</option><option value="work">в работе</option>
+          <option value="soon">скоро дедлайн</option><option value="over">просрочено</option><option value="done">закрыто</option>
         </select>
       </div>
     </div>
-
     <div class="filters">
-      <div>
-        <span class="small-lbl">Вид</span>
+      <div><span class="small-lbl">Вид</span>
         <select id="vView" onchange="render()">
-          <option value="list">плоский список</option>
-          <option value="status">по статусам</option>
-          <option value="who">по исполнителям</option>
+          <option value="list">плоский список</option><option value="status">по статусам</option><option value="who">по исполнителям</option>
         </select>
       </div>
-      <div>
-        <span class="small-lbl">Сортировка</span>
-        <select id="vSort" onchange="render()">
-          <option value="new">новые сверху</option>
-          <option value="deadline">по дедлайну</option>
-        </select>
+      <div><span class="small-lbl">Сортировка</span>
+        <select id="vSort" onchange="render()"><option value="new">новые сверху</option><option value="deadline">по дедлайну</option></select>
       </div>
     </div>
-
     <div id="taskList"><p class="note">Задач пока нет</p></div>
   </div>
-
   <p class="note">ВНИМАНИЕ. ТЕСТОВЫЙ РЕЖИМ. Задачи хранятся только на этом устройстве — переноси в Kaiten.</p>
-
 </div>
 
-<!-- ===== РАЗДЕЛ: Календарь экономиста ===== -->
 <div id="secCal" class="hidden">
-
   <div class="card">
     <div class="cal-nav">
-      <button onclick="calMove(-1)">‹</button>
-      <span class="mon" id="calTitle"></span>
-      <button onclick="calMove(1)">›</button>
+      <button onclick="calMove(-1)">‹</button><span class="mon" id="calTitle"></span><button onclick="calMove(1)">›</button>
     </div>
-    <div class="cal-week">
-      <div>пн</div><div>вт</div><div>ср</div><div>чт</div>
-      <div>пт</div><div>сб</div><div>вс</div>
-    </div>
+    <div class="cal-week"><div>пн</div><div>вт</div><div>ср</div><div>чт</div><div>пт</div><div>сб</div><div>вс</div></div>
     <div class="cal-grid" id="calGrid"></div>
   </div>
-
   <div class="card">
     <h3 id="calDayTitle">Выберите день</h3>
     <div id="calDayList"><p class="note">Нажмите на день в календаре</p></div>
   </div>
-
   <p class="note">В календаре задачи стоят на день дедлайна. Просроченные — красным.</p>
-
 </div>
 
-<!-- ===== РАЗДЕЛ: Калькулятор ===== -->
 <div id="secCalc" class="hidden">
-
   <div class="card">
     <h3>Калькулятор затрат (ПЭО)</h3>
-
     <h4>Материалы</h4>
     <label>Ф4 — материалы, руб. <input type="number" id="f4" step="0.01"></label>
     <label>Ф6 — ПКИ, руб. <input type="number" id="f6" step="0.01"></label>
     <label>Ф7 — услуги сторонних организаций, руб. <input type="number" id="f7" step="0.01"></label>
-
     <h4>Заработная плата</h4>
     <label>Средняя ЗП (норматив), руб./мес. <input type="number" id="avg" step="0.01"></label>
     <label>Трудоёмкость <input type="number" id="labor" step="0.1">
-      <select id="unit">
-        <option value="mm">чел./мес.</option>
-        <option value="h">часы</option>
-      </select>
+      <select id="unit"><option value="mm">чел./мес.</option><option value="h">часы</option></select>
     </label>
     <label>Часов в чел./мес. <input type="number" id="hpm" value="164" step="0.1"></label>
     <label>ДЗП (Ф10), % от основной ЗП <input type="number" id="dzp" step="0.1"></label>
     <label>СТРАХ, % от ЗП всего <input type="number" id="strah" step="0.1"></label>
-
     <h4>Накладные расходы</h4>
     <label>ОПР (Ф11), % от ЗП всего <input type="number" id="opr" step="0.1"></label>
     <label>ОХР/АУР (Ф12), % от ЗП всего <input type="number" id="ohr" step="0.1"></label>
-
     <button class="btn" onclick="calc()">Рассчитать</button>
     <div id="res"></div>
   </div>
-
   <div class="card">
     <h3>Сумма прописью</h3>
-    <p class="note" style="text-align:left; margin-bottom:8px">
-      Введите стоимость договора уже с НДС — блок рассчитает, сколько в ней
-      НДС 22% «в том числе», и запишет обе цифры прописью.
-    </p>
+    <p class="note" style="text-align:left; margin-bottom:8px">Введите стоимость договора уже с НДС — блок рассчитает, сколько в ней НДС 22% «в том числе», и запишет обе цифры прописью.</p>
     <label>Стоимость договора с НДС, руб. <input type="number" id="swSum" step="0.01"></label>
     <button class="btn" onclick="sumWords()">Записать прописью</button>
     <div id="swRes"></div>
   </div>
-
 </div>
 
-<!-- ===== РАЗДЕЛ: Договорная работа ===== -->
 <div id="secDoc" class="hidden">
-
   <div class="tabs">
     <button id="subDocRegistry" class="on" onclick="showDocSub('registry')">Реестр договоров</button>
     <button id="subDocPay" onclick="showDocSub('pay')">Реестр оплаты</button>
     <button id="subDocSched" onclick="showDocSub('sched')">График поставок</button>
   </div>
-
   <div id="docSubRegistry">
     <div class="card">
-      <h3>Реестр договоров
-        <button class="btn clear" onclick="clearDocFilters()">сбросить</button>
-      </h3>
-
+      <h3>Реестр договоров <button class="btn clear" onclick="clearDocFilters()">сбросить</button></h3>
       <div class="filters">
-        <div>
-          <span class="small-lbl">Статус</span>
+        <div><span class="small-lbl">Статус</span>
           <select id="dStatus" onchange="renderDocs()">
-            <option value="all">все</option>
-            <option value="проект">проект</option>
-            <option value="на согласовании">на согласовании</option>
-            <option value="подписан">подписан</option>
-            <option value="закрыт">закрыт</option>
+            <option value="all">все</option><option value="проект">проект</option>
+            <option value="на согласовании">на согласовании</option><option value="подписан">подписан</option><option value="закрыт">закрыт</option>
           </select>
         </div>
-        <div>
-          <span class="small-lbl">Контрагент</span>
-          <select id="fContr" onchange="renderDocs()">
-            <option value="all">все</option>
-          </select>
-        </div>
+        <div><span class="small-lbl">Контрагент</span><select id="fContr" onchange="renderDocs()"><option value="all">все</option></select></div>
       </div>
-
       <div class="filters">
-        <div>
-          <span class="small-lbl">Категория</span>
-          <select id="dCatFilter" onchange="renderDocs()">
-            <option value="all">все</option>
-            <option value="ГОЗ">ГОЗ</option>
-            <option value="КОМ">КОМ</option>
-          </select>
+        <div><span class="small-lbl">Категория</span>
+          <select id="dCatFilter" onchange="renderDocs()"><option value="all">все</option><option value="ГОЗ">ГОЗ</option><option value="КОМ">КОМ</option></select>
         </div>
-        <div>
-          <span class="small-lbl">Приёмка</span>
-          <select id="dAcceptFilter" onchange="renderDocs()">
-            <option value="all">все</option>
-            <option value="ОТК">ОТК</option>
-            <option value="ВП">ВП</option>
-          </select>
+        <div><span class="small-lbl">Приёмка</span>
+          <select id="dAcceptFilter" onchange="renderDocs()"><option value="all">все</option><option value="ОТК">ОТК</option><option value="ВП">ВП</option></select>
         </div>
       </div>
-
       <div class="filters">
-        <div>
-          <span class="small-lbl">Изделие / позиция (поиск)</span>
-          <input type="text" id="fItem" placeholder="например: ХХХП" oninput="renderDocs()">
-        </div>
-        <div>
-          <span class="small-lbl">Сортировка</span>
-          <select id="dSort" onchange="renderDocs()">
-            <option value="new">новые сверху</option>
-            <option value="end">по окончанию срока</option>
-          </select>
+        <div><span class="small-lbl">Изделие / позиция (поиск)</span><input type="text" id="fItem" placeholder="например: ХХХП" oninput="renderDocs()"></div>
+        <div><span class="small-lbl">Сортировка</span>
+          <select id="dSort" onchange="renderDocs()"><option value="new">новые сверху</option><option value="end">по окончанию срока</option></select>
         </div>
       </div>
-
       <div id="docList"><p class="note">Договоров пока нет</p></div>
-      <p class="mini-note" style="text-align:center">Нажми на строку договора — откроется карточка. Кнопка «оригиналы» переключает статус получения оригиналов (и отдельно по ДС).</p>
+      <p class="mini-note" style="text-align:center">Нажми на строку договора — откроется карточка. Кнопки «оригиналы» переключают статус получения.</p>
     </div>
   </div>
-
   <div id="docSubPay" class="hidden">
     <div class="card">
       <h3>Реестр оплаты</h3>
-      <p class="mini-note" style="text-align:left; margin-bottom:8px">
-        Счета формируются из карточек договоров. Дата оплаты считается автоматически:
-        для аванса — от даты подписания, для окончательного расчёта — от события расчёта.
-      </p>
+      <p class="mini-note" style="text-align:left; margin-bottom:8px">Счета формируются из карточек договоров. Дата оплаты считается автоматически: аванс — от даты подписания, окончательный расчёт — от события расчёта.</p>
       <div id="payList"><p class="note">Счетов пока нет</p></div>
     </div>
   </div>
-
   <div id="docSubSched" class="hidden">
     <div class="card">
       <h3>График поставок</h3>
-      <p class="mini-note" style="text-align:left; margin-bottom:8px">
-        Сводно по месяцам. Нажми на месяц — раскроются договоры, на договор — его позиции.
-      </p>
+      <p class="mini-note" style="text-align:left; margin-bottom:8px">Сводно по месяцам. Нажми на месяц — раскроются договоры, на договор — его позиции.</p>
       <div id="schedList"><p class="note">Позиций пока нет</p></div>
     </div>
   </div>
-
   <p class="note">ТЕСТОВЫЙ РЕЖИМ. Договоры хранятся только на этом устройстве — переноси в Kaiten.</p>
-
 </div>
 
-<!-- всплывающее меню выбора статуса -->
 <div id="statusMenu" class="status-menu hidden"></div>
 
-<!-- ===== плавающая кнопка «+» ===== -->
 <button class="fab" onclick="fabClick()" title="Добавить">+</button>
 
-<!-- ===== окно добавления задачи ===== -->
 <div id="taskOverlay" class="overlay hidden" onclick="if(event.target === this) closeTaskModal()">
   <div class="modal">
     <h3>Новая задача</h3>
     <label>Название <input type="text" id="tName" placeholder="Например: РКМ - изделие - ХХХП; ДС - ХХХП; НР - месяц.год"></label>
-    <label>Исполнитель
-      <select id="tWho" onchange="toggleCustomWho()"></select>
-    </label>
+    <label>Исполнитель <select id="tWho" onchange="toggleCustomWho()"></select></label>
     <label id="tWhoCustomWrap" class="hidden">Свой вариант <input type="text" id="tWhoCustom" placeholder="имя"></label>
     <label>Дедлайн <input type="date" id="tDate"></label>
     <div class="modal-actions">
@@ -574,79 +351,35 @@
   </div>
 </div>
 
-<!-- ===== окно добавления договора ===== -->
 <div id="docOverlay" class="overlay hidden" onclick="if(event.target === this) closeDocModal()">
   <div class="modal">
     <h3>Новый договор</h3>
     <label>Номер договора <input type="text" id="dNum" placeholder="Например: 2026-0142-П"></label>
     <label>Контрагент <input type="text" id="dContr" placeholder="Организация"></label>
     <label>Предмет договора
-      <select id="dSubjectType">
-        <option value="поставка">поставка</option>
-        <option value="услуги">услуги</option>
-        <option value="СЧ ОКР">СЧ ОКР</option>
-      </select>
+      <select id="dSubjectType"><option value="поставка">поставка</option><option value="услуги">услуги</option><option value="СЧ ОКР">СЧ ОКР</option></select>
     </label>
-    <label>Приёмка
-      <select id="dAccept">
-        <option value="ОТК">ОТК</option>
-        <option value="ВП">ВП</option>
-      </select>
-    </label>
-    <label>Категория
-      <select id="dCat">
-        <option value="ГОЗ">ГОЗ</option>
-        <option value="КОМ">КОМ</option>
-      </select>
-    </label>
+    <label>Приёмка <select id="dAccept"><option value="ОТК">ОТК</option><option value="ВП">ВП</option></select></label>
+    <label>Категория <select id="dCat"><option value="ГОЗ">ГОЗ</option><option value="КОМ">КОМ</option></select></label>
     <label>Окончание срока действия <input type="date" id="dDate"></label>
-
     <h4>Ведомость поставки</h4>
     <div id="itemsWrap"></div>
     <button class="btn add-item" onclick="addItemRow('itemsWrap', 'dSumLine')">+ Добавить позицию</button>
-    <div class="auto-sum-line" id="dSumLine">Сумма договора с НДС: <b>0,00</b> руб.
-      <span class="note" style="margin:0">· заполняется автоматически из ведомости</span></div>
-
+    <div class="auto-sum-line" id="dSumLine">Сумма договора с НДС: <b>0,00</b> руб. <span class="note" style="margin:0">· заполняется автоматически из ведомости</span></div>
     <h4>Оплата</h4>
     <div class="filters">
-      <div>
-        <span class="small-lbl">Аванс, %</span>
-        <input type="number" id="dPrepay" step="0.1" placeholder="0">
-      </div>
-      <div>
-        <span class="small-lbl">Срок оплаты аванса, дн.</span>
-        <input type="number" id="dPrepayDays" step="1" placeholder="0">
-      </div>
+      <div><span class="small-lbl">Аванс, %</span><input type="number" id="dPrepay" step="0.1" placeholder="0"></div>
+      <div><span class="small-lbl">Срок оплаты аванса, дн.</span><input type="number" id="dPrepayDays" step="1" placeholder="0"></div>
     </div>
-    <label>Тип дней срока аванса
-      <select id="dPrepayUnit">
-        <option value="cal">календарных</option>
-        <option value="work">рабочих</option>
-      </select>
-    </label>
+    <label>Тип дней срока аванса <select id="dPrepayUnit"><option value="cal">календарных</option><option value="work">рабочих</option></select></label>
     <p class="mini-note">Срок аванса отсчитывается с момента подписания договора и счёта.</p>
-
     <div class="filters">
-      <div>
-        <span class="small-lbl">Окончательный расчёт, дн.</span>
-        <input type="number" id="dFinalDays" step="1" placeholder="0">
-      </div>
-      <div>
-        <span class="small-lbl">Тип дней</span>
-        <select id="dFinalUnit">
-          <option value="cal">календарных</option>
-          <option value="work">рабочих</option>
-        </select>
-      </div>
+      <div><span class="small-lbl">Окончательный расчёт, дн.</span><input type="number" id="dFinalDays" step="1" placeholder="0"></div>
+      <div><span class="small-lbl">Тип дней</span><select id="dFinalUnit"><option value="cal">календарных</option><option value="work">рабочих</option></select></div>
     </div>
     <label>С какого момента отсчитывать
-      <select id="dFinalEvent">
-        <option value="act">после подписания акта</option>
-        <option value="delivery">после поставки (последней позиции)</option>
-        <option value="contract">после подписания договора</option>
-      </select>
+      <select id="dFinalEvent"><option value="act">после подписания акта</option><option value="delivery">после поставки (последней позиции)</option><option value="contract">после подписания договора</option></select>
     </label>
-
     <div class="modal-actions">
       <button class="btn" onclick="addDoc()">Добавить</button>
       <button class="btn ghost" onclick="closeDocModal()">Отмена</button>
@@ -654,95 +387,106 @@
   </div>
 </div>
 
-<!-- ===== карточка договора ===== -->
+<!-- ===== карточка договора: содержание слева, активный раздел справа ===== -->
 <div id="docCardOverlay" class="overlay hidden" onclick="if(event.target === this) closeDocCard()">
   <div class="modal">
-    <h3>Карточка договора</h3>
-    <label>Номер договора <input type="text" id="cNum"></label>
-    <label>Контрагент <input type="text" id="cContr"></label>
-    <label>Предмет договора
-      <select id="cSubjectType">
-        <option value="поставка">поставка</option>
-        <option value="услуги">услуги</option>
-        <option value="СЧ ОКР">СЧ ОКР</option>
-      </select>
-    </label>
-    <label>Приёмка
-      <select id="cAccept">
-        <option value="ОТК">ОТК</option>
-        <option value="ВП">ВП</option>
-      </select>
-    </label>
-    <label>Категория
-      <select id="cCat">
-        <option value="ГОЗ">ГОЗ</option>
-        <option value="КОМ">КОМ</option>
-      </select>
-    </label>
-    <label>Окончание срока действия <input type="date" id="cDate"></label>
-    <label>Статус <select id="cStatus"></select></label>
+    <h3 id="dcTitle">Карточка договора</h3>
 
-    <h4>Ведомость поставки</h4>
-    <div id="cItemsWrap"></div>
-    <button class="btn add-item" onclick="addItemRow('cItemsWrap', 'cSumLine')">+ Добавить позицию</button>
-    <div class="auto-sum-line" id="cSumLine">Сумма договора с НДС: <b>0,00</b> руб.
-      <span class="note" style="margin:0">· заполняется автоматически из ведомости</span></div>
-
-    <h4>Оплата</h4>
-    <div class="filters">
-      <div>
-        <span class="small-lbl">Аванс, %</span>
-        <input type="number" id="cPrepay" step="0.1">
+    <div class="doc-card-layout">
+      <div class="dc-nav">
+        <div class="dc-nav-title">Содержание</div>
+        <button class="on" data-p="pMain" onclick="dcShowPanel(this)">Основное</button>
+        <button data-p="pPay" onclick="dcShowPanel(this)">Оплата</button>
+        <button data-p="pItems" onclick="dcShowPanel(this)">Ведомость поставки</button>
+        <button data-p="pDs" onclick="dcShowPanel(this)">ДС и Протоколы разногл.</button>
+        <button data-p="pShip" onclick="dcShowPanel(this)">Отгрузка</button>
+        <button data-p="pOrig" onclick="dcShowPanel(this)">Оригиналы докумен&#173;тов</button>
       </div>
-      <div>
-        <span class="small-lbl">Срок оплаты аванса, дн.</span>
-        <input type="number" id="cPrepayDays" step="1">
+
+      <div class="dc-panels">
+        <!-- ОСНОВНОЕ -->
+        <div class="dc-panel on" id="pMain">
+          <label>Номер договора <input type="text" id="cNum"></label>
+          <label>Контрагент <input type="text" id="cContr"></label>
+          <label>Предмет договора
+            <select id="cSubjectType"><option value="поставка">поставка</option><option value="услуги">услуги</option><option value="СЧ ОКР">СЧ ОКР</option></select>
+          </label>
+          <label>Приёмка <select id="cAccept"><option value="ОТК">ОТК</option><option value="ВП">ВП</option></select></label>
+          <label>Категория <select id="cCat"><option value="ГОЗ">ГОЗ</option><option value="КОМ">КОМ</option></select></label>
+          <label>Окончание срока действия <input type="date" id="cDate"></label>
+          <label>Статус <select id="cStatus"></select></label>
+          <p class="mini-note">Сумма договора: <b id="cSumView">0,00</b> руб. — считается в разделе «Ведомость поставки».</p>
+        </div>
+
+        <!-- ОПЛАТА -->
+        <div class="dc-panel" id="pPay">
+          <div class="filters">
+            <div><span class="small-lbl">Аванс, %</span><input type="number" id="cPrepay" step="0.1"></div>
+            <div><span class="small-lbl">Срок оплаты аванса, дн.</span><input type="number" id="cPrepayDays" step="1"></div>
+          </div>
+          <label>Тип дней срока аванса <select id="cPrepayUnit"><option value="cal">календарных</option><option value="work">рабочих</option></select></label>
+          <div class="filters">
+            <div><span class="small-lbl">Окончательный расчёт, дн.</span><input type="number" id="cFinalDays" step="1"></div>
+            <div><span class="small-lbl">Тип дней</span><select id="cFinalUnit"><option value="cal">календарных</option><option value="work">рабочих</option></select></div>
+          </div>
+          <label>С какого момента отсчитывать
+            <select id="cFinalEvent"><option value="act">после подписания акта</option><option value="delivery">после поставки (последней позиции)</option><option value="contract">после подписания договора</option></select>
+          </label>
+          <h4>Факты (для расчёта плановых дат)</h4>
+          <label>Дата подписания договора и счёта <input type="date" id="cSignDate"></label>
+          <label>Дата перечисления аванса <input type="date" id="cPrepayDate"></label>
+          <label>Дата получения давальческого сырья <input type="date" id="cTollingDate"></label>
+          <label>Дата подписания акта <input type="date" id="cActDate"></label>
+        </div>
+
+        <!-- ВЕДОМОСТЬ ПОСТАВКИ -->
+        <div class="dc-panel" id="pItems">
+          <div id="cItemsWrap"></div>
+          <button class="btn add-item" onclick="addItemRow('cItemsWrap', 'cSumLine')">+ Добавить позицию</button>
+          <div class="auto-sum-line" id="cSumLine">Сумма договора с НДС: <b>0,00</b> руб. <span class="note" style="margin:0">· заполняется автоматически из ведомости</span></div>
+        </div>
+
+        <!-- ДС И ПРОТОКОЛЫ РАЗНОГЛАСИЙ -->
+        <div class="dc-panel" id="pDs">
+          <div id="cDsWrap"></div>
+          <button class="btn add-ds" onclick="addCardDsRow()">+ Добавить запись</button>
+          <p class="mini-note">Отмечай тип записи: ДС или протокол разногласий. В ДС фиксируй изменения ведомости: позиция, новое количество, новая цена. Фактические изменения вноси и в саму ведомость — сумма пересчитается.</p>
+        </div>
+
+        <!-- ОТГРУЗКА -->
+        <div class="dc-panel" id="pShip">
+          <div id="cShipWrap"></div>
+          <button class="btn add-ship" onclick="addCardShipRow()">+ Добавить отгрузку</button>
+          <p class="mini-note">Фиксируй факты отгрузки по позициям: что отгружено, когда и по какому документу (ТТН, УПД).</p>
+        </div>
+
+        <!-- ОРИГИНАЛЫ ДОКУМЕНТОВ -->
+        <div class="dc-panel" id="pOrig">
+          <p class="mini-note" style="text-align:left">Статусы переключаются нажатием: не получены → на согласовании → получены.</p>
+          <div class="pay-fact" style="margin-top:10px">
+            <span class="lbl2">Оригиналы договора:</span>
+            <select id="cOrigStatus">
+              <option value="не получены">не получены</option>
+              <option value="на согласовании">на согласовании</option>
+              <option value="получены">получены</option>
+            </select>
+          </div>
+          <div class="pay-fact">
+            <span class="lbl2">Оригиналы ДС и протоколов:</span>
+            <select id="cOrigDsStatus">
+              <option value="не получены">не получены</option>
+              <option value="на согласовании">на согласовании</option>
+              <option value="получены">получены</option>
+            </select>
+          </div>
+        </div>
       </div>
     </div>
-    <label>Тип дней срока аванса
-      <select id="cPrepayUnit">
-        <option value="cal">календарных</option>
-        <option value="work">рабочих</option>
-      </select>
-    </label>
-
-    <div class="filters">
-      <div>
-        <span class="small-lbl">Окончательный расчёт, дн.</span>
-        <input type="number" id="cFinalDays" step="1">
-      </div>
-      <div>
-        <span class="small-lbl">Тип дней</span>
-        <select id="cFinalUnit">
-          <option value="cal">календарных</option>
-          <option value="work">рабочих</option>
-        </select>
-      </div>
-    </div>
-    <label>С какого момента отсчитывать
-      <select id="cFinalEvent">
-        <option value="act">после подписания акта</option>
-        <option value="delivery">после поставки (последней позиции)</option>
-        <option value="contract">после подписания договора</option>
-      </select>
-    </label>
-
-    <h4>Факты (для расчёта плановых дат)</h4>
-    <label>Дата подписания договора и счёта <input type="date" id="cSignDate"></label>
-    <label>Дата перечисления аванса <input type="date" id="cPrepayDate"></label>
-    <label>Дата получения давальческого сырья <input type="date" id="cTollingDate"></label>
-    <label>Дата подписания акта <input type="date" id="cActDate"></label>
 
     <h4>Счета на оплату</h4>
-    <p class="mini-note">Счета, внесённые здесь, автоматически попадают в реестр оплаты.
-    Укажи тип — аванс или окончательный расчёт — дата оплаты посчитается сама.</p>
+    <p class="mini-note">Укажи тип — аванс или окончательный расчёт — дата оплаты посчитается в реестре.</p>
     <div id="cInvoicesWrap"></div>
     <button class="btn add-inv" onclick="addCardInvoiceRow()">+ Добавить счёт</button>
-
-    <h4>Дополнительные соглашения</h4>
-    <div id="cDsWrap"></div>
-    <button class="btn add-ds" onclick="addCardDsRow()">+ Добавить ДС</button>
-    <p class="mini-note">В ДС фиксируй изменения ведомости: позиция, новое количество, новая цена. Фактические изменения вноси и в саму ведомость — сумма пересчитается.</p>
 
     <div class="modal-actions">
       <button class="btn" onclick="saveDocCard()">Сохранить</button>
@@ -753,85 +497,35 @@
 </div>
 
 <script>
-// ===== СПИСОК ИСПОЛНИТЕЛЕЙ =====
 const TEAM = ['Нина', 'Аня', 'Маша', 'Вика', 'Алина'];
-
 let currentTab = 'tasks';
 
 function esc(v) {
   return String(v === null || v === undefined ? '' : v)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-// ===== СТАТУСЫ ЗАДАЧ =====
-const STATUS_LIST = [
-  'в очереди', 'в работе', 'на паузе',
-  'на согласовании у ГЭ', 'на согласовании у МВ', 'на доработке', 'выполнено'
-];
-const STATUS_CLS = {
-  'в очереди': 'ss-queue', 'в работе': 'ss-work', 'на паузе': 'ss-pause',
-  'на согласовании у ГЭ': 'ss-ge', 'на согласовании у МВ': 'ss-mv',
-  'на доработке': 'ss-rework', 'выполнено': 'ss-done'
-};
-const STATUS_HEAD = {
-  'в очереди': 'g-queue', 'в работе': 'g-work', 'на паузе': 'g-pause',
-  'на согласовании у ГЭ': 'g-ge', 'на согласовании у МВ': 'g-mv',
-  'на доработке': 'g-rework', 'выполнено': 'g-done'
-};
-const STATUS_SEG = {
-  'в очереди': 'sb-queue', 'в работе': 'sb-work', 'на паузе': 'sb-pause',
-  'на согласовании у ГЭ': 'sb-ge', 'на согласовании у МВ': 'sb-mv',
-  'на доработке': 'sb-rework', 'выполнено': 'sb-done'
-};
-const STATUS_STRIP = {
-  'в очереди': '#94a3b8', 'в работе': '#2563eb', 'на паузе': '#06b6d4',
-  'на согласовании у ГЭ': '#eab308', 'на согласовании у МВ': '#eab308',
-  'на доработке': '#ea580c', 'выполнено': '#16a34a'
-};
+const STATUS_LIST = ['в очереди', 'в работе', 'на паузе', 'на согласовании у ГЭ', 'на согласовании у МВ', 'на доработке', 'выполнено'];
+const STATUS_CLS = { 'в очереди':'ss-queue','в работе':'ss-work','на паузе':'ss-pause','на согласовании у ГЭ':'ss-ge','на согласовании у МВ':'ss-mv','на доработке':'ss-rework','выполнено':'ss-done' };
+const STATUS_HEAD = { 'в очереди':'g-queue','в работе':'g-work','на паузе':'g-pause','на согласовании у ГЭ':'g-ge','на согласовании у МВ':'g-mv','на доработке':'g-rework','выполнено':'g-done' };
+const STATUS_SEG = { 'в очереди':'sb-queue','в работе':'sb-work','на паузе':'sb-pause','на согласовании у ГЭ':'sb-ge','на согласовании у МВ':'sb-mv','на доработке':'sb-rework','выполнено':'sb-done' };
+const STATUS_STRIP = { 'в очереди':'#94a3b8','в работе':'#2563eb','на паузе':'#06b6d4','на согласовании у ГЭ':'#eab308','на согласовании у МВ':'#eab308','на доработке':'#ea580c','выполнено':'#16a34a' };
 
-// ===== СТАТУСЫ ДОГОВОРОВ =====
 const DOC_STATUS = ['проект', 'на согласовании', 'подписан', 'закрыт'];
-const DOC_STRIP = {
-  'проект': '#94a3b8', 'на согласовании': '#f59e0b',
-  'подписан': '#dc2626', 'закрыт': '#16a34a'
-};
-const DOC_CLS = {
-  'проект': 'ss-project', 'на согласовании': 'ss-on-approval',
-  'подписан': 'ss-signed', 'закрыт': 'ss-closed'
-};
+const DOC_STRIP = { 'проект':'#94a3b8','на согласовании':'#f59e0b','подписан':'#dc2626','закрыт':'#16a34a' };
+const DOC_CLS = { 'проект':'ss-project','на согласовании':'ss-on-approval','подписан':'ss-signed','закрыт':'ss-closed' };
 
-// статусы получения оригиналов
 const ORIG_STATUS = ['не получены', 'на согласовании', 'получены'];
-const ORIG_BADGE = {
-  'не получены':    { cls: 'over', label: 'оригиналы: не получены' },
-  'на согласовании':{ cls: 'soon', label: 'оригиналы: на согл.' },
-  'получены':       { cls: 'paid', label: 'оригиналы: получены' }
-};
-const ORIG_DS_BADGE = {
-  'не получены':    { cls: 'over', label: 'ориг. ДС: не получены' },
-  'на согласовании':{ cls: 'soon', label: 'ориг. ДС: на согл.' },
-  'получены':       { cls: 'paid', label: 'ориг. ДС: получены' }
-};
+const ORIG_BADGE = { 'не получены': { cls:'over', label:'оригиналы: не получены' }, 'на согласовании': { cls:'soon', label:'оригиналы: на согл.' }, 'получены': { cls:'paid', label:'оригиналы: получены' } };
+const ORIG_DS_BADGE = { 'не получены': { cls:'over', label:'ориг. ДС: не получены' }, 'на согласовании': { cls:'soon', label:'ориг. ДС: на согл.' }, 'получены': { cls:'paid', label:'ориг. ДС: получены' } };
 
-const COND_TEXT = {
-  prepay: 'с даты перечисления аванса',
-  tolling: 'с даты получения давальческого сырья',
-  fixed: 'конкретная дата'
-};
-const FINAL_EVENT_TEXT = {
-  act: 'после подписания акта',
-  delivery: 'после последней поставки',
-  contract: 'после подписания договора'
-};
+const COND_TEXT = { prepay:'с даты перечисления аванса', tolling:'с даты получения давальческого сырья', fixed:'конкретная дата' };
+const FINAL_EVENT_TEXT = { act:'после подписания акта', delivery:'после последней поставки', contract:'после подписания договора' };
 
 const whoOpen = {};
 const schedOpenMonth = {};
 const schedOpenDoc = {};
 
-// ===== Переключение разделов =====
 function showTab(name) {
   closeStatusMenu();
   currentTab = name;
@@ -844,28 +538,17 @@ function showTab(name) {
   document.getElementById('tabCalc').classList.toggle('on', name === 'calc');
   document.getElementById('tabDoc').classList.toggle('on', name === 'doc');
   if (name === 'cal') renderCal();
-  if (name === 'doc') {
-    renderDocs();
-    renderPays();
-    renderSched();
-    showDocSub(docSub);
-  }
+  if (name === 'doc') { renderDocs(); renderPays(); renderSched(); showDocSub(docSub); }
   document.body.classList.toggle('red-mode', name === 'doc');
 }
+function fabClick() { if (currentTab === 'doc') openDocModal(); else openTaskModal(); }
 
-function fabClick() {
-  if (currentTab === 'doc') openDocModal();
-  else openTaskModal();
-}
-
-// ===== Исполнитель =====
 function buildWhoSelect() {
   const sel = document.getElementById('tWho');
   let html = '<option value="">— не выбран —</option>';
   TEAM.forEach(t => { html += '<option value="' + esc(t) + '">' + esc(t) + '</option>'; });
   html += '<option value="__other">Другое…</option>';
   sel.innerHTML = html;
-
   const fSel = document.getElementById('fWho');
   let fHtml = '<option value="all">все</option>';
   TEAM.forEach(t => { fHtml += '<option value="' + esc(t) + '">' + esc(t) + '</option>'; });
@@ -876,13 +559,7 @@ function toggleCustomWho() {
   const isOther = document.getElementById('tWho').value === '__other';
   document.getElementById('tWhoCustomWrap').classList.toggle('hidden', !isOther);
 }
-
-// ===== Задачи: окна =====
-function openTaskModal() {
-  closeStatusMenu();
-  document.getElementById('taskOverlay').classList.remove('hidden');
-  document.getElementById('tName').focus();
-}
+function openTaskModal() { closeStatusMenu(); document.getElementById('taskOverlay').classList.remove('hidden'); document.getElementById('tName').focus(); }
 function closeTaskModal() {
   document.getElementById('taskOverlay').classList.add('hidden');
   document.getElementById('tName').value = '';
@@ -891,13 +568,7 @@ function closeTaskModal() {
   document.getElementById('tWhoCustomWrap').classList.add('hidden');
   document.getElementById('tDate').value = '';
 }
-
-// ===== Договоры: окна =====
-function openDocModal() {
-  closeStatusMenu();
-  document.getElementById('docOverlay').classList.remove('hidden');
-  document.getElementById('dNum').focus();
-}
+function openDocModal() { closeStatusMenu(); document.getElementById('docOverlay').classList.remove('hidden'); document.getElementById('dNum').focus(); }
 function closeDocModal() {
   document.getElementById('docOverlay').classList.add('hidden');
   document.getElementById('dNum').value = '';
@@ -916,45 +587,27 @@ function closeDocModal() {
   updateSumLine('dSumLine', 0);
 }
 
-// ===== Задачи: хранение =====
 function loadTasks() {
   let tasks = [];
-  try { tasks = JSON.parse(localStorage.getItem('strazh_tasks')) || []; }
-  catch(e) { tasks = []; }
+  try { tasks = JSON.parse(localStorage.getItem('strazh_tasks')) || []; } catch(e) { tasks = []; }
   let changed = false;
-  tasks.forEach(t => {
-    if (!t.id) {
-      t.id = 't' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-      changed = true;
-    }
-  });
+  tasks.forEach(t => { if (!t.id) { t.id = 't' + Date.now().toString(36) + Math.random().toString(36).slice(2,7); changed = true; } });
   if (changed) saveTasks(tasks);
   return tasks;
 }
-function saveTasks(tasks) {
-  localStorage.setItem('strazh_tasks', JSON.stringify(tasks));
-}
-function fmtDate(s) {
-  if (!s) return '';
-  const parts = s.split('-');
-  return parts[2] + '.' + parts[1] + '.' + parts[0];
-}
+function saveTasks(tasks) { localStorage.setItem('strazh_tasks', JSON.stringify(tasks)); }
+function fmtDate(s) { if (!s) return ''; const p = s.split('-'); return p[2] + '.' + p[1] + '.' + p[0]; }
 function fmtDT(iso) {
   if (!iso) return '';
   const d = new Date(iso);
   const p = n => (n < 10 ? '0' : '') + n;
-  return p(d.getDate()) + '.' + p(d.getMonth() + 1) + '.' + d.getFullYear() +
-    ', ' + p(d.getHours()) + ':' + p(d.getMinutes());
+  return p(d.getDate()) + '.' + p(d.getMonth()+1) + '.' + d.getFullYear() + ', ' + p(d.getHours()) + ':' + p(d.getMinutes());
 }
 function daysLeft(s) {
   if (!s) return null;
-  const y = parseInt(s.slice(0, 4), 10);
-  const m = parseInt(s.slice(5, 7), 10);
-  const d = parseInt(s.slice(8, 10), 10);
-  if (isNaN(y) || isNaN(m) || isNaN(d)) return null;
-  const dd = new Date(y, m - 1, d, 23, 59, 59);
-  const now = new Date();
-  return Math.ceil((dd - now) / 86400000);
+  const y = parseInt(s.slice(0,4),10), m = parseInt(s.slice(5,7),10), d = parseInt(s.slice(8,10),10);
+  if (isNaN(y)||isNaN(m)||isNaN(d)) return null;
+  return Math.ceil((new Date(y, m-1, d, 23, 59, 59) - new Date()) / 86400000);
 }
 function taskCat(t) {
   if (t.done || t.status === 'выполнено') return 'done';
@@ -963,11 +616,7 @@ function taskCat(t) {
   if (left !== null && left <= 3) return 'soon';
   return 'work';
 }
-function clearFilters() {
-  document.getElementById('fWho').value = 'all';
-  document.getElementById('fCat').value = 'all';
-  render();
-}
+function clearFilters() { document.getElementById('fWho').value = 'all'; document.getElementById('fCat').value = 'all'; render(); }
 function filteredTasks() {
   const tasks = loadTasks();
   const fWho = document.getElementById('fWho').value;
@@ -983,9 +632,8 @@ function filteredTasks() {
 function sortByChoice(arr) {
   const sort = document.getElementById('vSort').value;
   if (sort === 'new') return arr.slice();
-  return arr.slice().sort((a, b) => {
-    const da = taskCat(a) === 'done' ? 1 : 0;
-    const db = taskCat(b) === 'done' ? 1 : 0;
+  return arr.slice().sort((a,b) => {
+    const da = taskCat(a) === 'done' ? 1 : 0, db = taskCat(b) === 'done' ? 1 : 0;
     if (da !== db) return da - db;
     const la = daysLeft(a.date), lb = daysLeft(b.date);
     if (la === null && lb === null) return 0;
@@ -994,22 +642,17 @@ function sortByChoice(arr) {
     return la - lb;
   });
 }
-
 function taskRow(t, idx) {
   const cat = taskCat(t);
   const left = daysLeft(t.date);
   let badgeCat = '';
   if (cat === 'done') badgeCat = 'закрыто';
-  else if (left !== null) {
-    if (left < 0) badgeCat = 'просрочено';
-    else badgeCat = 'дедлайн: ' + left + ' дн.';
-  } else badgeCat = 'в работе';
-
+  else if (left !== null) { badgeCat = left < 0 ? 'просрочено' : 'дедлайн: ' + left + ' дн.'; }
+  else badgeCat = 'в работе';
   const badgeCls = cat === 'over' ? 'over' : (cat === 'soon' ? 'soon' : (cat === 'done' ? '' : 'ok'));
   const status = t.status || 'в работе';
   const stCls = STATUS_CLS[status] || 'ss-work';
   const strip = STATUS_STRIP[status] || '#64748b';
-
   return '<div class="task' + (cat === 'done' ? ' is-done' : '') + '" style="border-left-color:' + strip + '">' +
     '<div class="info"><div class="name">' + (cat === 'done' ? '✅ ' : '') + esc(t.name) + '</div>' +
     '<div class="meta">' +
@@ -1025,28 +668,20 @@ function taskRow(t, idx) {
     '</div></div>';
 }
 
-// ===== меню статуса =====
-let menuTaskId = null;
-let menuDocId = null;
-
+let menuTaskId = null, menuDocId = null;
 function openStatusMenu(ev, id) {
-  ev.stopPropagation();
-  menuDocId = null;
-  menuTaskId = id;
+  ev.stopPropagation(); menuDocId = null; menuTaskId = id;
   const menu = document.getElementById('statusMenu');
   const r = ev.currentTarget.getBoundingClientRect();
-  const top = Math.min(r.bottom + 6, window.innerHeight - 320);
-  const left = Math.max(8, Math.min(r.left, window.innerWidth - 246));
-  menu.style.top = top + 'px';
-  menu.style.left = left + 'px';
+  menu.style.top = Math.min(r.bottom + 6, window.innerHeight - 320) + 'px';
+  menu.style.left = Math.max(8, Math.min(r.left, window.innerWidth - 246)) + 'px';
   renderStatusMenu();
   menu.classList.remove('hidden');
 }
 function closeStatusMenu() {
   const menu = document.getElementById('statusMenu');
   if (menu) menu.classList.add('hidden');
-  menuTaskId = null;
-  menuDocId = null;
+  menuTaskId = null; menuDocId = null;
 }
 function renderStatusMenu() {
   const menu = document.getElementById('statusMenu');
@@ -1056,9 +691,7 @@ function renderStatusMenu() {
     const status = t ? (t.status || 'в работе') : 'в работе';
     menu.innerHTML = STATUS_LIST.map(s => {
       const color = STATUS_STRIP[s] || '#64748b';
-      return '<div class="opt" onclick="pickStatus(\'' + s + '\')">' +
-        '<span><span class="sdot" style="background:' + color + '"></span>' + esc(s) + '</span>' +
-        (s === status ? '<b>✓</b>' : '') + '</div>';
+      return '<div class="opt" onclick="pickStatus(\'' + s + '\')"><span><span class="sdot" style="background:' + color + '"></span>' + esc(s) + '</span>' + (s === status ? '<b>✓</b>' : '') + '</div>';
     }).join('');
   } else if (menuDocId) {
     const docs = loadDocs();
@@ -1066,30 +699,20 @@ function renderStatusMenu() {
     const status = d ? d.status : 'проект';
     menu.innerHTML = DOC_STATUS.map(s => {
       const color = DOC_STRIP[s] || '#64748b';
-      return '<div class="opt" onclick="setDocStatus(\'' + menuDocId + '\', \'' + s + '\')">' +
-        '<span><span class="sdot" style="background:' + color + '"></span>' + esc(s) + '</span>' +
-        (s === status ? '<b>✓</b>' : '') + '</div>';
+      return '<div class="opt" onclick="setDocStatus(\'' + menuDocId + '\', \'' + s + '\')"><span><span class="sdot" style="background:' + color + '"></span>' + esc(s) + '</span>' + (s === status ? '<b>✓</b>' : '') + '</div>';
     }).join('');
   }
 }
-function pickStatus(s) {
-  const id = menuTaskId;
-  closeStatusMenu();
-  if (id) setStatusById(id, s);
-}
+function pickStatus(s) { const id = menuTaskId; closeStatusMenu(); if (id) setStatusById(id, s); }
 document.addEventListener('click', function(e) {
   const menu = document.getElementById('statusMenu');
-  if (!menu.classList.contains('hidden') && !menu.contains(e.target)) {
-    closeStatusMenu();
-  }
+  if (!menu.classList.contains('hidden') && !menu.contains(e.target)) closeStatusMenu();
 });
 
-// ===== рендер задач =====
 function renderStats(tasks) {
   let all = 0, queue = 0, work = 0, soon = 0, over = 0, done = 0;
   const byStatus = {};
   STATUS_LIST.forEach(s => { byStatus[s] = 0; });
-
   tasks.forEach(t => {
     const st = t.status || 'в работе';
     byStatus[st] = (byStatus[st] || 0) + 1;
@@ -1099,169 +722,97 @@ function renderStats(tasks) {
     else if (c === 'soon') { all++; soon++; }
     else { all++; if (st === 'в очереди') queue++; else work++; }
   });
-
-  const setCounter = (id, val, cls) => {
-    const el = document.getElementById(id);
-    el.textContent = val;
-    el.className = 'num ' + cls;
-  };
-  setCounter('cAll',   all + done, 'c-black');
+  const setCounter = (id, val, cls) => { const el = document.getElementById(id); el.textContent = val; el.className = 'num ' + cls; };
+  setCounter('cAll', all + done, 'c-black');
   setCounter('cQueue', queue, 'c-gray');
-  setCounter('cWork',  work, 'c-blue');
-  setCounter('cSoon',  soon, 'c-orange');
-  setCounter('cOver',  over, 'c-red');
-  setCounter('cDone',  done, 'c-green');
-
+  setCounter('cWork', work, 'c-blue');
+  setCounter('cSoon', soon, 'c-orange');
+  setCounter('cOver', over, 'c-red');
+  setCounter('cDone', done, 'c-green');
   const total = tasks.length;
   const bar = document.getElementById('statusBar');
-  if (!total) {
-    bar.innerHTML = '';
-  } else {
-    bar.innerHTML = STATUS_LIST.map(s => {
-      const n = byStatus[s] || 0;
-      if (!n) return '';
-      return '<div class="' + STATUS_SEG[s] + '" style="width:' + (n / total * 100) + '%"></div>';
-    }).join('');
-  }
-
-  const load = TEAM.map(name => ({
-    name: name,
-    n: tasks.filter(t => t.who === name && taskCat(t) !== 'done').length
-  }));
+  if (!total) bar.innerHTML = '';
+  else bar.innerHTML = STATUS_LIST.map(s => {
+    const n = byStatus[s] || 0;
+    return n ? '<div class="' + STATUS_SEG[s] + '" style="width:' + (n/total*100) + '%"></div>' : '';
+  }).join('');
+  const load = TEAM.map(name => ({ name: name, n: tasks.filter(t => t.who === name && taskCat(t) !== 'done').length }));
   const max = Math.max.apply(null, [1].concat(load.map(x => x.n)));
   document.getElementById('loadBlock').innerHTML = load.map(x =>
     '<div class="load-row"><div class="lr-top"><span>' + esc(x.name) + '</span><b>' + x.n + '</b></div>' +
-    '<div class="load-track"><div class="load-fill' + (x.n === max && x.n > 0 ? ' max' : '') +
-    '" style="width:' + (x.n / max * 100) + '%"></div></div></div>'
+    '<div class="load-track"><div class="load-fill' + (x.n === max && x.n > 0 ? ' max' : '') + '" style="width:' + (x.n/max*100) + '%"></div></div></div>'
   ).join('');
-
-  const hot = tasks.filter(t => {
-    const c = taskCat(t);
-    return c === 'over' || c === 'soon';
-  }).sort((a, b) => (daysLeft(a.date) || 0) - (daysLeft(b.date) || 0));
+  const hot = tasks.filter(t => { const c = taskCat(t); return c === 'over' || c === 'soon'; })
+    .sort((a,b) => (daysLeft(a.date)||0) - (daysLeft(b.date)||0));
   const hotCard = document.getElementById('hotCard');
-  if (!hot.length) {
-    hotCard.classList.add('hidden');
-  } else {
-    hotCard.classList.remove('hidden');
-    document.getElementById('hotList').innerHTML = hot.map(t =>
-      taskRow(t, tasks.indexOf(t))
-    ).join('');
-  }
+  if (!hot.length) hotCard.classList.add('hidden');
+  else { hotCard.classList.remove('hidden'); document.getElementById('hotList').innerHTML = hot.map(t => taskRow(t, tasks.indexOf(t))).join(''); }
 }
-
 function render() {
   const tasks = loadTasks();
   renderStats(tasks);
-
   const view = document.getElementById('vView').value;
   const shown = sortByChoice(filteredTasks());
   const list = document.getElementById('taskList');
-
   if (!shown.length) {
-    list.innerHTML = tasks.length
-      ? '<p class="note">По выбранным фильтрам задач нет</p>'
-      : '<p class="note">Задач пока нет</p>';
+    list.innerHTML = tasks.length ? '<p class="note">По выбранным фильтрам задач нет</p>' : '<p class="note">Задач пока нет</p>';
     return;
   }
-
   if (view === 'status') {
     let html = '';
     STATUS_LIST.forEach(s => {
       const group = shown.filter(t => (t.status || 'в работе') === s);
       if (!group.length) return;
-      html += '<div class="group">' +
-        '<div class="group-head ' + STATUS_HEAD[s] + '"><span>' + esc(s) + '</span><small>' + group.length + '</small></div>' +
-        '<div class="group-body">' +
-        group.map(t => taskRow(t, tasks.indexOf(t))).join('') +
-        '</div></div>';
+      html += '<div class="group"><div class="group-head ' + STATUS_HEAD[s] + '"><span>' + esc(s) + '</span><small>' + group.length + '</small></div>' +
+        '<div class="group-body">' + group.map(t => taskRow(t, tasks.indexOf(t))).join('') + '</div></div>';
     });
     list.innerHTML = html;
-
   } else if (view === 'who') {
     const names = [];
-    shown.forEach(t => {
-      const k = t.who || '— без исполнителя —';
-      if (!names.includes(k)) names.push(k);
-    });
+    shown.forEach(t => { const k = t.who || '— без исполнителя —'; if (!names.includes(k)) names.push(k); });
     list.innerHTML = names.map(name => {
       const group = shown.filter(t => (t.who || '— без исполнителя —') === name);
       const isOpen = whoOpen[name] !== false;
       const safeName = name.replace(/'/g, "\\'");
-      return '<div class="group">' +
-        '<div class="group-head g-who" onclick="toggleWho(\'' + safeName + '\')">' +
+      return '<div class="group"><div class="group-head g-who" onclick="toggleWho(\'' + safeName + '\')">' +
         '<span>' + (isOpen ? '▾ ' : '▸ ') + esc(name) + '</span><small>' + group.length + '</small></div>' +
-        (isOpen ? '<div class="group-body">' +
-          group.map(t => taskRow(t, tasks.indexOf(t))).join('') + '</div>' : '') +
-        '</div>';
+        (isOpen ? '<div class="group-body">' + group.map(t => taskRow(t, tasks.indexOf(t))).join('') + '</div>' : '') + '</div>';
     }).join('');
-
   } else {
     const active = shown.filter(t => taskCat(t) !== 'done');
-    const doneT  = shown.filter(t => taskCat(t) === 'done');
-    list.innerHTML = active.map(t => taskRow(t, tasks.indexOf(t))).join('') +
-      doneT.map(t => taskRow(t, tasks.indexOf(t))).join('');
+    const doneT = shown.filter(t => taskCat(t) === 'done');
+    list.innerHTML = active.map(t => taskRow(t, tasks.indexOf(t))).join('') + doneT.map(t => taskRow(t, tasks.indexOf(t))).join('');
   }
 }
-function toggleWho(name) {
-  whoOpen[name] = (whoOpen[name] === false) ? true : false;
-  render();
-}
-
-// ===== действия задач =====
+function toggleWho(name) { whoOpen[name] = (whoOpen[name] === false) ? true : false; render(); }
 function setStatusById(id, val) {
   const tasks = loadTasks();
   const t = tasks.find(x => x.id === id);
   if (!t) return;
-  t.status = val;
-  t.statusDate = new Date().toISOString();
-  t.done = (val === 'выполнено');
-  saveTasks(tasks);
-  render();
+  t.status = val; t.statusDate = new Date().toISOString(); t.done = (val === 'выполнено');
+  saveTasks(tasks); render();
 }
 function addTask() {
   const name = document.getElementById('tName').value.trim();
   if (!name) { alert('Введите название задачи'); return; }
-
   let who = document.getElementById('tWho').value;
   if (who === '__other') {
     who = document.getElementById('tWhoCustom').value.trim();
     if (!who) { alert('Впишите исполнителя или выберите из списка'); return; }
   }
-
   const tasks = loadTasks();
-  tasks.unshift({
-    id: 't' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
-    name: name,
-    who: who,
-    date: document.getElementById('tDate').value,
-    status: 'в очереди',
-    statusDate: new Date().toISOString(),
-    createdAt: new Date().toISOString(),
-    done: false
-  });
-  saveTasks(tasks);
-  closeTaskModal();
-  render();
+  tasks.unshift({ id: 't' + Date.now().toString(36) + Math.random().toString(36).slice(2,7), name: name, who: who, date: document.getElementById('tDate').value, status: 'в очереди', statusDate: new Date().toISOString(), createdAt: new Date().toISOString(), done: false });
+  saveTasks(tasks); closeTaskModal(); render();
 }
 function closeTask(i) {
   const tasks = loadTasks();
-  tasks[i].status = 'выполнено';
-  tasks[i].statusDate = new Date().toISOString();
-  tasks[i].done = true;
-  saveTasks(tasks);
-  render();
+  tasks[i].status = 'выполнено'; tasks[i].statusDate = new Date().toISOString(); tasks[i].done = true;
+  saveTasks(tasks); render();
 }
-function delTask(i) {
-  const tasks = loadTasks();
-  tasks.splice(i, 1);
-  saveTasks(tasks);
-  render();
-}
+function delTask(i) { const tasks = loadTasks(); tasks.splice(i, 1); saveTasks(tasks); render(); }
 buildWhoSelect();
 render();
 
-// ===== ДОГОВОРНАЯ РАБОТА =====
 let docSub = 'registry';
 let editingDocId = null;
 
@@ -1279,35 +830,25 @@ function showDocSub(name) {
 
 function loadDocs() {
   let docs = [];
-  try { docs = JSON.parse(localStorage.getItem('strazh_docs')) || []; }
-  catch(e) { docs = []; }
+  try { docs = JSON.parse(localStorage.getItem('strazh_docs')) || []; } catch(e) { docs = []; }
   let changed = false;
   docs.forEach(d => {
-    if (!d.id) {
-      d.id = 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-      changed = true;
-    }
+    if (!d.id) { d.id = 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2,7); changed = true; }
     if (!Array.isArray(d.items)) d.items = [];
     if (!Array.isArray(d.invoices)) d.invoices = [];
     if (!Array.isArray(d.ds)) d.ds = [];
+    if (!Array.isArray(d.shipments)) d.shipments = [];
     if (!d.origStatus) { d.origStatus = 'не получены'; changed = true; }
     if (!d.origDsStatus) { d.origDsStatus = 'не получены'; changed = true; }
   });
   if (changed) saveDocs(docs);
   return docs;
 }
-function saveDocs(docs) {
-  localStorage.setItem('strazh_docs', JSON.stringify(docs));
-}
+function saveDocs(docs) { localStorage.setItem('strazh_docs', JSON.stringify(docs)); }
 function r2(x) { return Math.round(x * 100) / 100; }
-function fmtNum(x) {
-  return x.toLocaleString('ru-RU', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-}
+function fmtNum(x) { return x.toLocaleString('ru-RU', {minimumFractionDigits: 2, maximumFractionDigits: 2}); }
 
-// ===== автоматическая сумма договора из ведомости =====
-function itemsTotal(items) {
-  return r2((items || []).reduce((acc, it) => acc + (it.sum || 0), 0));
-}
+function itemsTotal(items) { return r2((items || []).reduce((acc, it) => acc + (it.sum || 0), 0)); }
 function updateSumLine(lineId, total) {
   const line = document.getElementById(lineId);
   if (!line) return;
@@ -1315,32 +856,28 @@ function updateSumLine(lineId, total) {
   if (b) b.textContent = fmtNum(total);
 }
 function recalcModalSum(wrapId, lineId) {
-  const wrap = document.getElementById(wrapId);
-  const line = document.getElementById(lineId);
+  const wrap = document.getElementById(wrapId), line = document.getElementById(lineId);
   if (!wrap || !line) return;
   updateSumLine(lineId, itemsTotal(collectItems(wrapId)));
 }
 
-// ===== оригиналы: циклическое переключение статуса =====
 function cycleOrig(id, field) {
   const docs = loadDocs();
   const d = docs.find(x => x.id === id);
   if (!d) return;
   const cur = d[field] || 'не получены';
-  const i = ORIG_STATUS.indexOf(cur);
-  d[field] = ORIG_STATUS[(i + 1) % ORIG_STATUS.length];
+  d[field] = ORIG_STATUS[(ORIG_STATUS.indexOf(cur) + 1) % ORIG_STATUS.length];
   saveDocs(docs);
   renderDocs();
 }
 
-// ===== добавление договора =====
 function addDoc() {
   const num = document.getElementById('dNum').value.trim();
   if (!num) { alert('Введите номер договора'); return; }
   const items = collectItems('itemsWrap');
   const docs = loadDocs();
   docs.unshift({
-    id: 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+    id: 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2,7),
     num: num,
     contr: document.getElementById('dContr').value.trim(),
     subjectType: document.getElementById('dSubjectType').value,
@@ -1354,53 +891,30 @@ function addDoc() {
     finalDays: parseInt(document.getElementById('dFinalDays').value, 10) || 0,
     finalUnit: document.getElementById('dFinalUnit').value,
     finalEvent: document.getElementById('dFinalEvent').value,
-    signDate: '',
-    prepayFactDate: '',
-    tollingDate: '',
-    actDate: '',
-    items: items,
-    invoices: [],
-    ds: [],
-    origStatus: 'не получены',
-    origDsStatus: 'не получены',
-    status: 'проект',
-    statusDate: new Date().toISOString(),
-    createdAt: new Date().toISOString()
+    signDate: '', prepayFactDate: '', tollingDate: '', actDate: '',
+    items: items, invoices: [], ds: [], shipments: [],
+    origStatus: 'не получены', origDsStatus: 'не получены',
+    status: 'проект', statusDate: new Date().toISOString(), createdAt: new Date().toISOString()
   });
-  saveDocs(docs);
-  closeDocModal();
-  buildContrFilter();
-  renderDocs();
-  renderPays();
-  renderSched();
+  saveDocs(docs); closeDocModal(); buildContrFilter(); renderDocs(); renderPays(); renderSched();
 }
 function delDoc(id) {
   saveDocs(loadDocs().filter(d => d.id !== id));
-  buildContrFilter();
-  renderDocs();
-  renderPays();
-  renderSched();
+  buildContrFilter(); renderDocs(); renderPays(); renderSched();
 }
 function setDocStatus(id, val) {
   const docs = loadDocs();
   const d = docs.find(x => x.id === id);
   if (!d) return;
-  d.status = val;
-  d.statusDate = new Date().toISOString();
-  saveDocs(docs);
-  closeStatusMenu();
-  renderDocs();
+  d.status = val; d.statusDate = new Date().toISOString();
+  saveDocs(docs); closeStatusMenu(); renderDocs();
 }
 function openDocStatusMenu(ev, id) {
-  ev.stopPropagation();
-  menuTaskId = null;
-  menuDocId = id;
+  ev.stopPropagation(); menuTaskId = null; menuDocId = id;
   const menu = document.getElementById('statusMenu');
   const r = ev.currentTarget.getBoundingClientRect();
-  const top = Math.min(r.bottom + 6, window.innerHeight - 240);
-  const left = Math.max(8, Math.min(r.left, window.innerWidth - 246));
-  menu.style.top = top + 'px';
-  menu.style.left = left + 'px';
+  menu.style.top = Math.min(r.bottom + 6, window.innerHeight - 240) + 'px';
+  menu.style.left = Math.max(8, Math.min(r.left, window.innerWidth - 246)) + 'px';
   renderStatusMenu();
   menu.classList.remove('hidden');
 }
@@ -1416,9 +930,7 @@ function clearDocFilters() {
 function buildContrFilter() {
   const docs = loadDocs();
   const names = [];
-  docs.forEach(d => {
-    if (d.contr && !names.includes(d.contr)) names.push(d.contr);
-  });
+  docs.forEach(d => { if (d.contr && !names.includes(d.contr)) names.push(d.contr); });
   const sel = document.getElementById('fContr');
   if (!sel) return;
   const cur = sel.value || 'all';
@@ -1428,28 +940,22 @@ function buildContrFilter() {
   if (names.includes(cur)) sel.value = cur;
 }
 
-// ===== строки ведомости =====
 function itemRowHtml(s, wrapId, lineId) {
   return '<div class="item-row">' +
     '<button class="remove-item" title="Убрать позицию" onclick="removeItemRow(this, \'' + wrapId + '\', \'' + lineId + '\')">✕</button>' +
     '<input type="text" class="it-name" placeholder="Наименование (позиция ведомости)" value="' + esc(s ? s.name : '') + '">' +
     '<div class="filters">' +
-    '<div><span class="small-lbl">Кол-во</span>' +
-    '<input type="number" class="it-qty" step="0.01" value="' + (s && s.qty ? s.qty : '') + '" oninput="updRowSum(this); recalcModalSum(\'' + wrapId + '\', \'' + lineId + '\')"></div>' +
-    '<div><span class="small-lbl">Цена за ед., руб.</span>' +
-    '<input type="number" class="it-price" step="0.01" value="' + (s && s.price ? s.price : '') + '" oninput="updRowSum(this); recalcModalSum(\'' + wrapId + '\', \'' + lineId + '\')"></div>' +
+    '<div><span class="small-lbl">Кол-во</span><input type="number" class="it-qty" step="0.01" value="' + (s && s.qty ? s.qty : '') + '" oninput="updRowSum(this); recalcModalSum(\'' + wrapId + '\', \'' + lineId + '\')"></div>' +
+    '<div><span class="small-lbl">Цена за ед., руб.</span><input type="number" class="it-price" step="0.01" value="' + (s && s.price ? s.price : '') + '" oninput="updRowSum(this); recalcModalSum(\'' + wrapId + '\', \'' + lineId + '\')"></div>' +
     '</div>' +
     '<div class="row-sum">Сумма: <span class="it-sum">' + (s && s.sum ? fmtNum(s.sum) : '0,00') + '</span> руб.</div>' +
     '<div class="filters">' +
-    '<div><span class="small-lbl">Срок поставки, мес.</span>' +
-    '<input type="number" class="it-months" step="1" value="' + (s && s.months ? s.months : '') + '"></div>' +
-    '<div><span class="small-lbl">С момента</span>' +
-    '<select class="it-cond">' +
+    '<div><span class="small-lbl">Срок поставки, мес.</span><input type="number" class="it-months" step="1" value="' + (s && s.months ? s.months : '') + '"></div>' +
+    '<div><span class="small-lbl">С момента</span><select class="it-cond">' +
     '<option value="prepay"' + (s && s.cond === 'prepay' ? ' selected' : '') + '>аванса</option>' +
     '<option value="tolling"' + (s && s.cond === 'tolling' ? ' selected' : '') + '>аванса + давальческого</option>' +
     '<option value="fixed"' + (s && s.cond === 'fixed' ? ' selected' : '') + '>конкретная дата</option>' +
-    '</select></div>' +
-    '</div>' +
+    '</select></div></div>' +
     '<input type="date" class="it-date" value="' + (s ? (s.date || '') : '') + '">' +
     '</div>';
 }
@@ -1479,9 +985,7 @@ function collectItems(wrapId) {
     const price = parseFloat(row.querySelector('.it-price').value) || 0;
     out.push({
       name: row.querySelector('.it-name').value.trim(),
-      qty: qty,
-      price: price,
-      sum: r2(qty * price),
+      qty: qty, price: price, sum: r2(qty * price),
       months: parseInt(row.querySelector('.it-months').value, 10) || 0,
       cond: row.querySelector('.it-cond').value,
       date: row.querySelector('.it-date').value
@@ -1490,29 +994,30 @@ function collectItems(wrapId) {
   return out;
 }
 
-// ===== строки ДС =====
 function dsRowHtml(s) {
+  const kind = s ? (s.kind || 'ДС') : 'ДС';
   return '<div class="ds-row">' +
-    '<button class="remove-ds" title="Убрать ДС" onclick="this.parentNode.remove()">✕</button>' +
-    '<input type="text" class="ds-num" placeholder="Номер ДС (например: ДС №1 от 12.01.2026)" value="' + esc(s ? s.num : '') + '">' +
-    '<input type="text" class="ds-subject" placeholder="Предмет ДС (например: изменение объёма поставки)" value="' + esc(s ? s.subject : '') + '">' +
+    '<button class="remove-ds" title="Убрать запись" onclick="this.parentNode.remove()">✕</button>' +
+    '<select class="ds-kind">' +
+    '<option value="ДС"' + (kind === 'ДС' ? ' selected' : '') + '>ДС</option>' +
+    '<option value="Протокол разногласий"' + (kind === 'Протокол разногласий' ? ' selected' : '') + '>Протокол разногласий</option>' +
+    '</select>' +
+    '<input type="text" class="ds-num" placeholder="Номер и дата (например: ДС №1 от 12.01.2026)" value="' + esc(s ? s.num : '') + '">' +
+    '<input type="text" class="ds-subject" placeholder="Предмет (например: изменение объёма поставки)" value="' + esc(s ? s.subject : '') + '">' +
     '<input type="text" class="ds-item" placeholder="Позиция ведомости" value="' + esc(s ? s.item : '') + '">' +
     '<div class="filters">' +
-    '<div><span class="small-lbl">Новое кол-во</span>' +
-    '<input type="number" class="ds-qty" step="0.01" value="' + (s && s.newQty ? s.newQty : '') + '"></div>' +
-    '<div><span class="small-lbl">Новая цена, руб.</span>' +
-    '<input type="number" class="ds-price" step="0.01" value="' + (s && s.newPrice ? s.newPrice : '') + '"></div>' +
+    '<div><span class="small-lbl">Новое кол-во</span><input type="number" class="ds-qty" step="0.01" value="' + (s && s.newQty ? s.newQty : '') + '"></div>' +
+    '<div><span class="small-lbl">Новая цена, руб.</span><input type="number" class="ds-price" step="0.01" value="' + (s && s.newPrice ? s.newPrice : '') + '"></div>' +
     '</div>' +
     '<input type="text" class="ds-note" placeholder="Примечание (увеличение/уменьшение, иное)" value="' + esc(s ? s.note : '') + '">' +
     '</div>';
 }
-function addCardDsRow(s) {
-  document.getElementById('cDsWrap').insertAdjacentHTML('beforeend', dsRowHtml(s));
-}
+function addCardDsRow(s) { document.getElementById('cDsWrap').insertAdjacentHTML('beforeend', dsRowHtml(s)); }
 function collectDs() {
   const out = [];
   document.querySelectorAll('#cDsWrap .ds-row').forEach(row => {
     out.push({
+      kind: row.querySelector('.ds-kind').value,
       num: row.querySelector('.ds-num').value.trim(),
       subject: row.querySelector('.ds-subject').value.trim(),
       item: row.querySelector('.ds-item').value.trim(),
@@ -1524,7 +1029,31 @@ function collectDs() {
   return out;
 }
 
-// ===== счёт в карточке: номер, дата, сумма, тип (аванс/окончательный расчёт) + ПП =====
+function shipRowHtml(s) {
+  return '<div class="ship-row">' +
+    '<button class="remove-ship" title="Убрать отгрузку" onclick="this.parentNode.remove()">✕</button>' +
+    '<input type="text" class="sh-item" placeholder="Позиция (что отгружено)" value="' + esc(s ? s.item : '') + '">' +
+    '<div class="filters">' +
+    '<div><span class="small-lbl">Дата отгрузки</span><input type="date" class="sh-date" value="' + (s ? (s.date || '') : '') + '"></div>' +
+    '<div><span class="small-lbl">№ ТТН / УПД</span><input type="text" class="sh-doc" value="' + esc(s ? s.doc : '') + '"></div>' +
+    '</div>' +
+    '<input type="text" class="sh-note" placeholder="Примечание" value="' + esc(s ? s.note : '') + '">' +
+    '</div>';
+}
+function addCardShipRow(s) { document.getElementById('cShipWrap').insertAdjacentHTML('beforeend', shipRowHtml(s)); }
+function collectShips() {
+  const out = [];
+  document.querySelectorAll('#cShipWrap .ship-row').forEach(row => {
+    out.push({
+      item: row.querySelector('.sh-item').value.trim(),
+      date: row.querySelector('.sh-date').value,
+      doc: row.querySelector('.sh-doc').value.trim(),
+      note: row.querySelector('.sh-note').value.trim()
+    });
+  });
+  return out;
+}
+
 function invoiceRowHtml(inv) {
   const t = inv ? (inv.type || 'аванс') : 'аванс';
   return '<div class="pay-block">' +
@@ -1537,19 +1066,15 @@ function invoiceRowHtml(inv) {
     '<select class="inv-type">' +
     '<option value="аванс"' + (t === 'аванс' ? ' selected' : '') + '>аванс</option>' +
     '<option value="окончательный расчёт"' + (t === 'окончательный расчёт' ? ' selected' : '') + '>окончательный расчёт</option>' +
-    '</select>' +
-    '</div>' +
+    '</select></div>' +
     '<div class="pb-title" style="margin-top:6px">Факт оплаты — платёжное поручение</div>' +
     '<div class="pay-fact">' +
     '<input type="text" class="pp-num" placeholder="номер ПП" value="' + esc(inv ? inv.ppNum : '') + '">' +
     '<input type="date" class="pp-date" value="' + (inv ? (inv.ppDate || '') : '') + '">' +
     '<input type="number" step="0.01" class="pp-sum" placeholder="сумма ПП" value="' + (inv && inv.ppSum ? inv.ppSum : '') + '">' +
-    '</div>' +
-    '</div>';
+    '</div></div>';
 }
-function addCardInvoiceRow(inv) {
-  document.getElementById('cInvoicesWrap').insertAdjacentHTML('beforeend', invoiceRowHtml(inv));
-}
+function addCardInvoiceRow(inv) { document.getElementById('cInvoicesWrap').insertAdjacentHTML('beforeend', invoiceRowHtml(inv)); }
 function collectInvoices() {
   const out = [];
   document.querySelectorAll('#cInvoicesWrap .pay-block').forEach(row => {
@@ -1566,29 +1091,16 @@ function collectInvoices() {
   return out;
 }
 
-// ===== расчёт дат =====
 function addDays(from, n, unit) {
   const d = new Date(from);
   if (unit === 'work') {
     let left = n;
-    while (left > 0) {
-      d.setDate(d.getDate() + 1);
-      if (d.getDay() !== 0 && d.getDay() !== 6) left--;
-    }
-  } else {
-    d.setDate(d.getDate() + n);
-  }
+    while (left > 0) { d.setDate(d.getDate() + 1); if (d.getDay() !== 0 && d.getDay() !== 6) left--; }
+  } else d.setDate(d.getDate() + n);
   return d;
 }
-function addMonths(from, n) {
-  const d = new Date(from);
-  d.setMonth(d.getMonth() + n);
-  return d;
-}
-function isoOf(d) {
-  const p = n => (n < 10 ? '0' : '') + n;
-  return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
-}
+function addMonths(from, n) { const d = new Date(from); d.setMonth(d.getMonth() + n); return d; }
+function isoOf(d) { const p = n => (n < 10 ? '0' : '') + n; return d.getFullYear() + '-' + p(d.getMonth()+1) + '-' + p(d.getDate()); }
 function itemDueDate(d, it) {
   if (!it) return null;
   if (it.cond === 'fixed') return it.date || null;
@@ -1600,22 +1112,15 @@ function finalBaseDate(d) {
   if (d.finalEvent === 'act') return d.actDate || null;
   if (d.finalEvent === 'contract') return d.signDate || null;
   let last = null;
-  (d.items || []).forEach(it => {
-    const dd = itemDueDate(d, it);
-    if (dd && (!last || dd > last)) last = dd;
-  });
+  (d.items || []).forEach(it => { const dd = itemDueDate(d, it); if (dd && (!last || dd > last)) last = dd; });
   return last;
 }
-// плановая дата оплаты по типу платежа
 function payPlanDate(d, type) {
-  if (type === 'аванс') {
-    return (d.signDate && d.prepayDays) ? isoOf(addDays(d.signDate, d.prepayDays, d.prepayUnit)) : null;
-  }
+  if (type === 'аванс') return (d.signDate && d.prepayDays) ? isoOf(addDays(d.signDate, d.prepayDays, d.prepayUnit)) : null;
   const base = finalBaseDate(d);
   return (base && d.finalDays) ? isoOf(addDays(base, d.finalDays, d.finalUnit)) : null;
 }
 
-// ===== тексты для реестра =====
 function itemsText(d) {
   if (!d.items || !d.items.length) return '';
   return d.items.map(it => {
@@ -1635,7 +1140,8 @@ function dsText(d) {
     let chg = [];
     if (x.newQty) chg.push('кол-во → ' + x.newQty);
     if (x.newPrice) chg.push('цена → ' + fmtNum(x.newPrice));
-    return '• ' + esc(x.num || 'ДС') + (x.subject ? ' — ' + esc(x.subject) : '') +
+    return '• [' + esc(x.kind || 'ДС') + '] ' + esc(x.num || '') +
+      (x.subject ? ' — ' + esc(x.subject) : '') +
       (x.item ? ' [' + esc(x.item) + ']' : '') +
       (chg.length ? ': ' + chg.join(', ') : '') +
       (x.note ? ' (' + esc(x.note) + ')' : '');
@@ -1643,14 +1149,11 @@ function dsText(d) {
 }
 function payText(d) {
   const parts = [];
-  if (d.prepay) parts.push('аванс ' + d.prepay + '% — в течение ' +
-    d.prepayDays + ' ' + (d.prepayUnit === 'work' ? 'раб.' : 'календ.') + ' дн. с подписания и счёта');
-  if (d.finalDays) parts.push('окончательный расчёт — в течение ' + d.finalDays + ' ' +
-    (d.finalUnit === 'work' ? 'раб.' : 'календ.') + ' дн. ' + (FINAL_EVENT_TEXT[d.finalEvent] || ''));
+  if (d.prepay) parts.push('аванс ' + d.prepay + '% — в течение ' + d.prepayDays + ' ' + (d.prepayUnit === 'work' ? 'раб.' : 'календ.') + ' дн. с подписания и счёта');
+  if (d.finalDays) parts.push('окончательный расчёт — в течение ' + d.finalDays + ' ' + (d.finalUnit === 'work' ? 'раб.' : 'календ.') + ' дн. ' + (FINAL_EVENT_TEXT[d.finalEvent] || ''));
   return parts.join(' · ');
 }
 
-// ===== реестр договоров =====
 function docRow(d) {
   const strip = DOC_STRIP[d.status] || '#64748b';
   const stCls = DOC_CLS[d.status] || 'ss-project';
@@ -1662,10 +1165,8 @@ function docRow(d) {
     else if (left <= 30) badge = '<span class="badge soon">' + left + ' дн.</span>';
   }
   const nInv = (d.invoices || []).length;
-  const catMark = d.cat
-    ? '<span class="cat-mark ' + (d.cat === 'ГОЗ' ? 'goz' : 'kom') + '" title="Категория">' + esc(d.cat) + '</span>' : '';
-  const accBadge = d.accept
-    ? '<span class="badge ' + (d.accept === 'ОТК' ? 'otk' : 'vp') + '">приёмка: ' + esc(d.accept) + '</span>' : '';
+  const catMark = d.cat ? '<span class="cat-mark ' + (d.cat === 'ГОЗ' ? 'goz' : 'kom') + '" title="Категория">' + esc(d.cat) + '</span>' : '';
+  const accBadge = d.accept ? '<span class="badge ' + (d.accept === 'ОТК' ? 'otk' : 'vp') + '">приёмка: ' + esc(d.accept) + '</span>' : '';
   const oB = ORIG_BADGE[d.origStatus || 'не получены'];
   const origBtn = '<span class="badge ' + oB.cls + '" onclick="cycleOrig(\'' + d.id + '\', \'origStatus\')" title="Нажми, чтобы сменить статус">' + oB.label + '</span>';
   let origDsBtn = '';
@@ -1688,7 +1189,7 @@ function docRow(d) {
     '</div>' +
     (itemsText(d) ? '<div class="doc-extra">Ведомость поставки:<br>' + itemsText(d) + '</div>' : '') +
     (payText(d) ? '<div class="doc-extra">Оплата: ' + payText(d) + '</div>' : '') +
-    (dsText(d) ? '<div class="doc-extra">Допсоглашения:<br>' + dsText(d) + '</div>' : '') +
+    (dsText(d) ? '<div class="doc-extra">ДС и протоколы:<br>' + dsText(d) + '</div>' : '') +
     '<div class="meta">' + origBtn + origDsBtn + '</div>' +
     '</div>' +
     '<div><button class="del" title="Удалить" onclick="delDoc(\'' + d.id + '\')">✕</button></div>' +
@@ -1703,7 +1204,6 @@ function renderDocs() {
   const fAcc = document.getElementById('dAcceptFilter').value;
   const fI = (document.getElementById('fItem').value || '').trim().toLowerCase();
   const sort = document.getElementById('dSort').value;
-
   let shown = docs.filter(d => {
     if (f !== 'all' && d.status !== f) return false;
     if (fC !== 'all' && d.contr !== fC) return false;
@@ -1717,32 +1217,33 @@ function renderDocs() {
     }
     return true;
   });
-  if (sort === 'end') {
-    shown.sort((a, b) => (a.date || '9999-12-31').localeCompare(b.date || '9999-12-31'));
-  }
-
+  if (sort === 'end') shown.sort((a,b) => (a.date || '9999-12-31').localeCompare(b.date || '9999-12-31'));
   const list = document.getElementById('docList');
   if (!shown.length) {
-    list.innerHTML = docs.length
-      ? '<p class="note">По выбранным фильтрам договоров нет</p>'
-      : '<p class="note">Договоров пока нет</p>';
+    list.innerHTML = docs.length ? '<p class="note">По выбранным фильтрам договоров нет</p>' : '<p class="note">Договоров пока нет</p>';
     return;
   }
   list.innerHTML = shown.map(docRow).join('');
 }
 
-// ===== карточка договора =====
+// ===== карточка: переключение разделов =====
+function dcShowPanel(btn) {
+  document.querySelectorAll('#docCardOverlay .dc-nav button').forEach(b => b.classList.remove('on'));
+  document.querySelectorAll('#docCardOverlay .dc-panel').forEach(p => p.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById(btn.getAttribute('data-p')).classList.add('on');
+}
+
 function fillStatusSelect(selId, cur) {
   const sel = document.getElementById(selId);
-  sel.innerHTML = DOC_STATUS.map(s =>
-    '<option value="' + esc(s) + '"' + (s === cur ? ' selected' : '') + '>' + esc(s) + '</option>'
-  ).join('');
+  sel.innerHTML = DOC_STATUS.map(s => '<option value="' + esc(s) + '"' + (s === cur ? ' selected' : '') + '>' + esc(s) + '</option>').join('');
 }
 function openDocCard(id) {
   closeStatusMenu();
   const d = loadDocs().find(x => x.id === id);
   if (!d) return;
   editingDocId = id;
+  document.getElementById('dcTitle').textContent = 'Карточка: ' + (d.num || '');
   document.getElementById('cNum').value = d.num || '';
   document.getElementById('cContr').value = d.contr || '';
   document.getElementById('cSubjectType').value = d.subjectType || 'поставка';
@@ -1760,22 +1261,30 @@ function openDocCard(id) {
   document.getElementById('cPrepayDate').value = d.prepayFactDate || '';
   document.getElementById('cTollingDate').value = d.tollingDate || '';
   document.getElementById('cActDate').value = d.actDate || '';
+  document.getElementById('cOrigStatus').value = d.origStatus || 'не получены';
+  document.getElementById('cOrigDsStatus').value = d.origDsStatus || 'не получены';
   const wrap = document.getElementById('cItemsWrap');
   wrap.innerHTML = '';
   (d.items && d.items.length ? d.items : [null]).forEach(s => addItemRow('cItemsWrap', 'cSumLine', s));
+  document.getElementById('cSumView').textContent = fmtNum(d.sum || 0);
   const invWrap = document.getElementById('cInvoicesWrap');
   invWrap.innerHTML = '';
   (d.invoices || []).forEach(inv => addCardInvoiceRow(inv));
   const dsWrap = document.getElementById('cDsWrap');
   dsWrap.innerHTML = '';
   (d.ds || []).forEach(s => addCardDsRow(s));
+  const shipWrap = document.getElementById('cShipWrap');
+  shipWrap.innerHTML = '';
+  (d.shipments || []).forEach(s => addCardShipRow(s));
+  // открываем раздел «Основное»
+  const navBtns = document.querySelectorAll('#docCardOverlay .dc-nav button');
+  document.querySelectorAll('#docCardOverlay .dc-panel').forEach(p => p.classList.remove('on'));
+  navBtns.forEach(b => b.classList.toggle('on', b.getAttribute('data-p') === 'pMain'));
+  document.getElementById('pMain').classList.add('on');
   document.getElementById('docCardOverlay').classList.remove('hidden');
   document.getElementById('cNum').focus();
 }
-function closeDocCard() {
-  document.getElementById('docCardOverlay').classList.add('hidden');
-  editingDocId = null;
-}
+function closeDocCard() { document.getElementById('docCardOverlay').classList.add('hidden'); editingDocId = null; }
 function saveDocCard() {
   if (!editingDocId) return;
   const docs = loadDocs();
@@ -1790,10 +1299,7 @@ function saveDocCard() {
   d.cat = document.getElementById('cCat').value;
   d.date = document.getElementById('cDate').value;
   const newStatus = document.getElementById('cStatus').value;
-  if (newStatus !== d.status) {
-    d.status = newStatus;
-    d.statusDate = new Date().toISOString();
-  }
+  if (newStatus !== d.status) { d.status = newStatus; d.statusDate = new Date().toISOString(); }
   d.items = collectItems('cItemsWrap');
   d.sum = itemsTotal(d.items);
   d.invoices = collectInvoices();
@@ -1808,12 +1314,12 @@ function saveDocCard() {
   d.tollingDate = document.getElementById('cTollingDate').value;
   d.actDate = document.getElementById('cActDate').value;
   d.ds = collectDs();
+  d.shipments = collectShips();
+  d.origStatus = document.getElementById('cOrigStatus').value;
+  d.origDsStatus = document.getElementById('cOrigDsStatus').value;
   saveDocs(docs);
   closeDocCard();
-  buildContrFilter();
-  renderDocs();
-  renderPays();
-  renderSched();
+  buildContrFilter(); renderDocs(); renderPays(); renderSched();
 }
 function delDocFromCard() {
   if (!editingDocId) return;
@@ -1823,7 +1329,6 @@ function delDocFromCard() {
   delDoc(id);
 }
 
-// ===== реестр оплаты: счета из карточек, дата оплаты по типу, по месяцам =====
 function saveInv(id, i, field, val) {
   const docs = loadDocs();
   const d = docs.find(x => x.id === id);
@@ -1837,11 +1342,8 @@ function invRow(d, i, inv) {
   const strip = DOC_STRIP[d.status] || '#64748b';
   const isPaid = !!(inv.ppNum || inv.ppDate || inv.ppSum);
   const dueDate = payPlanDate(d, inv.type || 'аванс');
-  let badge = isPaid
-    ? '<span class="badge paid">оплачено</span>'
-    : (dueDate && daysLeft(dueDate) < 0
-        ? '<span class="badge over">просрочено</span>'
-        : '<span class="badge wait">ждёт оплаты</span>');
+  let badge = isPaid ? '<span class="badge paid">оплачено</span>'
+    : (dueDate && daysLeft(dueDate) < 0 ? '<span class="badge over">просрочено</span>' : '<span class="badge wait">ждёт оплаты</span>');
   const typeBadge = '<span class="badge ' + ((inv.type || 'аванс') === 'аванс' ? 'ok' : 'soon') + '">' + esc(inv.type || 'аванс') + '</span>';
   return '<div class="task" style="border-left-color:' + strip + '">' +
     '<div class="info">' +
@@ -1851,8 +1353,7 @@ function invRow(d, i, inv) {
     (d.contr ? '<span>' + esc(d.contr) + '</span>' : '') +
     '<span>сумма: <b>' + (inv.sum ? fmtNum(inv.sum) : '—') + '</b> руб.</span>' +
     (dueDate ? '<span>срок оплаты: ' + fmtDate(dueDate) + '</span>' : '<span>срок оплаты: не рассчитан (заполни факты в карточке)</span>') +
-    typeBadge +
-    badge +
+    typeBadge + badge +
     '</div>' +
     '<div class="pay-block">' +
     '<div class="pb-title">Факт оплаты — платёжное поручение</div>' +
@@ -1860,27 +1361,18 @@ function invRow(d, i, inv) {
     '<input type="text" placeholder="номер ПП" value="' + esc(inv.ppNum || '') + '" onchange="saveInv(\'' + d.id + '\', ' + i + ', \'ppNum\', this.value)">' +
     '<input type="date" value="' + (inv.ppDate || '') + '" onchange="saveInv(\'' + d.id + '\', ' + i + ', \'ppDate\', this.value)">' +
     '<input type="number" step="0.01" placeholder="сумма ПП" value="' + (inv.ppSum || '') + '" onchange="saveInv(\'' + d.id + '\', ' + i + ', \'ppSum\', this.value)">' +
-    '</div>' +
-    '</div>' +
-    '</div>' +
-    '</div>';
+    '</div></div></div></div>';
 }
 function renderPays() {
   const docs = loadDocs();
   const rows = [];
-  docs.forEach(d => {
-    (d.invoices || []).forEach((inv, i) => rows.push({ d: d, i: i, inv: inv }));
-  });
+  docs.forEach(d => { (d.invoices || []).forEach((inv, i) => rows.push({ d: d, i: i, inv: inv })); });
   const list = document.getElementById('payList');
-  if (!rows.length) {
-    list.innerHTML = '<p class="note">Счетов пока нет — добавь счёт в карточку договора</p>';
-    return;
-  }
-  // группировка по месяцу срока оплаты (если не рассчитан — по дате счёта)
+  if (!rows.length) { list.innerHTML = '<p class="note">Счетов пока нет — добавь счёт в карточку договора</p>'; return; }
   const months = {};
   rows.forEach(r => {
     const dueDate = payPlanDate(r.d, r.inv.type || 'аванс');
-    const key = (dueDate || r.inv.date) ? (dueDate || r.inv.date).slice(0, 7) : 'nodate';
+    const key = (dueDate || r.inv.date) ? (dueDate || r.inv.date).slice(0,7) : 'nodate';
     if (!months[key]) months[key] = [];
     months[key].push(r);
   });
@@ -1888,28 +1380,19 @@ function renderPays() {
   list.innerHTML = keys.map(key => {
     const arr = months[key];
     const total = r2(arr.reduce((s, r) => s + (r.inv.sum || 0), 0));
-    const paidTotal = r2(arr.filter(r => r.inv.ppNum || r.inv.ppDate || r.inv.ppSum)
-      .reduce((s, r) => s + (r.inv.ppSum || r.inv.sum || 0), 0));
-    const label = key === 'nodate' ? 'Срок не определён' :
-      new Date(key + '-01').toLocaleDateString('ru-RU', { year: 'numeric', month: 'long' });
+    const paidTotal = r2(arr.filter(r => r.inv.ppNum || r.inv.ppDate || r.inv.ppSum).reduce((s, r) => s + (r.inv.ppSum || r.inv.sum || 0), 0));
+    const label = key === 'nodate' ? 'Срок не определён' : new Date(key + '-01').toLocaleDateString('ru-RU', { year: 'numeric', month: 'long' });
     const arr2 = arr.slice().sort((a, b) => {
       const da = payPlanDate(a.d, a.inv.type || 'аванс') || a.inv.date || '9999';
       const db = payPlanDate(b.d, b.inv.type || 'аванс') || b.inv.date || '9999';
       return da.localeCompare(db);
     });
-    return '<div class="group">' +
-      '<div class="group-head g-month">' +
-      '<span>' + label + '</span>' +
-      '<small>' + arr.length + ' счёт(ов) · на ' + fmtNum(total) + ' руб.' +
-      (paidTotal ? ' · оплачено ' + fmtNum(paidTotal) + ' руб.' : '') + '</small>' +
-      '</div>' +
-      '<div class="group-body">' +
-      arr2.map(r => invRow(r.d, r.i, r.inv)).join('') +
-      '</div></div>';
+    return '<div class="group"><div class="group-head g-month"><span>' + label + '</span>' +
+      '<small>' + arr.length + ' счёт(ов) · на ' + fmtNum(total) + ' руб.' + (paidTotal ? ' · оплачено ' + fmtNum(paidTotal) + ' руб.' : '') + '</small></div>' +
+      '<div class="group-body">' + arr2.map(r => invRow(r.d, r.i, r.inv)).join('') + '</div></div>';
   }).join('');
 }
 
-// ===== график поставок: месяц → договор → позиции =====
 function schedItemRow(d, it) {
   const strip = DOC_STRIP[d.status] || '#64748b';
   const due = itemDueDate(d, it);
@@ -1918,9 +1401,7 @@ function schedItemRow(d, it) {
     const left = daysLeft(due);
     if (left < 0) badge = '<span class="badge over">просрочено</span>';
     else if (left <= 14) badge = '<span class="badge soon">через ' + left + ' дн.</span>';
-  } else {
-    badge = '<span class="badge wait">' + (COND_TEXT[it.cond] || '') + '</span>';
-  }
+  } else badge = '<span class="badge wait">' + (COND_TEXT[it.cond] || '') + '</span>';
   const when = due ? 'до ' + fmtDate(due) : (it.months ? it.months + ' мес. — ' + (COND_TEXT[it.cond] || '') : (COND_TEXT[it.cond] || ''));
   const sumTxt = it.sum ? ' · ' + fmtNum(it.sum) + ' руб.' : '';
   const qtyTxt = it.qty ? ' (' + it.qty + ' ед.)' : '';
@@ -1930,29 +1411,21 @@ function schedItemRow(d, it) {
     '<div class="meta">' +
     '<span class="who">' + esc(d.num) + '</span>' +
     (d.contr ? '<span>' + esc(d.contr) + '</span>' : '') +
-    '<span>' + when + '</span>' +
-    badge +
-    '</div>' +
-    '</div>' +
-    '</div>';
+    '<span>' + when + '</span>' + badge +
+    '</div></div></div>';
 }
 function renderSched() {
   const docs = loadDocs();
   const entries = [];
   docs.forEach(d => {
     if (d.status === 'закрыт') return;
-    (d.items || []).forEach(it => {
-      entries.push({ d: d, it: it, due: itemDueDate(d, it) });
-    });
+    (d.items || []).forEach(it => entries.push({ d: d, it: it, due: itemDueDate(d, it) }));
   });
   const list = document.getElementById('schedList');
-  if (!entries.length) {
-    list.innerHTML = '<p class="note">Позиций пока нет</p>';
-    return;
-  }
+  if (!entries.length) { list.innerHTML = '<p class="note">Позиций пока нет</p>'; return; }
   const byMonth = {};
   entries.forEach(e => {
-    const key = e.due ? e.due.slice(0, 7) : 'nodate';
+    const key = e.due ? e.due.slice(0,7) : 'nodate';
     if (!byMonth[key]) byMonth[key] = [];
     byMonth[key].push(e);
   });
@@ -1960,28 +1433,17 @@ function renderSched() {
   list.innerHTML = keys.map(mKey => {
     const arr = byMonth[mKey];
     const mTotal = r2(arr.reduce((s, e) => s + (e.it.sum || 0), 0));
-    const label = mKey === 'nodate' ? 'Дата не определена (нет триггера)' :
-      new Date(mKey + '-01').toLocaleDateString('ru-RU', { year: 'numeric', month: 'long' });
+    const label = mKey === 'nodate' ? 'Дата не определена (нет триггера)' : new Date(mKey + '-01').toLocaleDateString('ru-RU', { year: 'numeric', month: 'long' });
     const monthOpen = schedOpenMonth[mKey] !== false;
     const byDoc = {};
-    arr.forEach(e => {
-      if (!byDoc[e.d.id]) byDoc[e.d.id] = { d: e.d, items: [] };
-      byDoc[e.d.id].items.push(e.it);
-    });
-    const docIds = Object.keys(byDoc).sort((a, b) =>
-      byDoc[a].d.num.localeCompare(byDoc[b].d.num));
+    arr.forEach(e => { if (!byDoc[e.d.id]) byDoc[e.d.id] = { d: e.d, items: [] }; byDoc[e.d.id].items.push(e.it); });
+    const docIds = Object.keys(byDoc).sort((a,b) => byDoc[a].d.num.localeCompare(byDoc[b].d.num));
     const docHtml = docIds.map(did => {
       const g = byDoc[did];
       const isOpen = schedOpenDoc[did] !== false;
       let overCount = 0;
-      g.items.forEach(it => {
-        const dd = itemDueDate(g.d, it);
-        if (dd && daysLeft(dd) < 0) overCount++;
-      });
-      const nearest = g.items.reduce((best, it) => {
-        const dd = itemDueDate(g.d, it);
-        return (dd && (!best || dd < best)) ? dd : best;
-      }, null);
+      g.items.forEach(it => { const dd = itemDueDate(g.d, it); if (dd && daysLeft(dd) < 0) overCount++; });
+      const nearest = g.items.reduce((best, it) => { const dd = itemDueDate(g.d, it); return (dd && (!best || dd < best)) ? dd : best; }, null);
       let nearestBadge = '';
       if (nearest) {
         const left = daysLeft(nearest);
@@ -1992,148 +1454,89 @@ function renderSched() {
       const overBadge = overCount ? '<span class="badge over">просрочено: ' + overCount + '</span>' : '';
       return '<div class="group" style="margin:8px">' +
         '<div class="group-head g-doc" onclick="toggleSchedDoc(\'' + did + '\')">' +
-        '<span>' + (isOpen ? '▾ ' : '▸ ') + esc(g.d.num) +
-        (g.d.contr ? ' · ' + esc(g.d.contr) : '') + '</span>' +
-        '<small>' + g.items.length + ' поз. · на ' + fmtNum(itemsTotal(g.items)) + ' руб. ' + nearestBadge + overBadge + '</small>' +
-        '</div>' +
-        (isOpen ? '<div class="group-body">' +
-          g.items.map(it => schedItemRow(g.d, it)).join('') + '</div>' : '') +
+        '<span>' + (isOpen ? '▾ ' : '▸ ') + esc(g.d.num) + (g.d.contr ? ' · ' + esc(g.d.contr) : '') + '</span>' +
+        '<small>' + g.items.length + ' поз. · на ' + fmtNum(itemsTotal(g.items)) + ' руб. ' + nearestBadge + overBadge + '</small></div>' +
+        (isOpen ? '<div class="group-body">' + g.items.map(it => schedItemRow(g.d, it)).join('') + '</div>' : '') +
         '</div>';
     }).join('');
-    return '<div class="group">' +
-      '<div class="group-head g-month" onclick="toggleSchedMonth(\'' + mKey + '\')">' +
+    return '<div class="group"><div class="group-head g-month" onclick="toggleSchedMonth(\'' + mKey + '\')">' +
       '<span>' + (monthOpen ? '▾ ' : '▸ ') + label + '</span>' +
-      '<small class="gm-sum">' + arr.length + ' поз. · на ' + fmtNum(mTotal) + ' руб.</small>' +
-      '</div>' +
-      (monthOpen ? '<div class="group-body">' + docHtml + '</div>' : '') +
-      '</div>';
+      '<small class="gm-sum">' + arr.length + ' поз. · на ' + fmtNum(mTotal) + ' руб.</small></div>' +
+      (monthOpen ? '<div class="group-body">' + docHtml + '</div>' : '') + '</div>';
   }).join('');
 }
-function toggleSchedMonth(key) {
-  schedOpenMonth[key] = (schedOpenMonth[key] === false) ? true : false;
-  renderSched();
-}
-function toggleSchedDoc(id) {
-  schedOpenDoc[id] = (schedOpenDoc[id] === false) ? true : false;
-  renderSched();
-}
+function toggleSchedMonth(key) { schedOpenMonth[key] = (schedOpenMonth[key] === false) ? true : false; renderSched(); }
+function toggleSchedDoc(id) { schedOpenDoc[id] = (schedOpenDoc[id] === false) ? true : false; renderSched(); }
 
-// ===== Календарь экономиста =====
-const MONTHS = ['январь','февраль','март','апрель','май','июнь',
-                'июль','август','сентябрь','октябрь','ноябрь','декабрь'];
-let calYear, calMonth;
-let calSel = null;
-(function initCal() {
-  const n = new Date();
-  calYear = n.getFullYear();
-  calMonth = n.getMonth();
-})();
-function calKey(y, m, d) {
-  const p = n => (n < 10 ? '0' : '') + n;
-  return y + '-' + p(m + 1) + '-' + p(d);
-}
+const MONTHS = ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
+let calYear, calMonth, calSel = null;
+(function initCal() { const n = new Date(); calYear = n.getFullYear(); calMonth = n.getMonth(); })();
+function calKey(y, m, d) { const p = n => (n < 10 ? '0' : '') + n; return y + '-' + p(m+1) + '-' + p(d); }
 function calMove(dir) {
   calMonth += dir;
   if (calMonth < 0) { calMonth = 11; calYear--; }
   if (calMonth > 11) { calMonth = 0; calYear++; }
   renderCal();
 }
-function calTasksOn(key) {
-  return loadTasks().filter(t => t.date === key);
-}
+function calTasksOn(key) { return loadTasks().filter(t => t.date === key); }
 function renderCal() {
   document.getElementById('calTitle').textContent = MONTHS[calMonth] + ' ' + calYear;
-
   const grid = document.getElementById('calGrid');
   const first = new Date(calYear, calMonth, 1);
   const shift = (first.getDay() + 6) % 7;
   const start = new Date(calYear, calMonth, 1 - shift);
-
   const today = new Date();
   const todayKey = calKey(today.getFullYear(), today.getMonth(), today.getDate());
-
   const order = { over: 0, soon: 1, work: 2, done: 3 };
   let html = '';
   for (let cell = 0; cell < 42; cell++) {
     const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + cell);
     const inMonth = d.getMonth() === calMonth;
     const key = calKey(d.getFullYear(), d.getMonth(), d.getDate());
-    const dayTasks = calTasksOn(key).slice().sort((a, b) =>
-      (order[taskCat(a)] !== undefined ? order[taskCat(a)] : 9) -
-      (order[taskCat(b)] !== undefined ? order[taskCat(b)] : 9));
-
+    const dayTasks = calTasksOn(key).slice().sort((a,b) =>
+      (order[taskCat(a)] !== undefined ? order[taskCat(a)] : 9) - (order[taskCat(b)] !== undefined ? order[taskCat(b)] : 9));
     let chips = '';
-    dayTasks.slice(0, 2).forEach(t => {
-      chips += '<div class="cal-chip c-' + taskCat(t) + '">' + esc(t.name) + '</div>';
-    });
-    if (dayTasks.length > 2) {
-      chips += '<div class="cal-chip c-work">+ ещё ' + (dayTasks.length - 2) + '</div>';
-    }
-
-    const cls = 'cal-day' + (inMonth ? '' : ' other') +
-      (key === todayKey ? ' today' : '') +
-      (key === calSel ? ' sel' : '');
-    html += '<div class="' + cls + '" onclick="calPick(\'' + key + '\')">' +
-      '<div class="d">' + d.getDate() + '</div>' + chips + '</div>';
+    dayTasks.slice(0, 2).forEach(t => { chips += '<div class="cal-chip c-' + taskCat(t) + '">' + esc(t.name) + '</div>'; });
+    if (dayTasks.length > 2) chips += '<div class="cal-chip c-work">+ ещё ' + (dayTasks.length - 2) + '</div>';
+    const cls = 'cal-day' + (inMonth ? '' : ' other') + (key === todayKey ? ' today' : '') + (key === calSel ? ' sel' : '');
+    html += '<div class="' + cls + '" onclick="calPick(\'' + key + '\')"><div class="d">' + d.getDate() + '</div>' + chips + '</div>';
   }
   grid.innerHTML = html;
 }
-function calPick(key) {
-  calSel = (calSel === key) ? null : key;
-  renderCal();
-  renderCalDay();
-}
+function calPick(key) { calSel = (calSel === key) ? null : key; renderCal(); renderCalDay(); }
 function renderCalDay() {
   const title = document.getElementById('calDayTitle');
   const listEl = document.getElementById('calDayList');
-  if (!calSel) {
-    title.textContent = 'Выберите день';
-    listEl.innerHTML = '<p class="note">Нажмите на день в календаре</p>';
-    return;
-  }
+  if (!calSel) { title.textContent = 'Выберите день'; listEl.innerHTML = '<p class="note">Нажмите на день в календаре</p>'; return; }
   title.textContent = 'Дедлайны: ' + fmtDate(calSel);
   const dayTasks = calTasksOn(calSel);
-  if (!dayTasks.length) {
-    listEl.innerHTML = '<p class="note">На этот день задач нет</p>';
-    return;
-  }
+  if (!dayTasks.length) { listEl.innerHTML = '<p class="note">На этот день задач нет</p>'; return; }
   listEl.innerHTML = dayTasks.map(t => {
     const cat = taskCat(t);
     const status = t.status || 'в работе';
     const bCls = cat === 'over' ? 'over' : (cat === 'soon' ? 'soon' : (cat === 'done' ? '' : 'ok'));
-    return '<div class="task">' +
-      '<div class="info"><div class="name">' + (cat === 'done' ? '✅ ' : '') + esc(t.name) + '</div>' +
-      '<div class="meta">' +
-      (t.who ? '<span class="who">' + esc(t.who) + '</span>' : '') +
+    return '<div class="task"><div class="info"><div class="name">' + (cat === 'done' ? '✅ ' : '') + esc(t.name) + '</div>' +
+      '<div class="meta">' + (t.who ? '<span class="who">' + esc(t.who) + '</span>' : '') +
       '<span class="badge ' + bCls + '">' + (cat === 'done' ? 'закрыто' : esc(status)) + '</span>' +
       '</div></div></div>';
   }).join('');
 }
 renderCal();
 
-// ===== Калькулятор =====
-function fmt(x) {
-  return x.toLocaleString('ru-RU', {maximumFractionDigits: 2}) + ' руб.';
-}
+function fmt(x) { return x.toLocaleString('ru-RU', {maximumFractionDigits: 2}) + ' руб.'; }
 
-// ===== Число прописью =====
 const W_UNITS_M = ['', 'один', 'два', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять'];
 const W_UNITS_F = ['', 'одна', 'две', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять'];
-const W_TEEN = ['десять', 'одиннадцать', 'двенадцать', 'тринадцать', 'четырнадцать',
-                'пятнадцать', 'шестнадцать', 'семнадцать', 'восемнадцать', 'девятнадцать'];
-const W_TENS = ['', '', 'двадцать', 'тридцать', 'сорок', 'пятьдесят',
-                'шестьдесят', 'семьдесят', 'восемьдесят', 'девяносто'];
-const W_HUNDREDS = ['', 'сто', 'двести', 'триста', 'четыреста', 'пятьсот',
-                    'шестьсот', 'семьсот', 'восемьсот', 'девятьсот'];
-
+const W_TEEN = ['десять', 'одиннадцать', 'двенадцать', 'тринадцать', 'четырнадцать', 'пятнадцать', 'шестнадцать', 'семнадцать', 'восемнадцать', 'девятнадцать'];
+const W_TENS = ['', '', 'двадцать', 'тридцать', 'сорок', 'пятьдесят', 'шестьдесят', 'семьдесят', 'восемьдесят', 'девяносто'];
+const W_HUNDREDS = ['', 'сто', 'двести', 'триста', 'четыреста', 'пятьсот', 'шестьсот', 'семьсот', 'восемьсот', 'девятьсот'];
 function wordsUpTo999(n, fem) {
   const out = [];
   const h = Math.floor(n / 100);
   if (h) out.push(W_HUNDREDS[h]);
   const rest = n % 100;
-  if (rest >= 10 && rest < 20) {
-    out.push(W_TEEN[rest - 10]);
-  } else {
+  if (rest >= 10 && rest < 20) out.push(W_TEEN[rest - 10]);
+  else {
     const t = Math.floor(rest / 10);
     if (t) out.push(W_TENS[t]);
     const u = rest % 10;
@@ -2142,8 +1545,7 @@ function wordsUpTo999(n, fem) {
   return out.join(' ');
 }
 function pluralForm(n, one, few, many) {
-  const m100 = n % 100;
-  const m10 = n % 10;
+  const m100 = n % 100, m10 = n % 10;
   if (m10 === 1 && m100 !== 11) return one;
   if (m10 >= 2 && m10 <= 4 && !(m100 >= 12 && m100 <= 14)) return few;
   return many;
@@ -2153,64 +1555,43 @@ function numToWords(n) {
   const groups = [];
   let x = n;
   while (x > 0) { groups.push(x % 1000); x = Math.floor(x / 1000); }
-  const scales = [
-    null,
-    ['тысяча', 'тысячи', 'тысяч'],
-    ['миллион', 'миллиона', 'миллионов'],
-    ['миллиард', 'миллиарда', 'миллиардов']
-  ];
+  const scales = [null, ['тысяча','тысячи','тысяч'], ['миллион','миллиона','миллионов'], ['миллиард','миллиарда','миллиардов']];
   const out = [];
   for (let i = groups.length - 1; i >= 0; i--) {
     const g = groups[i];
     if (!g) continue;
     out.push(wordsUpTo999(g, i === 1));
-    if (i > 0) {
-      const f = scales[i];
-      out.push(pluralForm(g, f[0], f[1], f[2]));
-    }
+    if (i > 0) { const f = scales[i]; out.push(pluralForm(g, f[0], f[1], f[2])); }
   }
   return out.join(' ');
 }
 function sumInWords(amount) {
   const cents = Math.round(amount * 100);
-  let rub = Math.floor(cents / 100);
-  let kop = cents % 100;
+  let rub = Math.floor(cents / 100), kop = cents % 100;
   if (kop === 100) { rub += 1; kop = 0; }
   const rubWords = rub === 0 ? 'ноль' : numToWords(rub);
   const capitalized = rubWords.charAt(0).toUpperCase() + rubWords.slice(1);
   const kopStr = (kop < 10 ? '0' : '') + kop;
-  return rub.toLocaleString('ru-RU') + ' (' + capitalized + ') ' +
-    pluralForm(rub, 'рубль', 'рубля', 'рублей') + ' ' + kopStr + ' копеек';
+  return rub.toLocaleString('ru-RU') + ' (' + capitalized + ') ' + pluralForm(rub, 'рубль', 'рубля', 'рублей') + ' ' + kopStr + ' копеек';
 }
-
 function calc() {
   const v = id => parseFloat(document.getElementById(id).value) || 0;
-
   const materials = v('f4') + v('f6') + v('f7');
-
   const hpm = v('hpm') || 164;
-  const manMonths = document.getElementById('unit').value === 'h'
-    ? v('labor') / hpm
-    : v('labor');
-
+  const manMonths = document.getElementById('unit').value === 'h' ? v('labor') / hpm : v('labor');
   const f9 = v('avg') * manMonths;
   const f10 = f9 * v('dzp') / 100;
   const salary = f9 + f10;
   const strah = salary * v('strah') / 100;
   const f11 = salary * v('opr') / 100;
   const f12 = salary * v('ohr') / 100;
-
   const seb = materials + salary + strah + f11 + f12;
-
   const profitMaterials = materials * 0.01;
   const profitOwn = (salary + strah + f11 + f12) * 0.25;
   const profit = profitMaterials + profitOwn;
-
   const price = seb + profit;
-
   const nds = price * 0.22;
   const priceWithNds = price + nds;
-
   document.getElementById('res').innerHTML =
     '<hr class="hr">' +
     '<p>Материалы всего: <b>' + fmt(materials) + '</b></p>' +
@@ -2222,34 +1603,25 @@ function calc() {
     '<p>Ф12 — ОХР/АУР: ' + fmt(f12) + '</p>' +
     '<hr class="hr">' +
     '<p>СЕБ — себестоимость: <b>' + fmt(seb) + '</b></p>' +
-    '<p>Прибыль: <b>' + fmt(profit) + '</b>' +
-    ' <span class="note">(1% от материалов: ' + fmt(profitMaterials) +
-    ' · 25% от собственных: ' + fmt(profitOwn) + ')</span></p>' +
+    '<p>Прибыль: <b>' + fmt(profit) + '</b> <span class="note">(1% от материалов: ' + fmt(profitMaterials) + ' · 25% от собственных: ' + fmt(profitOwn) + ')</span></p>' +
     '<hr class="hr">' +
     '<p style="font-size:17px">ЦЕНА БЕЗ НДС: <b>' + fmt(price) + '</b></p>' +
     '<p>НДС 22%: <b>' + fmt(nds) + '</b></p>' +
     '<hr class="hr">' +
     '<p style="font-size:19px">ЦЕНА С НДС: <b>' + fmt(priceWithNds) + '</b></p>';
 }
-
-// ===== отдельный блок: сумма прописью =====
 function sumWords() {
   const s = parseFloat(document.getElementById('swSum').value) || 0;
   if (s <= 0) { alert('Введите стоимость договора с НДС'); return; }
-
   const nds = s * 22 / 122;
   const priceNoNds = s - nds;
-
   document.getElementById('swRes').innerHTML =
     '<hr class="hr">' +
     '<p>Цена без НДС: <b>' + fmtNum(priceNoNds) + '</b></p>' +
     '<p>в том числе НДС 22%: <b>' + fmtNum(nds) + '</b></p>' +
-    '<div class="sum-box">' +
-    '<div class="sum-title">Стоимость договора</div>' +
-    '<p>' + sumInWords(s) + ', в том числе НДС 22% — ' + sumInWords(nds) + '</p>' +
-    '</div>';
+    '<div class="sum-box"><div class="sum-title">Стоимость договора</div>' +
+    '<p>' + sumInWords(s) + ', в том числе НДС 22% — ' + sumInWords(nds) + '</p></div>';
 }
 </script>
-
 </body>
 </html>
