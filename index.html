@@ -488,6 +488,11 @@
           <label>Дата перечисления аванса <input type="date" id="cPrepayDate"></label>
           <label>Дата получения давальческого сырья <input type="date" id="cTollingDate"></label>
           <label>Дата подписания акта <input type="date" id="cActDate"></label>
+
+          <h4>Счета на оплату</h4>
+          <p class="mini-note">Укажи тип — аванс или окончательный расчёт — дата оплаты посчитается в реестре.</p>
+          <div id="cInvoicesWrap"></div>
+          <button class="btn add-inv" onclick="addCardInvoiceRow()">+ Добавить счёт</button>
         </div>
 
         <!-- ВЕДОМОСТЬ ПОСТАВКИ -->
@@ -535,10 +540,7 @@
       </div>
     </div>
 
-    <h4>Счета на оплату</h4>
-    <p class="mini-note">Укажи тип — аванс или окончательный расчёт — дата оплаты посчитается в реестре.</p>
-    <div id="cInvoicesWrap"></div>
-    <button class="btn add-inv" onclick="addCardInvoiceRow()">+ Добавить счёт</button>
+
 
     <div class="modal-actions">
       <button class="btn" onclick="saveDocCard()">Сохранить</button>
