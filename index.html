@@ -42,7 +42,7 @@
   .btn:active { background: #1d4ed8; }
   .btn.clear { background: #e2e8f0; color: #475569; width: auto; padding: 8px 14px; margin-top: 0; font-size: 13px; }
   .btn.ghost { background: #e2e8f0; color: #475569; }
-  .btn.danger { background: #fff; color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.5); width: 100%; font-size: 13px; padding: 9px; }
+  .btn.danger { background: #fff; color: #ef4444; border: 1px solid rgba(239,68,68,0.5); width: 100%; font-size: 13px; padding: 9px; }
   .hot-title { color: #ef4444; }
   .task { display: flex; justify-content: space-between; align-items: flex-start; padding: 10px 10px 10px 12px; border-bottom: 1px solid #e2e8f0; font-size: 14px; gap: 8px; border-left-width: 4px; border-left-style: solid; }
   .task:last-child { border-bottom: none; }
@@ -73,7 +73,6 @@
   .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; color: #fff; background: #64748b; cursor: pointer; user-select: none; }
   .badge.over { background: #ef4444; } .badge.soon { background: #f59e0b; } .badge.ok { background: #2563eb; }
   .badge.paid { background: #16a34a; } .badge.wait { background: #94a3b8; }
-  .badge.goz { background: #dc2626; } .badge.kom { background: #2563eb; }
   .badge.otk { background: #f59e0b; } .badge.vp { background: #64748b; }
   .cat-mark { display: inline-block; padding: 1px 7px; border-radius: 6px; font-size: 10px; font-weight: 700; color: #fff; }
   .cat-mark.goz { background: #dc2626; } .cat-mark.kom { background: #2563eb; }
@@ -95,8 +94,6 @@
   .sum-box .sum-title { font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 4px; }
   .fab { position: fixed; right: 20px; bottom: 20px; width: 58px; height: 58px; border-radius: 50%; background: #2563eb; color: #fff; border: none; font-size: 30px; line-height: 1; cursor: pointer; z-index: 40; box-shadow: 0 4px 14px rgba(37,99,235,0.4); display: flex; align-items: center; justify-content: center; }
   .fab:active { background: #1d4ed8; }
-  .fab::after { content: ''; position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px; border-radius: 50%; border: 2px solid rgba(37,99,235,0.45); border-top-color: transparent; animation: fabspin 2.2s linear infinite; pointer-events: none; }
-  @keyframes fabspin { to { transform: rotate(360deg); } }
   .overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.45); z-index: 60; display: flex; align-items: flex-end; justify-content: center; padding: 16px; }
   .overlay.hidden { display: none !important; }
   .modal { background: #fff; border-radius: 16px; padding: 18px; width: 100%; max-width: 480px; box-shadow: 0 -4px 30px rgba(0,0,0,0.25); max-height: 90vh; overflow-y: auto; }
@@ -106,7 +103,6 @@
   .item-row, .ds-row, .ship-row { border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; margin-bottom: 8px; background: #f8fafc; }
   .item-row .filters, .ds-row .filters, .ship-row .filters { margin-bottom: 6px; }
   .item-row .remove-item, .ds-row .remove-ds, .ship-row .remove-ship { background: none; border: none; color: #ef4444; font-size: 16px; cursor: pointer; float: right; padding: 0 4px; }
-  .item-row .row-sum { font-size: 12px; color: #475569; margin-top: 4px; font-weight: 600; }
   .btn.add-item, .btn.add-ds, .btn.add-inv, .btn.add-ship { background: #e2e8f0; color: #475569; font-size: 13px; padding: 8px; margin-top: 4px; }
   .mini-note { font-size: 11px; color: #94a3b8; margin: 4px 0 0; }
   .doc-extra { font-size: 11px; color: #64748b; margin-top: 4px; line-height: 1.5; }
@@ -136,78 +132,35 @@
   .hidden { display: none; }
   body.red-mode .tabs button.on { background: #dc2626; }
   body.red-mode .fab { background: #dc2626; box-shadow: 0 4px 14px rgba(220,38,38,0.4); }
-  body.red-mode .fab:active { background: #b91c1c; }
-  body.red-mode .fab::after { border: 2px solid rgba(220,38,38,0.45); border-top-color: transparent; }
   body.red-mode .btn { background: #dc2626; }
-  body.red-mode .btn:active { background: #b91c1c; }
   body.red-mode .btn.clear, body.red-mode .btn.ghost, body.red-mode .btn.add-item, body.red-mode .btn.add-ds, body.red-mode .btn.add-inv, body.red-mode .btn.add-ship { background: #fee2e2; color: #b91c1c; }
   body.red-mode .btn.danger { background: #fff; color: #ef4444; }
   body.red-mode #secDoc .card h3 { color: #b91c1c; }
   body.red-mode #secDoc .who { color: #dc2626; }
   body.red-mode #secDoc .card { box-shadow: 0 1px 4px rgba(220,38,38,0.12); }
-
-  /* ===== переключатель компактный / расширенный ===== */
-  .view-toggle {
-    display: flex; align-items: center; justify-content: center;
-    gap: 10px; font-size: 12px; font-weight: 600; color: #475569;
-    margin: 4px 0 10px;
-  }
+  .view-toggle { display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 12px; font-weight: 600; color: #475569; margin: 4px 0 10px; }
   .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
   .switch input { opacity: 0; width: 0; height: 0; }
-  .slider {
-    position: absolute; inset: 0; border-radius: 999px;
-    background: #cbd5e1; transition: 0.2s; cursor: pointer;
-  }
-  .slider::before {
-    content: ''; position: absolute; width: 18px; height: 18px;
-    border-radius: 50%; left: 3px; top: 3px; background: #fff;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.25); transition: 0.2s;
-  }
+  .slider { position: absolute; inset: 0; border-radius: 999px; background: #cbd5e1; transition: 0.2s; cursor: pointer; }
+  .slider::before { content: ''; position: absolute; width: 18px; height: 18px; border-radius: 50%; left: 3px; top: 3px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.25); transition: 0.2s; }
   .switch input:checked + .slider { background: #dc2626; }
   .switch input:checked + .slider::before { transform: translateX(20px); }
-
-  /* компактная карточка договора в реестре */
   .task.compact .doc-extra { display: none; }
-
-  /* ===== график поставок ===== */
   .g-year { background: #334155; cursor: pointer; user-select: none; }
-  .view-btn {
-    border: 1px solid #cbd5e1; background: #f1f5f9; color: #64748b;
-    font-size: 11px; font-weight: 600; padding: 4px 14px; border-radius: 999px; cursor: pointer;
-  }
-  .view-btn.ext { background: #dc2626; border-color: #dc2626; color: #fff; }
-  .sched-year-bar { display: flex; align-items: center; gap: 8px; justify-content: flex-end; margin-bottom: 10px; }
-  .sched-year-bar .small-lbl { margin-bottom: 0; }
-  .sched-year-bar select { width: auto; margin-top: 0; padding: 6px 10px; font-size: 13px; }
-  .group-head.g-doc-lite { background: #f8fafc; color: #1e293b; border-bottom: 1px solid #e2e8f0; }
-  .group-head.g-doc-lite small { font-weight: 500; }
-  .sched-table { width: 100%; border-collapse: collapse; font-size: 11px; }
-  .sched-table th { text-align: left; color: #64748b; font-weight: 600; padding: 3px 6px; border-bottom: 1px solid #e2e8f0; }
-  .sched-table td { padding: 3px 6px; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
+  .sched-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center; margin-bottom: 12px; }
+  .sched-summary .num { font-size: 20px; font-weight: 700; }
+  .sched-summary .lbl { font-size: 11px; color: #64748b; }
   .sched-items { font-size: 11px; color: #64748b; line-height: 1.55; padding: 4px 12px 8px; }
   .sched-items .done { color: #16a34a; font-weight: 600; }
   .sched-items .part { color: #b45309; font-weight: 600; }
   .sched-items .over { color: #b91c1c; font-weight: 600; }
   .month-now { outline: 2px solid #2563eb; outline-offset: -2px; }
-
-  /* ===== карточка договора по скетчу: содержание + активный раздел ===== */
   .doc-card-layout { display: flex; gap: 12px; align-items: stretch; }
-  .dc-nav {
-    width: 118px; flex-shrink: 0;
-    border: 1px solid #e2e8f0; border-radius: 10px;
-    background: #f8fafc; padding: 6px;
-    display: flex; flex-direction: column; gap: 4px;
-    align-self: flex-start;
-  }
+  .dc-nav { width: 118px; flex-shrink: 0; border: 1px solid #e2e8f0; border-radius: 10px; background: #f8fafc; padding: 6px; display: flex; flex-direction: column; gap: 4px; align-self: flex-start; }
   .dc-nav .dc-nav-title { font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.04em; padding: 4px 6px 2px; }
-  .dc-nav button {
-    border: none; background: transparent; text-align: left;
-    padding: 8px 8px; font-size: 12px; font-weight: 600; color: #475569;
-    border-radius: 8px; cursor: pointer; line-height: 1.25;
-  }
+  .dc-nav button { border: none; background: transparent; text-align: left; padding: 8px 8px; font-size: 12px; font-weight: 600; color: #475569; border-radius: 8px; cursor: pointer; line-height: 1.25; }
   .dc-nav button:active { background: #e2e8f0; }
   .dc-nav button.on { background: #dc2626; color: #fff; }
-  body:not(.red-mode) .dc-nav button.on { background: #dc2626; }
   .dc-panel { flex: 1; min-width: 0; display: none; }
   .dc-panel.on { display: block; }
   .dc-panel h4 { margin-top: 0; }
@@ -217,6 +170,13 @@
     .dc-nav .dc-nav-title { display: none; }
     .dc-nav button { flex: 1 1 auto; text-align: center; }
   }
+  /* ===== светлый вид графика ===== */
+  #docSubSched .g-year { background: #f8fafc; color: #334155; border-bottom: 1px solid #e2e8f0; padding: 7px 12px; font-size: 13px; }
+  #docSubSched .g-year small { color: #94a3b8; font-weight: 600; }
+  #docSubSched .g-year .gy-title { margin-left: auto; font-weight: 700; margin-right: 10px; }
+  #docSubSched .g-month { background: #f1f5f9; color: #475569; padding: 6px 12px; font-size: 12.5px; border-bottom: 1px solid #e2e8f0; }
+  #docSubSched .g-doc { background: #ffffff; color: #b91c1c; padding: 6px 12px; font-size: 12.5px; border-bottom: 1px solid #f1f5f9; }
+  .sched-switch { flex-shrink: 0; transform: scale(0.85); }
 </style>
 </head>
 <body>
@@ -371,16 +331,16 @@
   <div id="docSubPay" class="hidden">
     <div class="card">
       <h3>Реестр оплаты</h3>
-      <p class="mini-note" style="text-align:left; margin-bottom:8px">Счета формируются из карточек договоров. Дата оплаты считается автоматически: аванс — от даты подписания, окончательный расчёт — от события расчёта.</p>
+      <p class="mini-note" style="text-align:left; margin-bottom:8px">Счета формируются в разделе «Оплата» карточки договора. Дата оплаты считается автоматически: аванс — от даты подписания, окончательный расчёт — от события расчёта.</p>
       <div id="payList"><p class="note">Счетов пока нет</p></div>
     </div>
   </div>
   <div id="docSubSched" class="hidden">
     <div class="card">
       <h3>График поставок</h3>
-      <div style="text-align:center; margin:2px 0 10px"><button class="view-btn" id="schedViewToggle" onclick="toggleSchedView()">компактный вид</button></div>
+      <div class="sched-summary" id="schedSummary"></div>
       <div id="schedList"><p class="note">Позиций пока нет</p></div>
-      <p class="mini-note" style="text-align:center">Год → месяц → договор. Отметки «поставлено»/«выполнено» ставятся автоматически из раздела «Отгрузка» карточки договора.</p>
+      <p class="mini-note" style="text-align:center">Год → месяц → договор. Тумблер вида — в строке года слева. Отметки «поставлено»/«выполнено» ставятся автоматически из раздела «Отгрузка» карточки.</p>
     </div>
   </div>
   <p class="note">ТЕСТОВЫЙ РЕЖИМ. Договоры хранятся только на этом устройстве — переноси в Kaiten.</p>
@@ -440,7 +400,6 @@
   </div>
 </div>
 
-<!-- ===== карточка договора: содержание слева, активный раздел справа ===== -->
 <div id="docCardOverlay" class="overlay hidden" onclick="if(event.target === this) closeDocCard()">
   <div class="modal">
     <h3 id="dcTitle">Карточка договора</h3>
@@ -457,7 +416,6 @@
       </div>
 
       <div class="dc-panels">
-        <!-- ОСНОВНОЕ -->
         <div class="dc-panel on" id="pMain">
           <label>Номер договора <input type="text" id="cNum"></label>
           <label>Контрагент <input type="text" id="cContr"></label>
@@ -471,7 +429,6 @@
           <p class="mini-note">Сумма договора: <b id="cSumView">0,00</b> руб. — считается в разделе «Ведомость поставки».</p>
         </div>
 
-        <!-- ОПЛАТА -->
         <div class="dc-panel" id="pPay">
           <div class="filters">
             <div><span class="small-lbl">Аванс, %</span><input type="number" id="cPrepay" step="0.1"></div>
@@ -491,26 +448,23 @@
           <label>Дата получения давальческого сырья <input type="date" id="cTollingDate"></label>
           <label>Дата подписания акта <input type="date" id="cActDate"></label>
           <h4>Счета на оплату</h4>
-          <p class="mini-note">Укажи тип — аванс или окончательный расчёт — дата оплаты посчитается в реестре.</p>
+          <p class="mini-note">Укажи тип — аванс или окончательный расчёт — дата оплаты посчитается в реестре оплаты.</p>
           <div id="cInvoicesWrap"></div>
           <button class="btn add-inv" onclick="addCardInvoiceRow()">+ Добавить счёт</button>
         </div>
 
-        <!-- ВЕДОМОСТЬ ПОСТАВКИ -->
         <div class="dc-panel" id="pItems">
           <div id="cItemsWrap"></div>
           <button class="btn add-item" onclick="addItemRow('cItemsWrap', 'cSumLine')">+ Добавить позицию</button>
           <div class="auto-sum-line" id="cSumLine">Сумма договора с НДС: <b>0,00</b> руб. <span class="note" style="margin:0">· заполняется автоматически из ведомости</span></div>
         </div>
 
-        <!-- ДС И ПРОТОКОЛЫ РАЗНОГЛАСИЙ -->
         <div class="dc-panel" id="pDs">
           <div id="cDsWrap"></div>
           <button class="btn add-ds" onclick="addCardDsRow()">+ Добавить запись</button>
           <p class="mini-note">Отмечай тип записи: ДС или протокол разногласий. В ДС фиксируй изменения ведомости: позиция, новое количество, новая цена. Фактические изменения вноси и в саму ведомость — сумма пересчитается.</p>
         </div>
 
-        <!-- ОТГРУЗКА -->
         <div class="dc-panel" id="pShip">
           <div id="cShipWrap"></div>
           <button class="btn add-ship" onclick="addCardShipRow()">+ Добавить отгрузку</button>
@@ -518,11 +472,10 @@
           <p class="mini-note">ТН — отгрузка по поставке: выбери позицию из ведомости и укажи количество. Акт — выполнение услуг/этапов: закрывает их отметкой «выполнено». График поставок обновится сам.</p>
         </div>
 
-        <!-- ОРИГИНАЛЫ ДОКУМЕНТОВ -->
         <div class="dc-panel" id="pOrig">
           <p class="mini-note" style="text-align:left">Статусы переключаются нажатием: не получены → на согласовании → получены.</p>
           <div class="pay-fact" style="margin-top:10px">
-            <span class="lbl2">Оригиналы договора:</span>
+            <span>Оригиналы договора:</span>
             <select id="cOrigStatus">
               <option value="не получены">не получены</option>
               <option value="на согласовании">на согласовании</option>
@@ -530,7 +483,7 @@
             </select>
           </div>
           <div class="pay-fact">
-            <span class="lbl2">Оригиналы ДС и протоколов:</span>
+            <span>Оригиналы ДС и протоколов:</span>
             <select id="cOrigDsStatus">
               <option value="не получены">не получены</option>
               <option value="на согласовании">на согласовании</option>
@@ -574,6 +527,7 @@ const ORIG_DS_BADGE = { 'не получены': { cls:'over', label:'ориг. 
 
 const COND_TEXT = { prepay:'с даты перечисления аванса', tolling:'с даты получения давальческого сырья', fixed:'конкретная дата' };
 const FINAL_EVENT_TEXT = { act:'после подписания акта', delivery:'после последней поставки', contract:'после подписания договора' };
+const MONTHS = ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
 
 const whoOpen = {};
 const schedOpenYear = {};
@@ -591,7 +545,7 @@ function showTab(name) {
   document.getElementById('tabCal').classList.toggle('on', name === 'cal');
   document.getElementById('tabCalc').classList.toggle('on', name === 'calc');
   document.getElementById('tabDoc').classList.toggle('on', name === 'doc');
-  if (name === 'cal') renderCal();
+  if (name === 'cal') { renderCal(); renderCalDay(); }
   if (name === 'doc') { renderDocs(); renderPays(); renderSched(); showDocSub(docSub); }
   document.body.classList.toggle('red-mode', name === 'doc');
 }
@@ -805,6 +759,7 @@ function renderStats(tasks) {
 function render() {
   const tasks = loadTasks();
   renderStats(tasks);
+  if (currentTab === 'cal') { renderCal(); renderCalDay(); }
   const view = document.getElementById('vView').value;
   const shown = sortByChoice(filteredTasks());
   const list = document.getElementById('taskList');
@@ -872,21 +827,15 @@ function toggleDocView(isExtended) {
   localStorage.setItem('strazh_docview', isExtended ? 'ext' : 'comp');
   renderDocs();
 }
-function restoreDocView() {
+(function() {
   const mode = localStorage.getItem('strazh_docview') || 'comp';
   const chk = document.getElementById('docViewToggle');
   if (chk) chk.checked = (mode === 'ext');
-}
-restoreDocView();
+})();
 
-// ===== вид графика: компактный / расширенный (кнопка) =====
-function toggleSchedView() {
-  const next = (localStorage.getItem('strazh_schedview') || 'comp') === 'ext' ? 'comp' : 'ext';
-  localStorage.setItem('strazh_schedview', next);
-  renderSched();
-}
-function onSchedYearChange(v) {
-  localStorage.setItem('strazh_schedyear', v);
+// ===== вид графика: компактный / расширенный =====
+function toggleSchedView(isExt) {
+  localStorage.setItem('strazh_schedview', isExt ? 'ext' : 'comp');
   renderSched();
 }
 
@@ -1299,11 +1248,11 @@ function docRow(d) {
   const catMark = d.cat ? '<span class="cat-mark ' + (d.cat === 'ГОЗ' ? 'goz' : 'kom') + '" title="Категория">' + esc(d.cat) + '</span>' : '';
   const accBadge = d.accept ? '<span class="badge ' + (d.accept === 'ОТК' ? 'otk' : 'vp') + '">приёмка: ' + esc(d.accept) + '</span>' : '';
   const oB = ORIG_BADGE[d.origStatus || 'не получены'];
-  const origBtn = '<span class="badge ' + oB.cls + '" onclick="cycleOrig(\'' + d.id + '\', \'origStatus\')" title="Нажми, чтобы сменить статус">' + oB.label + '</span>';
+  const origBtn = '<span class="badge ' + oB.cls + '" onclick="event.stopPropagation(); cycleOrig(\'' + d.id + '\', \'origStatus\')" title="Нажми, чтобы сменить статус">' + oB.label + '</span>';
   let origDsBtn = '';
   if ((d.ds || []).length) {
     const oD = ORIG_DS_BADGE[d.origDsStatus || 'не получены'];
-    origDsBtn = '<span class="badge ' + oD.cls + '" onclick="cycleOrig(\'' + d.id + '\', \'origDsStatus\')" title="Нажми, чтобы сменить статус">' + oD.label + '</span>';
+    origDsBtn = '<span class="badge ' + oD.cls + '" onclick="event.stopPropagation(); cycleOrig(\'' + d.id + '\', \'origDsStatus\')" title="Нажми, чтобы сменить статус">' + oD.label + '</span>';
   }
   const isExt = (localStorage.getItem('strazh_docview') || 'comp') === 'ext';
   return '<div class="task' + (d.status === 'закрыт' ? ' is-done' : '') + (isExt ? '' : ' compact') + '" style="border-left-color:' + strip + '">' +
@@ -1501,7 +1450,7 @@ function renderPays() {
   const rows = [];
   docs.forEach(d => { (d.invoices || []).forEach((inv, i) => rows.push({ d: d, i: i, inv: inv })); });
   const list = document.getElementById('payList');
-  if (!rows.length) { list.innerHTML = '<p class="note">Счетов пока нет — добавь счёт в карточку договора</p>'; return; }
+  if (!rows.length) { list.innerHTML = '<p class="note">Счетов пока нет — добавь счёт в разделе «Оплата» карточки договора</p>'; return; }
   const months = {};
   rows.forEach(r => {
     const dueDate = payPlanDate(r.d, r.inv.type || 'аванс');
@@ -1538,14 +1487,23 @@ function renderSched() {
     if (d.status === 'закрыт') return;
     (d.items || []).forEach(it => entries.push({ d: d, it: it, due: itemDueDate(d, it) }));
   });
-  entries.forEach(e => { e.st = itemShipStatus(e.d, e.it); });
   const todayStr = isoOf(new Date());
+  const in14 = isoOf(new Date(Date.now() + 14 * 86400000));
+  const thisYM = todayStr.slice(0, 7);
+  let nDone = 0, nOver = 0, nSoon = 0;
+  entries.forEach(e => {
+    e.st = itemShipStatus(e.d, e.it);
+    if (e.st.state === 'done') { nDone++; return; }
+    if (e.due && e.due < todayStr) nOver++;
+    else if (e.due && e.due <= in14) nSoon++;
+  });
+  const sumEl = document.getElementById('schedSummary');
+  if (sumEl) sumEl.innerHTML =
+    '<div><div class="num c-black">' + entries.length + '</div><div class="lbl">позиций открыто</div></div>' +
+    '<div><div class="num c-red">' + nOver + '</div><div class="lbl">просрочено</div></div>' +
+    '<div><div class="num c-orange">' + nSoon + '</div><div class="lbl">ближайшие 14 дн.</div></div>' +
+    '<div><div class="num c-green">' + nDone + '</div><div class="lbl">закрыто</div></div>';
   const isExt = (localStorage.getItem('strazh_schedview') || 'comp') === 'ext';
-  const vb = document.getElementById('schedViewToggle');
-  if (vb) {
-    vb.textContent = isExt ? 'расширенный вид' : 'компактный вид';
-    vb.classList.toggle('ext', isExt);
-  }
   const list = document.getElementById('schedList');
   if (!entries.length) { list.innerHTML = '<p class="note">Позиций пока нет</p>'; return; }
   const years = {};
@@ -1557,85 +1515,83 @@ function renderSched() {
     years[yk][mk].push(e);
   });
   const yKeys = Object.keys(years).sort();
-  const selYear = localStorage.getItem('strazh_schedyear');
-  const activeYk = (selYear && yKeys.includes(selYear)) ? selYear : null;
-  const yKeysShow = activeYk ? [activeYk] : yKeys;
-  const yOpts = ['<option value="all"' + (!activeYk ? ' selected' : '') + '>все годы</option>'].concat(
-    yKeys.map(yk => '<option value="' + yk + '"' + (yk === activeYk ? ' selected' : '') + '>' + (yk === '----' ? 'без даты' : yk) + '</option>')
-  ).join('');
-  list.innerHTML = '<div class="sched-year-bar"><span class="small-lbl">Выбор года</span>' +
-    '<select onchange="onSchedYearChange(this.value)">' + yOpts + '</select></div>' +
-    yKeysShow.map(yk => {
-      const months = years[yk];
-      const mKeys = Object.keys(months).sort();
-      const yOpen = schedOpenYear[yk] !== false;
-      const mHtml = mKeys.map(mk => {
-        const arr = months[mk];
-        const mOpen = schedOpenMonth[mk] !== false;
-        const label = mk === 'nodate' ? 'Дата не определена' : MONTHS[parseInt(mk.slice(5, 7), 10) - 1];
-        const isNow = mk === todayStr.slice(0, 7);
-        const mOver = arr.filter(e => e.st.state !== 'done' && e.due && e.due < todayStr).length;
-        const byDoc = {};
-        arr.forEach(e => { if (!byDoc[e.d.id]) byDoc[e.d.id] = { d: e.d, items: [] }; byDoc[e.d.id].items.push(e.it); });
-        const docIds = Object.keys(byDoc).sort((a, b) => byDoc[a].d.num.localeCompare(byDoc[b].d.num));
-        const docHtml = docIds.map(did => {
-          const g = byDoc[did];
-          const isOpen = schedOpenDoc[did] !== false;
-          let overCount = 0;
-          g.items.forEach(it => {
-            const st = itemShipStatus(g.d, it);
-            if (st.state !== 'done') { const dd = itemDueDate(g.d, it); if (dd && dd < todayStr) overCount++; }
-          });
-          const nearest = g.items.reduce((best, it) => {
-            if (itemShipStatus(g.d, it).state === 'done') return best;
-            const dd = itemDueDate(g.d, it);
-            return (dd && (!best || dd < best)) ? dd : best;
-          }, null);
-          let nearestBadge = '';
-          if (nearest) {
-            const left = daysLeft(nearest);
-            if (left < 0) nearestBadge = '<span class="badge over">просрочено</span>';
-            else if (left <= 14) nearestBadge = '<span class="badge soon">через ' + left + ' дн.</span>';
-            else nearestBadge = '<span class="badge ok">' + fmtDate(nearest) + '</span>';
-          }
-          const overBadge = overCount ? '<span class="badge over">недопоставки: ' + overCount + '</span>' : '';
-          const itemsHtml = isExt
-            ? '<div class="sched-items"><table class="sched-table">' +
-              '<tr><th>Изделие</th><th>шт.</th><th>мес.</th><th>сроки</th></tr>' +
-              g.items.map(it => {
-                const st = itemShipStatus(g.d, it);
-                const due = itemDueDate(g.d, it);
-                const when = due ? 'до ' + fmtDate(due) : '—';
-                let mark = '';
-                if (st.state === 'done') mark = '<span class="done">✓ ' + st.label + '</span>';
-                else if (st.state === 'partial') mark = '<span class="part">' + esc(st.label) + '</span>';
-                else if (due && due < todayStr) mark = '<span class="over">просрочено</span>';
-                const mm = due ? MONTHS_SHORT[parseInt(due.slice(5, 7), 10) - 1] : '—';
-                return '<tr><td>' + esc(it.name || 'позиция') + '</td><td>' +
-                  (it.qty ? it.qty + ' ' + esc(it.unit || 'шт.') : '—') + '</td><td>' + mm + '</td><td>' +
-                  when + (mark ? ' ' + mark : '') + '</td></tr>';
-              }).join('') + '</table></div>'
-            : '';
-          return '<div class="group" style="margin:8px">' +
-            '<div class="group-head g-doc-lite" onclick="toggleSchedDoc(\'' + did + '\')">' +
-            '<span>' + (isOpen ? '▾ ' : '▸ ') + esc(g.d.num) + (g.d.contr ? ' · ' + esc(g.d.contr) : '') + '</span>' +
-            '<small>' + nearestBadge + overBadge + '</small></div>' +
-            (isOpen ? itemsHtml : '') +
-            '</div>';
-        }).join('');
-        return '<div class="group' + (isNow ? ' month-now' : '') + '"><div class="group-head g-month" onclick="toggleSchedMonth(\'' + mk + '\')">' +
-          '<span>' + (mOpen ? '▾ ' : '▸ ') + label + (isNow ? ' · сейчас' : '') + '</span>' +
-          '<small class="gm-sum">' + (mOver ? 'недопоставки: ' + mOver : '') + '</small></div>' +
-          (mOpen ? '<div class="group-body">' + docHtml + '</div>' : '') + '</div>';
+  list.innerHTML = yKeys.map(yk => {
+    const months = years[yk];
+    const mKeys = Object.keys(months).sort();
+    const yEntries = mKeys.reduce((acc, mk) => acc.concat(months[mk]), []);
+    const yTotal = r2(yEntries.reduce((s, e) => s + (e.it.sum || 0), 0));
+    const yOver = yEntries.filter(e => e.st.state !== 'done' && e.due && e.due < todayStr).length;
+    const yOpen = schedOpenYear[yk] !== false;
+    const yLabel = yk === '----' ? 'Дата не определена' : yk;
+    const schedSwitch =
+      '<label class="switch sched-switch" onclick="event.stopPropagation()">' +
+      '<input type="checkbox"' + (isExt ? ' checked' : '') + ' onchange="toggleSchedView(this.checked)">' +
+      '<span class="slider"></span></label>';
+    const mHtml = mKeys.map(mk => {
+      const arr = months[mk];
+      const mTotal = r2(arr.reduce((s, e) => s + (e.it.sum || 0), 0));
+      const mOver = arr.filter(e => e.st.state !== 'done' && e.due && e.due < todayStr).length;
+      const label = mk === 'nodate' ? 'Дата не определена' : MONTHS[parseInt(mk.slice(5, 7), 10) - 1];
+      const isNow = mk === thisYM;
+      const mOpen = schedOpenMonth[mk] !== false;
+      const byDoc = {};
+      arr.forEach(e => { if (!byDoc[e.d.id]) byDoc[e.d.id] = { d: e.d, items: [] }; byDoc[e.d.id].items.push(e.it); });
+      const docIds = Object.keys(byDoc).sort((a, b) => byDoc[a].d.num.localeCompare(byDoc[b].d.num));
+      const docHtml = docIds.map(did => {
+        const g = byDoc[did];
+        const isOpen = schedOpenDoc[did] !== false;
+        let overCount = 0;
+        g.items.forEach(it => {
+          const st = itemShipStatus(g.d, it);
+          if (st.state !== 'done') { const dd = itemDueDate(g.d, it); if (dd && dd < todayStr) overCount++; }
+        });
+        const nearest = g.items.reduce((best, it) => {
+          if (itemShipStatus(g.d, it).state === 'done') return best;
+          const dd = itemDueDate(g.d, it);
+          return (dd && (!best || dd < best)) ? dd : best;
+        }, null);
+        let nearestBadge = '';
+        if (nearest) {
+          const left = daysLeft(nearest);
+          if (left < 0) nearestBadge = '<span class="badge over">просрочено</span>';
+          else if (left <= 14) nearestBadge = '<span class="badge soon">через ' + left + ' дн.</span>';
+          else nearestBadge = '<span class="badge ok">' + fmtDate(nearest) + '</span>';
+        }
+        const overBadge = overCount ? '<span class="badge over">недопоставки: ' + overCount + '</span>' : '';
+        const itemsSmall = isExt
+          ? '<div class="sched-items">' + g.items.map(it => {
+              const st = itemShipStatus(g.d, it);
+              const due = itemDueDate(g.d, it);
+              const when = due ? 'до ' + fmtDate(due) : 'дата не определена';
+              let mark = '';
+              if (st.state === 'done') mark = '<span class="done">✓ ' + st.label + '</span>';
+              else if (st.state === 'partial') mark = '<span class="part">' + esc(st.label) + '</span>';
+              else if (due && due < todayStr) mark = '<span class="over">просрочено</span>';
+              const q = it.qty ? ' (' + it.qty + ' ' + esc(it.unit || 'шт.') + ')' : '';
+              return '<div>• ' + esc(it.name || 'позиция') + q + ' · ' + when + ' · ' + mark + '</div>';
+            }).join('') + '</div>'
+          : '';
+        return '<div class="group" style="margin:8px">' +
+          '<div class="group-head g-doc" onclick="toggleSchedDoc(\'' + did + '\')">' +
+          '<span>' + (isOpen ? '▾ ' : '▸ ') + esc(g.d.num) + (g.d.contr ? ' · ' + esc(g.d.contr) : '') + '</span>' +
+          '<small>' + g.items.length + ' поз. · на ' + fmtNum(itemsTotal(g.items)) + ' руб. ' + nearestBadge + overBadge + '</small></div>' +
+          (isOpen ? itemsSmall : '') +
+          '</div>';
       }).join('');
-      return '<div class="group"><div class="group-head g-year" onclick="toggleSchedYear(\'' + yk + '\')">' +
-        '<span>' + (yOpen ? '▾ ' : '▸ ') + (yk === '----' ? 'Дата не определена' : yk) + '</span></div>' +
-        (yOpen ? '<div class="group-body">' + mHtml + '</div>' : '') + '</div>';
+      return '<div class="group' + (isNow ? ' month-now' : '') + '"><div class="group-head g-month" onclick="toggleSchedMonth(\'' + mk + '\')">' +
+        '<span>' + (mOpen ? '▾ ' : '▸ ') + label + (isNow ? ' · сейчас' : '') + '</span>' +
+        '<small class="gm-sum">' + arr.length + ' поз. · на ' + fmtNum(mTotal) + ' руб.' + (mOver ? ' · <span style="color:#b91c1c">недопоставки: ' + mOver + '</span>' : '') + '</small></div>' +
+        (mOpen ? '<div class="group-body">' + docHtml + '</div>' : '') + '</div>';
     }).join('');
+    return '<div class="group"><div class="group-head g-year" onclick="toggleSchedYear(\'' + yk + '\')">' +
+      schedSwitch +
+      '<span class="gy-title">' + (yOpen ? '▾ ' : '▸ ') + yLabel + '</span>' +
+      '<small>' + yEntries.length + ' поз. · на ' + fmtNum(yTotal) + ' руб.' + (yOver ? ' · недопоставки: ' + yOver : '') + '</small></div>' +
+      (yOpen ? '<div class="group-body">' + mHtml + '</div>' : '') + '</div>';
+  }).join('');
 }
 
-const MONTHS_SHORT = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
-const MONTHS = ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
+// ===== календарь =====
 let calYear, calMonth, calSel = null;
 (function initCal() { const n = new Date(); calYear = n.getFullYear(); calMonth = n.getMonth(); })();
 function calKey(y, m, d) { const p = n => (n < 10 ? '0' : '') + n; return y + '-' + p(m+1) + '-' + p(d); }
