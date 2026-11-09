@@ -1249,4 +1249,547 @@ function payText(d) {
   return parts.join(' · ');
 }
 
-function
+// ===== факт поставки из раздела «Отгрузка» =====
+function shippedQtyOf(d, it) {
+  const name = (it.name || '').trim().toLowerCase();
+  if (!name) return 0;
+  let q = 0;
+  (d.shipments || []).forEach(sh => {
+    if ((sh.docType || 'ТН') !== 'ТН') return;
+    if ((sh.item || '').trim().toLowerCase() === name) q += (parseFloat(sh.qty) || 0);
+  });
+  return q;
+}
+function itemShipStatus(d, it) {
+  const isServiceLike = it.unit === 'услуга' || it.unit === 'этап' ||
+    d.subjectType === 'услуги' || d.subjectType === 'СЧ ОКР';
+  if (isServiceLike) {
+    const acts = (d.shipments || []).filter(sh => sh.docType === 'Акт');
+    if (!acts.length) return { state: 'pending', label: 'не выполнено' };
+    const name = (it.name || '').trim().toLowerCase();
+    const matched = acts.some(sh => (sh.item || '').trim().toLowerCase() === name);
+    const whole = acts.some(sh => !(sh.item || '').trim());
+    return (matched || whole) ? { state: 'done', label: 'выполнено' } : { state: 'pending', label: 'не выполнено' };
+  }
+  const qty = it.qty || 0;
+  const shipped = shippedQtyOf(d, it);
+  if (qty > 0) {
+    if (shipped >= qty) return { state: 'done', label: 'поставлено', shipped: shipped, qty: qty };
+    if (shipped > 0) return { state: 'partial', label: 'частично: ' + shipped + ' из ' + qty + ' ' + (it.unit || 'шт.'), shipped: shipped, qty: qty };
+    return { state: 'pending', label: 'ожидается' };
+  }
+  const hasAny = (d.shipments || []).some(sh =>
+    (sh.docType || 'ТН') === 'ТН' && (sh.item || '').trim().toLowerCase() === (it.name || '').trim().toLowerCase());
+  return hasAny ? { state: 'done', label: 'поставлено' } : { state: 'pending', label: 'ожидается' };
+}
+
+function docRow(d) {
+  const strip = DOC_STRIP[d.status] || '#64748b';
+  const stCls = DOC_CLS[d.status] || 'ss-project';
+  const left = daysLeft(d.date);
+  let badge = '';
+  if (d.status === 'закрыт') badge = '';
+  else if (d.date && left !== null) {
+    if (left < 0) badge = '<span class="badge over">истёк</span>';
+    else if (left <= 30) badge = '<span class="badge soon">' + left + ' дн.</span>';
+  }
+  const nInv = (d.invoices || []).length;
+  const catMark = d.cat ? '<span class="cat-mark ' + (d.cat === 'ГОЗ' ? 'goz' : 'kom') + '" title="Категория">' + esc(d.cat) + '</span>' : '';
+  const accBadge = d.accept ? '<span class="badge ' + (d.accept === 'ОТК' ? 'otk' : 'vp') + '">приёмка: ' + esc(d.accept) + '</span>' : '';
+  const oB = ORIG_BADGE[d.origStatus || 'не получены'];
+  const origBtn = '<span class="badge ' + oB.cls + '" onclick="cycleOrig(\'' + d.id + '\', \'origStatus\')" title="Нажми, чтобы сменить статус">' + oB.label + '</span>';
+  let origDsBtn = '';
+  if ((d.ds || []).length) {
+    const oD = ORIG_DS_BADGE[d.origDsStatus || 'не получены'];
+    origDsBtn = '<span class="badge ' + oD.cls + '" onclick="cycleOrig(\'' + d.id + '\', \'origDsStatus\')" title="Нажми, чтобы сменить статус">' + oD.label + '</span>';
+  }
+  const isExt = (localStorage.getItem('strazh_docview') || 'comp') === 'ext';
+  return '<div class="task' + (d.status === 'закрыт' ? ' is-done' : '') + (isExt ? '' : ' compact') + '" style="border-left-color:' + strip + '">' +
+    '<div class="info clickable" onclick="openDocCard(\'' + d.id + '\')">' +
+    '<div class="name">' + catMark + ' ' + esc(d.num) + ' <span style="font-weight:400;color:#64748b">· ' + esc(d.subjectType || '') + '</span></div>' +
+    '<div class="meta">' +
+    (d.contr ? '<span class="who">' + esc(d.contr) + '</span>' : '') +
+    accBadge +
+    (d.sum ? '<span>' + fmtNum(d.sum) + ' руб.</span>' : '') +
+    (nInv ? '<span>счетов: ' + nInv + '</span>' : '') +
+    (d.date ? '<span>до ' + fmtDate(d.date) + '</span>' : '') +
+    badge +
+    '<span class="status-pill ' + stCls + '" onclick="openDocStatusMenu(event, \'' + d.id + '\')">' + esc(d.status) + '</span>' +
+    (d.statusDate ? '<span class="stdate">' + fmtDT(d.statusDate) + '</span>' : '') +
+    '</div>' +
+    (itemsText(d) ? '<div class="doc-extra">Ведомость поставки:<br>' + itemsText(d) + '</div>' : '') +
+    (payText(d) ? '<div class="doc-extra">Оплата: ' + payText(d) + '</div>' : '') +
+    (dsText(d) ? '<div class="doc-extra">ДС и протоколы:<br>' + dsText(d) + '</div>' : '') +
+    '<div class="meta">' + origBtn + origDsBtn + '</div>' +
+    '</div>' +
+    '<div><button class="del" title="Удалить" onclick="delDoc(\'' + d.id + '\')">✕</button></div>' +
+    '</div>';
+}
+function renderDocs() {
+  buildContrFilter();
+  const docs = loadDocs();
+  const f = document.getElementById('dStatus').value;
+  const fC = document.getElementById('fContr').value;
+  const fCat = document.getElementById('dCatFilter').value;
+  const fAcc = document.getElementById('dAcceptFilter').value;
+  const fI = (document.getElementById('fItem').value || '').trim().toLowerCase();
+  const sort = document.getElementById('dSort').value;
+  let shown = docs.filter(d => {
+    if (f !== 'all' && d.status !== f) return false;
+    if (fC !== 'all' && d.contr !== fC) return false;
+    if (fCat !== 'all' && d.cat !== fCat) return false;
+    if (fAcc !== 'all' && d.accept !== fAcc) return false;
+    if (fI) {
+      const hay = (d.num + ' ' + (d.contr || '') + ' ' + (d.subjectType || '')).toLowerCase() +
+        ' ' + (d.items || []).map(it => (it.name || '').toLowerCase()).join(' ') +
+        ' ' + (d.ds || []).map(x => ((x.item || '') + ' ' + (x.subject || '')).toLowerCase()).join(' ');
+      if (hay.indexOf(fI) === -1) return false;
+    }
+    return true;
+  });
+  if (sort === 'end') shown.sort((a,b) => (a.date || '9999-12-31').localeCompare(b.date || '9999-12-31'));
+  const list = document.getElementById('docList');
+  if (!shown.length) {
+    list.innerHTML = docs.length ? '<p class="note">По выбранным фильтрам договоров нет</p>' : '<p class="note">Договоров пока нет</p>';
+    return;
+  }
+  list.innerHTML = shown.map(docRow).join('');
+}
+
+// ===== карточка: переключение разделов =====
+function dcShowPanel(btn) {
+  document.querySelectorAll('#docCardOverlay .dc-nav button').forEach(b => b.classList.remove('on'));
+  document.querySelectorAll('#docCardOverlay .dc-panel').forEach(p => p.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById(btn.getAttribute('data-p')).classList.add('on');
+}
+
+function fillStatusSelect(selId, cur) {
+  const sel = document.getElementById(selId);
+  sel.innerHTML = DOC_STATUS.map(s => '<option value="' + esc(s) + '"' + (s === cur ? ' selected' : '') + '>' + esc(s) + '</option>').join('');
+}
+function openDocCard(id) {
+  closeStatusMenu();
+  const d = loadDocs().find(x => x.id === id);
+  if (!d) return;
+  editingDocId = id;
+  document.getElementById('dcTitle').textContent = 'Карточка: ' + (d.num || '');
+  document.getElementById('cNum').value = d.num || '';
+  document.getElementById('cContr').value = d.contr || '';
+  document.getElementById('cSubjectType').value = d.subjectType || 'поставка';
+  document.getElementById('cAccept').value = d.accept || 'ОТК';
+  document.getElementById('cCat').value = d.cat || 'ГОЗ';
+  document.getElementById('cDate').value = d.date || '';
+  fillStatusSelect('cStatus', d.status || 'проект');
+  document.getElementById('cPrepay').value = d.prepay || '';
+  document.getElementById('cPrepayDays').value = d.prepayDays || '';
+  document.getElementById('cPrepayUnit').value = d.prepayUnit || 'cal';
+  document.getElementById('cFinalDays').value = d.finalDays || '';
+  document.getElementById('cFinalUnit').value = d.finalUnit || 'cal';
+  document.getElementById('cFinalEvent').value = d.finalEvent || 'act';
+  document.getElementById('cSignDate').value = d.signDate || '';
+  document.getElementById('cPrepayDate').value = d.prepayFactDate || '';
+  document.getElementById('cTollingDate').value = d.tollingDate || '';
+  document.getElementById('cActDate').value = d.actDate || '';
+  document.getElementById('cOrigStatus').value = d.origStatus || 'не получены';
+  document.getElementById('cOrigDsStatus').value = d.origDsStatus || 'не получены';
+  const wrap = document.getElementById('cItemsWrap');
+  wrap.innerHTML = '';
+  (d.items && d.items.length ? d.items : [null]).forEach(s => addItemRow('cItemsWrap', 'cSumLine', s));
+  document.getElementById('cSumView').textContent = fmtNum(d.sum || 0);
+  const invWrap = document.getElementById('cInvoicesWrap');
+  invWrap.innerHTML = '';
+  (d.invoices || []).forEach(inv => addCardInvoiceRow(inv));
+  const dsWrap = document.getElementById('cDsWrap');
+  dsWrap.innerHTML = '';
+  (d.ds || []).forEach(s => addCardDsRow(s));
+  const shipWrap = document.getElementById('cShipWrap');
+  shipWrap.innerHTML = '';
+  (d.shipments || []).forEach(s => addCardShipRow(s));
+  const dl = document.getElementById('shItemsDL');
+  if (dl) dl.innerHTML = (d.items || []).filter(it => it.name).map(it => '<option value="' + esc(it.name) + '">').join('');
+  const navBtns = document.querySelectorAll('#docCardOverlay .dc-nav button');
+  document.querySelectorAll('#docCardOverlay .dc-panel').forEach(p => p.classList.remove('on'));
+  navBtns.forEach(b => b.classList.toggle('on', b.getAttribute('data-p') === 'pMain'));
+  document.getElementById('pMain').classList.add('on');
+  document.getElementById('docCardOverlay').classList.remove('hidden');
+  document.getElementById('cNum').focus();
+}
+function closeDocCard() { document.getElementById('docCardOverlay').classList.add('hidden'); editingDocId = null; }
+function saveDocCard() {
+  if (!editingDocId) return;
+  const docs = loadDocs();
+  const d = docs.find(x => x.id === editingDocId);
+  if (!d) return;
+  const num = document.getElementById('cNum').value.trim();
+  if (!num) { alert('Введите номер договора'); return; }
+  d.num = num;
+  d.contr = document.getElementById('cContr').value.trim();
+  d.subjectType = document.getElementById('cSubjectType').value;
+  d.accept = document.getElementById('cAccept').value;
+  d.cat = document.getElementById('cCat').value;
+  d.date = document.getElementById('cDate').value;
+  const newStatus = document.getElementById('cStatus').value;
+  if (newStatus !== d.status) { d.status = newStatus; d.statusDate = new Date().toISOString(); }
+  d.items = collectItems('cItemsWrap');
+  d.sum = itemsTotal(d.items);
+  d.invoices = collectInvoices();
+  d.prepay = parseFloat(document.getElementById('cPrepay').value) || 0;
+  d.prepayDays = parseInt(document.getElementById('cPrepayDays').value, 10) || 0;
+  d.prepayUnit = document.getElementById('cPrepayUnit').value;
+  d.finalDays = parseInt(document.getElementById('cFinalDays').value, 10) || 0;
+  d.finalUnit = document.getElementById('cFinalUnit').value;
+  d.finalEvent = document.getElementById('cFinalEvent').value;
+  d.signDate = document.getElementById('cSignDate').value;
+  d.prepayFactDate = document.getElementById('cPrepayDate').value;
+  d.tollingDate = document.getElementById('cTollingDate').value;
+  d.actDate = document.getElementById('cActDate').value;
+  d.ds = collectDs();
+  d.shipments = collectShips();
+  d.origStatus = document.getElementById('cOrigStatus').value;
+  d.origDsStatus = document.getElementById('cOrigDsStatus').value;
+  saveDocs(docs);
+  closeDocCard();
+  buildContrFilter(); renderDocs(); renderPays(); renderSched();
+}
+function delDocFromCard() {
+  if (!editingDocId) return;
+  if (!confirm('Удалить договор? Счета и график обновятся автоматически.')) return;
+  const id = editingDocId;
+  closeDocCard();
+  delDoc(id);
+}
+
+function saveInv(id, i, field, val) {
+  const docs = loadDocs();
+  const d = docs.find(x => x.id === id);
+  if (!d || !d.invoices || !d.invoices[i]) return;
+  if (field === 'ppSum') d.invoices[i][field] = parseFloat(val) || 0;
+  else d.invoices[i][field] = val;
+  saveDocs(docs);
+  renderPays();
+}
+function invRow(d, i, inv) {
+  const strip = DOC_STRIP[d.status] || '#64748b';
+  const isPaid = !!(inv.ppNum || inv.ppDate || inv.ppSum);
+  const dueDate = payPlanDate(d, inv.type || 'аванс');
+  let badge = isPaid ? '<span class="badge paid">оплачено</span>'
+    : (dueDate && daysLeft(dueDate) < 0 ? '<span class="badge over">просрочено</span>' : '<span class="badge wait">ждёт оплаты</span>');
+  const typeBadge = '<span class="badge ' + ((inv.type || 'аванс') === 'аванс' ? 'ok' : 'soon') + '">' + esc(inv.type || 'аванс') + '</span>';
+  return '<div class="task" style="border-left-color:' + strip + '">' +
+    '<div class="info">' +
+    '<div class="name">Счёт №' + esc(inv.num || '—') + ' от ' + fmtDate(inv.date) + '</div>' +
+    '<div class="meta">' +
+    '<span class="who">' + esc(d.num) + '</span>' +
+    (d.contr ? '<span>' + esc(d.contr) + '</span>' : '') +
+    '<span>сумма: <b>' + (inv.sum ? fmtNum(inv.sum) : '—') + '</b> руб.</span>' +
+    (dueDate ? '<span>срок оплаты: ' + fmtDate(dueDate) + '</span>' : '<span>срок оплаты: не рассчитан (заполни факты в карточке)</span>') +
+    typeBadge + badge +
+    '</div>' +
+    '<div class="pay-block">' +
+    '<div class="pb-title">Факт оплаты — платёжное поручение</div>' +
+    '<div class="pay-fact">' +
+    '<input type="text" placeholder="номер ПП" value="' + esc(inv.ppNum || '') + '" onchange="saveInv(\'' + d.id + '\', ' + i + ', \'ppNum\', this.value)">' +
+    '<input type="date" value="' + (inv.ppDate || '') + '" onchange="saveInv(\'' + d.id + '\', ' + i + ', \'ppDate\', this.value)">' +
+    '<input type="number" step="0.01" placeholder="сумма ПП" value="' + (inv.ppSum || '') + '" onchange="saveInv(\'' + d.id + '\', ' + i + ', \'ppSum\', this.value)">' +
+    '</div></div></div></div>';
+}
+function renderPays() {
+  const docs = loadDocs();
+  const rows = [];
+  docs.forEach(d => { (d.invoices || []).forEach((inv, i) => rows.push({ d: d, i: i, inv: inv })); });
+  const list = document.getElementById('payList');
+  if (!rows.length) { list.innerHTML = '<p class="note">Счетов пока нет — добавь счёт в карточку договора</p>'; return; }
+  const months = {};
+  rows.forEach(r => {
+    const dueDate = payPlanDate(r.d, r.inv.type || 'аванс');
+    const key = (dueDate || r.inv.date) ? (dueDate || r.inv.date).slice(0,7) : 'nodate';
+    if (!months[key]) months[key] = [];
+    months[key].push(r);
+  });
+  const keys = Object.keys(months).sort();
+  list.innerHTML = keys.map(key => {
+    const arr = months[key];
+    const total = r2(arr.reduce((s, r) => s + (r.inv.sum || 0), 0));
+    const paidTotal = r2(arr.filter(r => r.inv.ppNum || r.inv.ppDate || r.inv.ppSum).reduce((s, r) => s + (r.inv.ppSum || r.inv.sum || 0), 0));
+    const label = key === 'nodate' ? 'Срок не определён' : new Date(key + '-01').toLocaleDateString('ru-RU', { year: 'numeric', month: 'long' });
+    const arr2 = arr.slice().sort((a, b) => {
+      const da = payPlanDate(a.d, a.inv.type || 'аванс') || a.inv.date || '9999';
+      const db = payPlanDate(b.d, b.inv.type || 'аванс') || b.inv.date || '9999';
+      return da.localeCompare(db);
+    });
+    return '<div class="group"><div class="group-head g-month"><span>' + label + '</span>' +
+      '<small>' + arr.length + ' счёт(ов) · на ' + fmtNum(total) + ' руб.' + (paidTotal ? ' · оплачено ' + fmtNum(paidTotal) + ' руб.' : '') + '</small></div>' +
+      '<div class="group-body">' + arr2.map(r => invRow(r.d, r.i, r.inv)).join('') + '</div></div>';
+  }).join('');
+}
+
+// ===== график поставок: год → месяц → договор → позиции =====
+function toggleSchedYear(y) { schedOpenYear[y] = (schedOpenYear[y] === false) ? true : false; renderSched(); }
+function toggleSchedMonth(key) { schedOpenMonth[key] = (schedOpenMonth[key] === false) ? true : false; renderSched(); }
+function toggleSchedDoc(id) { schedOpenDoc[id] = (schedOpenDoc[id] === false) ? true : false; renderSched(); }
+
+function renderSched() {
+  const docs = loadDocs();
+  const entries = [];
+  docs.forEach(d => {
+    if (d.status === 'закрыт') return;
+    (d.items || []).forEach(it => entries.push({ d: d, it: it, due: itemDueDate(d, it) }));
+  });
+  const todayStr = isoOf(new Date());
+  const in14 = isoOf(new Date(Date.now() + 14 * 86400000));
+  const thisYM = todayStr.slice(0, 7);
+  let nDone = 0, nOver = 0, nSoon = 0;
+  entries.forEach(e => {
+    e.st = itemShipStatus(e.d, e.it);
+    if (e.st.state === 'done') { nDone++; return; }
+    if (e.due && e.due < todayStr) nOver++;
+    else if (e.due && e.due <= in14) nSoon++;
+  });
+  const sumEl = document.getElementById('schedSummary');
+  if (sumEl) sumEl.innerHTML =
+    '<div><div class="num c-black">' + entries.length + '</div><div class="lbl">позиций открыто</div></div>' +
+    '<div><div class="num c-red">' + nOver + '</div><div class="lbl">просрочено</div></div>' +
+    '<div><div class="num c-orange">' + nSoon + '</div><div class="lbl">ближайшие 14 дн.</div></div>' +
+    '<div><div class="num c-green">' + nDone + '</div><div class="lbl">закрыто</div></div>';
+  const isExt = (localStorage.getItem('strazh_schedview') || 'comp') === 'ext';
+  const list = document.getElementById('schedList');
+  if (!entries.length) { list.innerHTML = '<p class="note">Позиций пока нет</p>'; return; }
+  const years = {};
+  entries.forEach(e => {
+    const yk = e.due ? e.due.slice(0, 4) : '----';
+    const mk = e.due ? e.due.slice(0, 7) : 'nodate';
+    if (!years[yk]) years[yk] = {};
+    if (!years[yk][mk]) years[yk][mk] = [];
+    years[yk][mk].push(e);
+  });
+  const yKeys = Object.keys(years).sort();
+  list.innerHTML = yKeys.map(yk => {
+    const months = years[yk];
+    const mKeys = Object.keys(months).sort();
+    const yEntries = mKeys.reduce((acc, mk) => acc.concat(months[mk]), []);
+    const yTotal = r2(yEntries.reduce((s, e) => s + (e.it.sum || 0), 0));
+    const yOver = yEntries.filter(e => e.st.state !== 'done' && e.due && e.due < todayStr).length;
+    const yOpen = schedOpenYear[yk] !== false;
+    const yLabel = yk === '----' ? 'Дата не определена' : yk;
+    const mHtml = mKeys.map(mk => {
+      const arr = months[mk];
+      const mTotal = r2(arr.reduce((s, e) => s + (e.it.sum || 0), 0));
+      const mOver = arr.filter(e => e.st.state !== 'done' && e.due && e.due < todayStr).length;
+      const label = mk === 'nodate' ? 'Дата не определена' : MONTHS[parseInt(mk.slice(5, 7), 10) - 1];
+      const isNow = mk === thisYM;
+      const mOpen = schedOpenMonth[mk] !== false;
+      const byDoc = {};
+      arr.forEach(e => { if (!byDoc[e.d.id]) byDoc[e.d.id] = { d: e.d, items: [] }; byDoc[e.d.id].items.push(e.it); });
+      const docIds = Object.keys(byDoc).sort((a, b) => byDoc[a].d.num.localeCompare(byDoc[b].d.num));
+      const docHtml = docIds.map(did => {
+        const g = byDoc[did];
+        const isOpen = schedOpenDoc[did] !== false;
+        let overCount = 0;
+        g.items.forEach(it => {
+          const st = itemShipStatus(g.d, it);
+          if (st.state !== 'done') { const dd = itemDueDate(g.d, it); if (dd && dd < todayStr) overCount++; }
+        });
+        const nearest = g.items.reduce((best, it) => {
+          if (itemShipStatus(g.d, it).state === 'done') return best;
+          const dd = itemDueDate(g.d, it);
+          return (dd && (!best || dd < best)) ? dd : best;
+        }, null);
+        let nearestBadge = '';
+        if (nearest) {
+          const left = daysLeft(nearest);
+          if (left < 0) nearestBadge = '<span class="badge over">просрочено</span>';
+          else if (left <= 14) nearestBadge = '<span class="badge soon">через ' + left + ' дн.</span>';
+          else nearestBadge = '<span class="badge ok">' + fmtDate(nearest) + '</span>';
+        }
+        const overBadge = overCount ? '<span class="badge over">недопоставки: ' + overCount + '</span>' : '';
+        const itemsSmall = isExt
+          ? '<div class="sched-items">' + g.items.map(it => {
+              const st = itemShipStatus(g.d, it);
+              const due = itemDueDate(g.d, it);
+              const when = due ? 'до ' + fmtDate(due) : 'дата не определена';
+              let mark = '';
+              if (st.state === 'done') mark = '<span class="done">✓ ' + st.label + '</span>';
+              else if (st.state === 'partial') mark = '<span class="part">' + esc(st.label) + '</span>';
+              else if (due && due < todayStr) mark = '<span class="over">просрочено</span>';
+              const q = it.qty ? ' (' + it.qty + ' ' + esc(it.unit || 'шт.') + ')' : '';
+              return '<div>• ' + esc(it.name || 'позиция') + q + ' · ' + when + ' · ' + mark + '</div>';
+            }).join('') + '</div>'
+          : '';
+        return '<div class="group" style="margin:8px">' +
+          '<div class="group-head g-doc" onclick="toggleSchedDoc(\'' + did + '\')">' +
+          '<span>' + (isOpen ? '▾ ' : '▸ ') + esc(g.d.num) + (g.d.contr ? ' · ' + esc(g.d.contr) : '') + '</span>' +
+          '<small>' + g.items.length + ' поз. · на ' + fmtNum(itemsTotal(g.items)) + ' руб. ' + nearestBadge + overBadge + '</small></div>' +
+          (isOpen ? itemsSmall : '') +
+          '</div>';
+      }).join('');
+      return '<div class="group' + (isNow ? ' month-now' : '') + '"><div class="group-head g-month" onclick="toggleSchedMonth(\'' + mk + '\')">' +
+        '<span>' + (mOpen ? '▾ ' : '▸ ') + label + (isNow ? ' · сейчас' : '') + '</span>' +
+        '<small class="gm-sum">' + arr.length + ' поз. · на ' + fmtNum(mTotal) + ' руб.' + (mOver ? ' · <span style="color:#fecaca">недопоставки: ' + mOver + '</span>' : '') + '</small></div>' +
+        (mOpen ? '<div class="group-body">' + docHtml + '</div>' : '') + '</div>';
+    }).join('');
+    return '<div class="group"><div class="group-head g-year" onclick="toggleSchedYear(\'' + yk + '\')">' +
+      '<span>' + (yOpen ? '▾ ' : '▸ ') + yLabel + '</span>' +
+      '<small>' + yEntries.length + ' поз. · на ' + fmtNum(yTotal) + ' руб.' + (yOver ? ' · недопоставки: ' + yOver : '') + '</small></div>' +
+      (yOpen ? '<div class="group-body">' + mHtml + '</div>' : '') + '</div>';
+  }).join('');
+}
+
+const MONTHS = ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
+let calYear, calMonth, calSel = null;
+(function initCal() { const n = new Date(); calYear = n.getFullYear(); calMonth = n.getMonth(); })();
+function calKey(y, m, d) { const p = n => (n < 10 ? '0' : '') + n; return y + '-' + p(m+1) + '-' + p(d); }
+function calMove(dir) {
+  calMonth += dir;
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  renderCal();
+}
+function calTasksOn(key) { return loadTasks().filter(t => t.date === key); }
+function renderCal() {
+  document.getElementById('calTitle').textContent = MONTHS[calMonth] + ' ' + calYear;
+  const grid = document.getElementById('calGrid');
+  const first = new Date(calYear, calMonth, 1);
+  const shift = (first.getDay() + 6) % 7;
+  const start = new Date(calYear, calMonth, 1 - shift);
+  const today = new Date();
+  const todayKey = calKey(today.getFullYear(), today.getMonth(), today.getDate());
+  const order = { over: 0, soon: 1, work: 2, done: 3 };
+  let html = '';
+  for (let cell = 0; cell < 42; cell++) {
+    const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + cell);
+    const inMonth = d.getMonth() === calMonth;
+    const key = calKey(d.getFullYear(), d.getMonth(), d.getDate());
+    const dayTasks = calTasksOn(key).slice().sort((a,b) =>
+      (order[taskCat(a)] !== undefined ? order[taskCat(a)] : 9) - (order[taskCat(b)] !== undefined ? order[taskCat(b)] : 9));
+    let chips = '';
+    dayTasks.slice(0, 2).forEach(t => { chips += '<div class="cal-chip c-' + taskCat(t) + '">' + esc(t.name) + '</div>'; });
+    if (dayTasks.length > 2) chips += '<div class="cal-chip c-work">+ ещё ' + (dayTasks.length - 2) + '</div>';
+    const cls = 'cal-day' + (inMonth ? '' : ' other') + (key === todayKey ? ' today' : '') + (key === calSel ? ' sel' : '');
+    html += '<div class="' + cls + '" onclick="calPick(\'' + key + '\')"><div class="d">' + d.getDate() + '</div>' + chips + '</div>';
+  }
+  grid.innerHTML = html;
+}
+function calPick(key) { calSel = (calSel === key) ? null : key; renderCal(); renderCalDay(); }
+function renderCalDay() {
+  const title = document.getElementById('calDayTitle');
+  const listEl = document.getElementById('calDayList');
+  if (!calSel) { title.textContent = 'Выберите день'; listEl.innerHTML = '<p class="note">Нажмите на день в календаре</p>'; return; }
+  title.textContent = 'Дедлайны: ' + fmtDate(calSel);
+  const dayTasks = calTasksOn(calSel);
+  if (!dayTasks.length) { listEl.innerHTML = '<p class="note">На этот день задач нет</p>'; return; }
+  listEl.innerHTML = dayTasks.map(t => {
+    const cat = taskCat(t);
+    const status = t.status || 'в работе';
+    const bCls = cat === 'over' ? 'over' : (cat === 'soon' ? 'soon' : (cat === 'done' ? '' : 'ok'));
+    return '<div class="task"><div class="info"><div class="name">' + (cat === 'done' ? '✅ ' : '') + esc(t.name) + '</div>' +
+      '<div class="meta">' + (t.who ? '<span class="who">' + esc(t.who) + '</span>' : '') +
+      '<span class="badge ' + bCls + '">' + (cat === 'done' ? 'закрыто' : esc(status)) + '</span>' +
+      '</div></div></div>';
+  }).join('');
+}
+renderCal();
+
+function fmt(x) { return x.toLocaleString('ru-RU', {maximumFractionDigits: 2}) + ' руб.'; }
+
+const W_UNITS_M = ['', 'один', 'два', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять'];
+const W_UNITS_F = ['', 'одна', 'две', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять'];
+const W_TEEN = ['десять', 'одиннадцать', 'двенадцать', 'тринадцать', 'четырнадцать', 'пятнадцать', 'шестнадцать', 'семнадцать', 'восемнадцать', 'девятнадцать'];
+const W_TENS = ['', '', 'двадцать', 'тридцать', 'сорок', 'пятьдесят', 'шестьдесят', 'семьдесят', 'восемьдесят', 'девяносто'];
+const W_HUNDREDS = ['', 'сто', 'двести', 'триста', 'четыреста', 'пятьсот', 'шестьсот', 'семьсот', 'восемьсот', 'девятьсот'];
+function wordsUpTo999(n, fem) {
+  const out = [];
+  const h = Math.floor(n / 100);
+  if (h) out.push(W_HUNDREDS[h]);
+  const rest = n % 100;
+  if (rest >= 10 && rest < 20) out.push(W_TEEN[rest - 10]);
+  else {
+    const t = Math.floor(rest / 10);
+    if (t) out.push(W_TENS[t]);
+    const u = rest % 10;
+    if (u) out.push((fem ? W_UNITS_F : W_UNITS_M)[u]);
+  }
+  return out.join(' ');
+}
+function pluralForm(n, one, few, many) {
+  const m100 = n % 100, m10 = n % 10;
+  if (m10 === 1 && m100 !== 11) return one;
+  if (m10 >= 2 && m10 <= 4 && !(m100 >= 12 && m100 <= 14)) return few;
+  return many;
+}
+function numToWords(n) {
+  if (n === 0) return 'ноль';
+  const groups = [];
+  let x = n;
+  while (x > 0) { groups.push(x % 1000); x = Math.floor(x / 1000); }
+  const scales = [null, ['тысяча','тысячи','тысяч'], ['миллион','миллиона','миллионов'], ['миллиард','миллиарда','миллиардов']];
+  const out = [];
+  for (let i = groups.length - 1; i >= 0; i--) {
+    const g = groups[i];
+    if (!g) continue;
+    out.push(wordsUpTo999(g, i === 1));
+    if (i > 0) { const f = scales[i]; out.push(pluralForm(g, f[0], f[1], f[2])); }
+  }
+  return out.join(' ');
+}
+function sumInWords(amount) {
+  const cents = Math.round(amount * 100);
+  let rub = Math.floor(cents / 100), kop = cents % 100;
+  if (kop === 100) { rub += 1; kop = 0; }
+  const rubWords = rub === 0 ? 'ноль' : numToWords(rub);
+  const capitalized = rubWords.charAt(0).toUpperCase() + rubWords.slice(1);
+  const kopStr = (kop < 10 ? '0' : '') + kop;
+  return rub.toLocaleString('ru-RU') + ' (' + capitalized + ') ' + pluralForm(rub, 'рубль', 'рубля', 'рублей') + ' ' + kopStr + ' копеек';
+}
+function calc() {
+  const v = id => parseFloat(document.getElementById(id).value) || 0;
+  const materials = v('f4') + v('f6') + v('f7');
+  const hpm = v('hpm') || 164;
+  const manMonths = document.getElementById('unit').value === 'h' ? v('labor') / hpm : v('labor');
+  const f9 = v('avg') * manMonths;
+  const f10 = f9 * v('dzp') / 100;
+  const salary = f9 + f10;
+  const strah = salary * v('strah') / 100;
+  const f11 = salary * v('opr') / 100;
+  const f12 = salary * v('ohr') / 100;
+  const seb = materials + salary + strah + f11 + f12;
+  const profitMaterials = materials * 0.01;
+  const profitOwn = (salary + strah + f11 + f12) * 0.25;
+  const profit = profitMaterials + profitOwn;
+  const price = seb + profit;
+  const nds = price * 0.22;
+  const priceWithNds = price + nds;
+  document.getElementById('res').innerHTML =
+    '<hr class="hr">' +
+    '<p>Материалы всего: <b>' + fmt(materials) + '</b></p>' +
+    '<p>Ф9 — основная ЗП: ' + fmt(f9) + '</p>' +
+    '<p>Ф10 — ДЗП: ' + fmt(f10) + '</p>' +
+    '<p>ЗП всего: <b>' + fmt(salary) + '</b></p>' +
+    '<p>СТРАХ: ' + fmt(strah) + '</p>' +
+    '<p>Ф11 — ОПР: ' + fmt(f11) + '</p>' +
+    '<p>Ф12 — ОХР/АУР: ' + fmt(f12) + '</p>' +
+    '<hr class="hr">' +
+    '<p>СЕБ — себестоимость: <b>' + fmt(seb) + '</b></p>' +
+    '<p>Прибыль: <b>' + fmt(profit) + '</b> <span class="note">(1% от материалов: ' + fmt(profitMaterials) + ' · 25% от собственных: ' + fmt(profitOwn) + ')</span></p>' +
+    '<hr class="hr">' +
+    '<p style="font-size:17px">ЦЕНА БЕЗ НДС: <b>' + fmt(price) + '</b></p>' +
+    '<p>НДС 22%: <b>' + fmt(nds) + '</b></p>' +
+    '<hr class="hr">' +
+    '<p style="font-size:19px">ЦЕНА С НДС: <b>' + fmt(priceWithNds) + '</b></p>';
+}
+function sumWords() {
+  const s = parseFloat(document.getElementById('swSum').value) || 0;
+  if (s <= 0) { alert('Введите стоимость договора с НДС'); return; }
+  const nds = s * 22 / 122;
+  const priceNoNds = s - nds;
+  document.getElementById('swRes').innerHTML =
+    '<hr class="hr">' +
+    '<p>Цена без НДС: <b>' + fmtNum(priceNoNds) + '</b></p>' +
+    '<p>в том числе НДС 22%: <b>' + fmtNum(nds) + '</b></p>' +
+    '<div class="sum-box"><div class="sum-title">Стоимость договора</div>' +
+    '<p>' + sumInWords(s) + ', в том числе НДС 22% — ' + sumInWords(nds) + '</p></div>';
+}
+</script>
+</body>
+</html>
+
