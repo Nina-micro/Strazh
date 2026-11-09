@@ -175,6 +175,11 @@
   .sched-summary .num { font-size: 20px; font-weight: 700; }
   .sched-summary .lbl { font-size: 11px; color: #64748b; }
   .sched-items { font-size: 11px; color: #64748b; line-height: 1.55; padding: 4px 12px 8px; }
+  .sched-items table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  .sched-items th, .sched-items td { padding: 4px 6px; border-bottom: 1px solid #e2e8f0; text-align: left; vertical-align: top; }
+  .sched-items th { font-size: 10px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.03em; }
+  .sched-items td:nth-child(1) { font-weight: 600; color: #1e293b; }
+  .sched-items td:nth-child(2), .sched-items td:nth-child(3) { white-space: nowrap; }
   .sched-items .done { color: #16a34a; font-weight: 600; }
   .sched-items .part { color: #b45309; font-weight: 600; }
   .sched-items .over { color: #b91c1c; font-weight: 600; }
@@ -377,6 +382,7 @@
         </label>
         <span>Расширенный</span>
       </div>
+      <div class="filters" id="schedYearWrap"></div>
       <div id="schedList"><p class="note">Позиций пока нет</p></div>
       <p class="mini-note" style="text-align:center">Год → месяц → договор. Отметки «поставлено»/«выполнено» ставятся автоматически из раздела «Отгрузка» карточки договора.</p>
     </div>
@@ -488,7 +494,6 @@
           <label>Дата перечисления аванса <input type="date" id="cPrepayDate"></label>
           <label>Дата получения давальческого сырья <input type="date" id="cTollingDate"></label>
           <label>Дата подписания акта <input type="date" id="cActDate"></label>
-
           <h4>Счета на оплату</h4>
           <p class="mini-note">Укажи тип — аванс или окончательный расчёт — дата оплаты посчитается в реестре.</p>
           <div id="cInvoicesWrap"></div>
@@ -580,6 +585,7 @@ const whoOpen = {};
 const schedOpenYear = {};
 const schedOpenMonth = {};
 const schedOpenDoc = {};
+let schedSelYear = null;
 
 function showTab(name) {
   closeStatusMenu();
@@ -1556,7 +1562,12 @@ function renderSched() {
     '<div><div class="num c-green">' + nDone + '</div><div class="lbl">закрыто</div></div>';
   const isExt = (localStorage.getItem('strazh_schedview') || 'comp') === 'ext';
   const list = document.getElementById('schedList');
-  if (!entries.length) { list.innerHTML = '<p class="note">Позиций пока нет</p>'; return; }
+  const yw = document.getElementById('schedYearWrap');
+  if (!entries.length) {
+    list.innerHTML = '<p class="note">Позиций пока нет</p>';
+    if (yw) yw.innerHTML = '';
+    return;
+  }
   const years = {};
   entries.forEach(e => {
     const yk = e.due ? e.due.slice(0, 4) : '----';
@@ -1566,80 +1577,97 @@ function renderSched() {
     years[yk][mk].push(e);
   });
   const yKeys = Object.keys(years).sort();
-  list.innerHTML = yKeys.map(yk => {
-    const months = years[yk];
-    const mKeys = Object.keys(months).sort();
-    const yEntries = mKeys.reduce((acc, mk) => acc.concat(months[mk]), []);
-    const yTotal = r2(yEntries.reduce((s, e) => s + (e.it.sum || 0), 0));
-    const yOver = yEntries.filter(e => e.st.state !== 'done' && e.due && e.due < todayStr).length;
-    const yOpen = schedOpenYear[yk] !== false;
-    const yLabel = yk === '----' ? 'Дата не определена' : yk;
-    const mHtml = mKeys.map(mk => {
-      const arr = months[mk];
-      const mTotal = r2(arr.reduce((s, e) => s + (e.it.sum || 0), 0));
-      const mOver = arr.filter(e => e.st.state !== 'done' && e.due && e.due < todayStr).length;
-      const label = mk === 'nodate' ? 'Дата не определена' : MONTHS[parseInt(mk.slice(5, 7), 10) - 1];
-      const isNow = mk === thisYM;
-      const mOpen = schedOpenMonth[mk] !== false;
-      const byDoc = {};
-      arr.forEach(e => { if (!byDoc[e.d.id]) byDoc[e.d.id] = { d: e.d, items: [] }; byDoc[e.d.id].items.push(e.it); });
-      const docIds = Object.keys(byDoc).sort((a, b) => byDoc[a].d.num.localeCompare(byDoc[b].d.num));
-      const docHtml = docIds.map(did => {
-        const g = byDoc[did];
-        const isOpen = schedOpenDoc[did] !== false;
-        let overCount = 0;
-        g.items.forEach(it => {
-          const st = itemShipStatus(g.d, it);
-          if (st.state !== 'done') { const dd = itemDueDate(g.d, it); if (dd && dd < todayStr) overCount++; }
-        });
-        const nearest = g.items.reduce((best, it) => {
-          if (itemShipStatus(g.d, it).state === 'done') return best;
-          const dd = itemDueDate(g.d, it);
-          return (dd && (!best || dd < best)) ? dd : best;
-        }, null);
-        let nearestBadge = '';
-        if (nearest) {
-          const left = daysLeft(nearest);
-          if (left < 0) nearestBadge = '<span class="badge over">просрочено</span>';
-          else if (left <= 14) nearestBadge = '<span class="badge soon">через ' + left + ' дн.</span>';
-          else nearestBadge = '<span class="badge ok">' + fmtDate(nearest) + '</span>';
-        }
-        const overBadge = overCount ? '<span class="badge over">недопоставки: ' + overCount + '</span>' : '';
-        const itemsSmall = isExt
-          ? '<div class="sched-items">' + g.items.map(it => {
-              const st = itemShipStatus(g.d, it);
-              const due = itemDueDate(g.d, it);
-              const when = due ? 'до ' + fmtDate(due) : 'дата не определена';
-              let mark = '';
-              if (st.state === 'done') mark = '<span class="done">✓ ' + st.label + '</span>';
-              else if (st.state === 'partial') mark = '<span class="part">' + esc(st.label) + '</span>';
-              else if (due && due < todayStr) mark = '<span class="over">просрочено</span>';
-              const q = it.qty ? ' (' + it.qty + ' ' + esc(it.unit || 'шт.') + ')' : '';
-              return '<div>• ' + esc(it.name || 'позиция') + q + ' · ' + when + ' · ' + mark + '</div>';
-            }).join('') + '</div>'
-          : '';
-        return '<div class="group" style="margin:8px">' +
-          '<div class="group-head g-doc" onclick="toggleSchedDoc(\'' + did + '\')">' +
-          '<span>' + (isOpen ? '▾ ' : '▸ ') + esc(g.d.num) + (g.d.contr ? ' · ' + esc(g.d.contr) : '') + '</span>' +
-          '<small>' + g.items.length + ' поз. · на ' + fmtNum(itemsTotal(g.items)) + ' руб. ' + nearestBadge + overBadge + '</small></div>' +
-          (isOpen ? itemsSmall : '') +
-          '</div>';
-      }).join('');
-      return '<div class="group' + (isNow ? ' month-now' : '') + '"><div class="group-head g-month" onclick="toggleSchedMonth(\'' + mk + '\')">' +
-        '<span>' + (mOpen ? '▾ ' : '▸ ') + label + (isNow ? ' · сейчас' : '') + '</span>' +
-        '<small class="gm-sum">' + arr.length + ' поз. · на ' + fmtNum(mTotal) + ' руб.' + (mOver ? ' · <span style="color:#fecaca">недопоставки: ' + mOver + '</span>' : '') + '</small></div>' +
-        (mOpen ? '<div class="group-body">' + docHtml + '</div>' : '') + '</div>';
+  // выбор года (по скетчу: селектор справа над списком)
+  if (schedSelYear !== 'all' && (!schedSelYear || !yKeys.includes(schedSelYear))) {
+    const cy = String(new Date().getFullYear());
+    schedSelYear = yKeys.includes(cy) ? cy : yKeys[0];
+  }
+  if (yw) {
+    let opts = '<option value="all"' + (schedSelYear === 'all' ? ' selected' : '') + '>все годы</option>';
+    yKeys.forEach(y => {
+      const lbl = y === '----' ? 'без даты' : y;
+      opts += '<option value="' + y + '"' + (schedSelYear === y ? ' selected' : '') + '>' + lbl + '</option>';
+    });
+    yw.innerHTML = '<div><span class="small-lbl">Выбор года</span><select onchange="setSchedYear(this.value)">' + opts + '</select></div>';
+  }
+  const selYear = schedSelYear === 'all' ? null : schedSelYear;
+  // список пар месяц -> записи (в выбранном году или по всем)
+  const monthPairs = [];
+  if (selYear) {
+    Object.keys(years[selYear]).sort().forEach(mk => monthPairs.push({ mk: mk, arr: years[selYear][mk] }));
+  } else {
+    yKeys.forEach(y => Object.keys(years[y]).sort().forEach(mk => monthPairs.push({ mk: mk, arr: years[y][mk] })));
+  }
+  const yTotal = r2(entries.reduce((s, e) => s + (e.it.sum || 0), 0));
+  const mHtml = monthPairs.map(p => {
+    const mk = p.mk, arr = p.arr;
+    const mTotal = r2(arr.reduce((s, e) => s + (e.it.sum || 0), 0));
+    const mOver = arr.filter(e => e.st.state !== 'done' && e.due && e.due < todayStr).length;
+    const label = mk === 'nodate' ? 'Дата не определена' : MONTHS[parseInt(mk.slice(5, 7), 10) - 1];
+    const isNow = mk === thisYM;
+    const mOpen = schedOpenMonth[mk] !== false;
+    const byDoc = {};
+    arr.forEach(e => { if (!byDoc[e.d.id]) byDoc[e.d.id] = { d: e.d, items: [] }; byDoc[e.d.id].items.push(e.it); });
+    const docIds = Object.keys(byDoc).sort((a, b) => byDoc[a].d.num.localeCompare(byDoc[b].d.num));
+    const docHtml = docIds.map(did => {
+      const g = byDoc[did];
+      const isOpen = schedOpenDoc[did] !== false;
+      let overCount = 0;
+      g.items.forEach(it => {
+        const st = itemShipStatus(g.d, it);
+        if (st.state !== 'done') { const dd = itemDueDate(g.d, it); if (dd && dd < todayStr) overCount++; }
+      });
+      const nearest = g.items.reduce((best, it) => {
+        if (itemShipStatus(g.d, it).state === 'done') return best;
+        const dd = itemDueDate(g.d, it);
+        return (dd && (!best || dd < best)) ? dd : best;
+      }, null);
+      let nearestBadge = '';
+      if (nearest) {
+        const left = daysLeft(nearest);
+        if (left < 0) nearestBadge = '<span class="badge over">просрочено</span>';
+        else if (left <= 14) nearestBadge = '<span class="badge soon">через ' + left + ' дн.</span>';
+        else nearestBadge = '<span class="badge ok">' + fmtDate(nearest) + '</span>';
+      }
+      const overBadge = overCount ? '<span class="badge over">недопоставки: ' + overCount + '</span>' : '';
+      // расширенный вид: ведомость таблицей «Изделие | шт. | мес. | сроки»
+      const itemsSmall = isExt
+        ? '<div class="sched-items"><table><thead><tr><th>Изделие</th><th>шт.</th><th>мес.</th><th>сроки</th></tr></thead><tbody>'
+          + g.items.map(it => {
+            const st = itemShipStatus(g.d, it);
+            const due = itemDueDate(g.d, it);
+            const mPart = due ? MONTH_ABBR[parseInt(due.slice(5, 7), 10) - 1] : '—';
+            const duePart = due ? 'до ' + fmtDate(due) : 'дата не определена';
+            let mark = '';
+            if (st.state === 'done') mark = '<span class="done">✓ ' + esc(st.label) + '</span>';
+            else if (st.state === 'partial') mark = '<span class="part">' + esc(st.label) + '</span>';
+            else if (due && due < todayStr) mark = '<span class="over">просрочено</span>';
+            const q = it.qty ? esc(it.qty) + ' ' + esc(it.unit || 'шт.') : '—';
+            return '<tr><td>' + esc(it.name || 'позиция') + '</td><td>' + q + '</td><td>' + mPart + '</td><td>' + duePart + (mark ? '<br>' + mark : '') + '</td></tr>';
+          }).join('') + '</tbody></table></div>'
+        : '';
+      return '<div class="group" style="margin:8px">' +
+        '<div class="group-head g-doc" onclick="toggleSchedDoc(\'' + did + '\')">' +
+        '<span>' + (isOpen ? '▾ ' : '▸ ') + esc(g.d.num) + (g.d.contr ? ' · ' + esc(g.d.contr) : '') + '</span>' +
+        '<small>Срок поставки: ' + (nearestBadge || '—') + ' · ' + g.items.length + ' поз. · ' + fmtNum(itemsTotal(g.items)) + ' руб.' + overBadge + '</small></div>' +
+        (isOpen ? itemsSmall : '') +
+        '</div>';
     }).join('');
-    return '<div class="group"><div class="group-head g-year" onclick="toggleSchedYear(\'' + yk + '\')">' +
-      '<span>' + (yOpen ? '▾ ' : '▸ ') + yLabel + '</span>' +
-      '<small>' + yEntries.length + ' поз. · на ' + fmtNum(yTotal) + ' руб.' + (yOver ? ' · недопоставки: ' + yOver : '') + '</small></div>' +
-      (yOpen ? '<div class="group-body">' + mHtml + '</div>' : '') + '</div>';
+    return '<div class="group' + (isNow ? ' month-now' : '') + '"><div class="group-head g-month" onclick="toggleSchedMonth(\'' + mk + '\')">' +
+      '<span>' + (mOpen ? '▾ ' : '▸ ') + label + (isNow ? ' · сейчас' : '') + '</span>' +
+      '<small class="gm-sum">' + arr.length + ' поз. · на ' + fmtNum(mTotal) + ' руб.' + (mOver ? ' · <span style="color:#fecaca">недопоставки: ' + mOver + '</span>' : '') + '</small></div>' +
+      (mOpen ? '<div class="group-body">' + docHtml + '</div>' : '') + '</div>';
   }).join('');
+  list.innerHTML = '<p class="mini-note" style="text-align:left; margin:0 0 8px">Выбрано: ' +
+    (selYear ? 'год ' + selYear : 'все годы') + ' · ' + entries.length + ' поз. · на ' + fmtNum(yTotal) + ' руб.</p>' + mHtml;
 }
 
-const MONTHS = ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
-let calYear, calMonth, calSel = null;
-(function initCal() { const n = new Date(); calYear = n.getFullYear(); calMonth = n.getMonth(); })();
+function setSchedYear(y) {
+  schedSelYear = y;
+  try { localStorage.setItem('strazh_schedyear', y); } catch (err) {}
+  renderSched();
+}
+(function initSchedYear() { try { const v = localStorage.getItem('strazh_schedyear'); if (v) schedSelYear = v; } catch (err) {} })();
 function calKey(y, m, d) { const p = n => (n < 10 ? '0' : '') + n; return y + '-' + p(m+1) + '-' + p(d); }
 function calMove(dir) {
   calMonth += dir;
