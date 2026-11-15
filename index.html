@@ -258,7 +258,12 @@ body.theme-graphite .tp-dot.on { border-color:#e5e7eb; }
 }
 #tabPrices.on { background: var(--accent); color:#fff; border-color: transparent; animation: none; box-shadow:none; }
 body.theme-graphite #tabPrices { color:#fbbf24; }
-body.red-mode #tabPrices { border-color:#dc2626; color:#b91c1c; animation:none; box-shadow:none; }
+/* вкладка ДОГОВОРА: красное свечение в красном режиме */
+body.red-mode #tabDoc { border:2px solid #dc2626; animation: docGlowRed 2.2s ease-in-out infinite; }
+@keyframes docGlowRed {
+  0%,100% { box-shadow: 0 0 5px rgba(220,38,38,0.55); }
+  50%     { box-shadow: 0 0 16px rgba(220,38,38,0.95); }
+}
 </style>
 </head>
 <body>
