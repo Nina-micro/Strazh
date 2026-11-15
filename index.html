@@ -153,36 +153,7 @@
   .sch-filter { margin-top: 12px; }
   .sch-filter select { margin-top: 0; }
   .sch-hint { font-size: 11px; color: #94a3b8; text-align: center; margin-top: 8px; }
-  .sch-view { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
-  .view-btn { padding: 4px 10px; font-size: 11px; font-weight: 600; border: 1px solid #cbd5e1; border-radius: 999px; background: #fff; color: #475569; cursor: pointer; }
-  .view-btn.on { background: #1e293b; border-color: #1e293b; color: #fff; }
-  .sch-row.has-rkm .snum { color: #1e293b; font-weight: 700; }
-  .sch-rkm { font-size: 10px; font-weight: 400; color: #dc2626; white-space: nowrap; }
-  .ship-box { flex: 0 0 auto; width: 13px; height: 13px; border: 1.5px solid #94a3b8; border-radius: 3px; cursor: pointer; font-size: 10px; line-height: 11px; text-align: center; color: #fff; align-self: center; user-select: none; }
-  .ship-box.on { background: #16a34a; border-color: #16a34a; }
-  .sch-row.shipped .snum, .sch-row.shipped .sdate, .sch-row.shipped .sch-rkm { text-decoration: line-through; color: #94a3b8; font-weight: 400; }
-  .sch-row.shipped { opacity: 0.55; }
-  /* ===== блок для генерации PDF (off-screen) ===== */
-  .pdf-area { background: #fff; }
-  .pdf-area .pr-title { font-size: 20px; font-weight: 700; color: #1e293b; margin-bottom: 4px; }
-  .pdf-area .pr-sub { font-size: 12px; color: #64748b; margin-bottom: 6px; }
-  .pdf-area .pr-criteria { font-size: 12px; color: #475569; background: #f3f4f6; border-radius: 6px; padding: 6px 10px; margin-bottom: 18px; }
-  .pdf-area .sch-month { margin-bottom: 14px; }
-  .pdf-area .sch-month-title { font-size: 15px; font-weight: 700; color: #b91c1c; text-transform: capitalize; }
-  .pdf-area .sch-month-line { width: 100%; height: 1px; background: #b91c1c; margin: 5px 0 8px; }
-  .pdf-area .sch-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 5px 2px; border-bottom: 1px solid #e5e7eb; font-size: 13px; }
-  .pdf-area .sch-row:last-child { border-bottom: none; }
-  .pdf-area .sch-row .snum { font-weight: 500; color: #6b7280; }
-  .pdf-area .sch-row .sdate { color: #6b7280; white-space: nowrap; }
-  .pdf-area .sch-row.past .snum, .pdf-area .sch-row.past .sdate { color: #b91c1c; }
-  .pdf-area .sch-empty { font-size: 12px; color: #9ca3af; padding: 4px 2px; }
-  .pdf-area .sch-row.has-rkm .snum { color: #1e293b; font-weight: 700; }
-  .pdf-area .sch-rkm { font-size: 9px; font-weight: 400; color: #dc2626; white-space: nowrap; }
-  .pdf-area .sch-row.shipped .snum, .pdf-area .sch-row.shipped .sdate, .pdf-area .sch-row.shipped .sch-rkm { text-decoration: line-through; color: #9ca3af; font-weight: 400; }
-  .pdf-area .ship-box { flex: 0 0 auto; width: 12px; height: 12px; border: 1px solid #9ca3af; border-radius: 3px; font-size: 9px; line-height: 11px; text-align: center; color: #16a34a; align-self: center; }
-  .pdf-area .sch-row.shipped .ship-box { background: #16a34a; border-color: #16a34a; color: #fff; }
-  .pdf-area .pr-note { margin-top: 24px; font-size: 10px; color: #9ca3af; }
-/* ===== печатный блок (выгрузка графика в PDF) ===== */
+  /* ===== печатный блок (выгрузка графика в PDF) ===== */
   #printArea { display: none; }
   @media print {
     body { background: #fff; padding: 0; max-width: none; }
@@ -200,15 +171,9 @@
     #printArea .sch-row .sdate { color: #6b7280; white-space: nowrap; }
     #printArea .sch-row.past .snum, #printArea .sch-row.past .sdate { color: #b91c1c; }
     #printArea .sch-empty { font-size: 12px; color: #9ca3af; padding: 4px 2px; }
-    #printArea .sch-row.has-rkm .snum { color: #1e293b; font-weight: 700; }
-    #printArea .sch-rkm { font-size: 9px; font-weight: 400; color: #dc2626; white-space: nowrap; }
-    #printArea .sch-row.shipped .snum, #printArea .sch-row.shipped .sdate, #printArea .sch-row.shipped .sch-rkm { text-decoration: line-through; color: #9ca3af; font-weight: 400; }
-    #printArea .ship-box { flex: 0 0 auto; width: 12px; height: 12px; border: 1px solid #9ca3af; border-radius: 3px; font-size: 9px; line-height: 11px; text-align: center; color: #16a34a; align-self: center; }
-    #printArea .sch-row.shipped .ship-box { background: #16a34a; border-color: #16a34a; color: #fff; }
     #printArea .pr-note { margin-top: 24px; font-size: 10px; color: #9ca3af; }
   }
 </style>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
 
@@ -351,12 +316,10 @@
       </div>
       <label>Номер договора <input type="text" id="dcNum" placeholder="Например: 0142ХХП, 0317ХХУС, 0521ХХОКР"></label>
       <label>Контрагент <input type="text" id="dcContr" placeholder="Организация (можно не заполнять)"></label>
-      <label>Аванс — дата оплаты <input type="date" id="dcPrepay" onchange="updateTargetHint()"></label>
-      <label>Давальческое — дата получения <input type="date" id="dcToll" onchange="updateTargetHint()"></label>
+      <label>Аванс — дата оплаты <input type="date" id="dcPrepay"></label>
+      <label>Давальческое — дата получения <input type="date" id="dcToll"></label>
       <p class="mini-note" style="margin-bottom:8px">Нет давальческого — оставьте поле пустым.</p>
       <label>Срок поставки, мес. с момента оплаты аванса <input type="number" id="dcMonths" step="1" min="1"></label>
-      <label>…или конкретная дата поставки <input type="date" id="dcTargetDate" onchange="updateTargetHint()"></label>
-      <p class="mini-note" id="dcTargetHint" style="margin:4px 0 8px; text-align:left; min-height:14px"></p>
       <div class="chk-row">
         <input type="checkbox" id="dcNoRkm">
         <span>РКМ не требуется</span>
@@ -376,7 +339,7 @@
       <h3>График поставок
         <span style="display:flex; gap:6px;">
           <button class="btn clear" id="schedSearchBtn" onclick="toggleSchedSearch()">🔍 Поиск</button>
-          <button class="btn clear" id="schedPdfBtn" onclick="exportSchedPdf()">⤓ Скачать PDF</button>
+          <button class="btn clear" onclick="printSched()">🖨 Распечатать</button>
         </span>
       </h3>
       <div class="sch-search hidden" id="schedSearchWrap">
@@ -385,13 +348,8 @@
       <div class="sch-filter">
         <select id="schedMonthFilter" onchange="renderSched()"><option value="all">Месяц: все</option></select>
       </div>
-      <div class="sch-view">
-        <button class="view-btn on" id="viewBtnAll" onclick="setSchedView('all')">Все месяца</button>
-        <button class="view-btn" id="viewBtnRkm" onclick="setSchedView('rkm')">С РКМ</button>
-        <button class="view-btn" id="viewBtnNoEmpty" onclick="setSchedView('noempty')">Без пустых месяцев</button>
-      </div>
       <div id="schedList"><p class="note">Поставок пока нет — сделайте расчёт на первой вкладке</p></div>
-      <p class="sch-hint">Кнопка «Скачать PDF» сохраняет график на устройство. Квадратик слева — отметка отгрузки договора.</p>
+      <p class="sch-hint">В окне печати можно выбрать «Сохранить как PDF» — файл сразу попадёт на устройство.</p>
     </div>
   </div>
 
@@ -944,27 +902,6 @@ function addMonthsISO(iso, n) {
   d.setDate(Math.min(day, dim));
   return isoOfDate(d);
 }
-function monthsBetweenISO(fromISO, toISO) {
-  const a = parseISO(fromISO), b = parseISO(toISO);
-  let months = (b.getFullYear() - a.getFullYear()) * 12 + (b.getMonth() - a.getMonth());
-  let days = Math.round((parseISO(toISO) - parseISO(addMonthsISO(fromISO, months))) / 86400000);
-  if (days < 0) { months -= 1; days = Math.round((parseISO(toISO) - parseISO(addMonthsISO(fromISO, months))) / 86400000); }
-  return { months: months, days: days };
-}
-function periodLabel(m, d) { return m + ' мес.' + (d ? ' ' + d + ' дн.' : ''); }
-function updateTargetHint() {
-  const el = document.getElementById('dcTargetHint');
-  if (!el) return;
-  const target = document.getElementById('dcTargetDate').value;
-  if (!target) { el.textContent = ''; return; }
-  const prepay = document.getElementById('dcPrepay').value;
-  const toll = document.getElementById('dcToll').value;
-  const base = (toll && prepay && toll > prepay) ? toll : (prepay || '');
-  if (!base) { el.textContent = 'Сначала укажите дату аванса или давальческого'; return; }
-  if (parseISO(target) <= parseISO(base)) { el.textContent = 'Дата поставки должна быть позже ' + fmtDate(base); return; }
-  const p = monthsBetweenISO(base, target);
-  el.textContent = 'От ' + fmtDate(base) + ' до ' + fmtDate(target) + ' — это ' + periodLabel(p.months, p.days);
-}
 function loadSupply() {
   let arr = [];
   try { arr = JSON.parse(localStorage.getItem('strazh_supply')) || []; } catch(e) { arr = []; }
@@ -984,8 +921,6 @@ function setSupplyForm(e) {
   document.getElementById('dcPrepay').value = e ? (e.prepay || '') : '';
   document.getElementById('dcToll').value = e ? (e.toll || '') : '';
   document.getElementById('dcMonths').value = e ? (e.months || '') : '';
-  document.getElementById('dcTargetDate').value = e ? (e.targetDate || '') : '';
-  updateTargetHint();
   document.getElementById('dcNoRkm').checked = e ? !!e.noRkm : false;
 }
 function enterEditSupply(id) {
@@ -1012,23 +947,12 @@ function calcSupply() {
   const contr = document.getElementById('dcContr').value.trim();
   const prepay = document.getElementById('dcPrepay').value;
   const toll = document.getElementById('dcToll').value;
-  const targetDate = document.getElementById('dcTargetDate').value || '';
+  const months = parseInt(document.getElementById('dcMonths').value, 10);
   const noRkm = document.getElementById('dcNoRkm').checked;
   if (!prepay) { alert('Укажите дату оплаты аванса'); return; }
+  if (!months || months <= 0) { alert('Укажите срок поставки в месяцах'); return; }
   const base = (toll && toll > prepay) ? toll : prepay;
-  let months = parseInt(document.getElementById('dcMonths').value, 10);
-  let delivery, periodTxt;
-  if (targetDate) {
-    if (parseISO(targetDate) <= parseISO(base)) { alert('Дата поставки должна быть позже даты отсчёта (' + fmtDate(base) + ')'); return; }
-    const p = monthsBetweenISO(base, targetDate);
-    months = Math.max(1, Math.round(p.months + (p.days >= 15 ? 1 : 0)));
-    delivery = targetDate;
-    periodTxt = periodLabel(p.months, p.days) + ' (до ' + fmtDate(targetDate) + ')';
-  } else {
-    if (!months || months <= 0) { alert('Укажите срок поставки в месяцах или конкретную дату поставки'); return; }
-    delivery = addMonthsISO(base, months);
-    periodTxt = months + ' мес.';
-  }
+  const delivery = addMonthsISO(base, months);
   const rkm = noRkm ? '' : addMonthsISO(delivery, -3);
   const arr = loadSupply();
   let entry;
@@ -1038,13 +962,13 @@ function calcSupply() {
   }
   if (entry) {
     entry.num = num; entry.contr = contr; entry.prepay = prepay; entry.toll = toll;
-    entry.months = months; entry.noRkm = noRkm; entry.targetDate = targetDate;
+    entry.months = months; entry.noRkm = noRkm;
     entry.base = base; entry.delivery = delivery; entry.rkm = rkm;
     entry.updatedAt = new Date().toISOString();
   } else {
     entry = {
       id: 's' + Date.now().toString(36) + Math.random().toString(36).slice(2,7),
-      num: num, contr: contr, prepay: prepay, toll: toll, months: months, noRkm: noRkm, targetDate: targetDate,
+      num: num, contr: contr, prepay: prepay, toll: toll, months: months, noRkm: noRkm,
       base: base, delivery: delivery, rkm: rkm,
       createdAt: new Date().toISOString()
     };
@@ -1059,7 +983,7 @@ function calcSupply() {
     '<p>Договор: <b>' + esc(num) + '</b>' + (contr ? ' · ' + esc(contr) : '') + '</p>' +
     '<p>Аванс (оплата): ' + fmtDate(prepay) + '</p>' +
     (toll ? '<p>Давальческое (получено): ' + fmtDate(toll) + '</p>' : '') +
-    '<p>Срок поставки: ' + periodTxt + '</p>' +
+    '<p>Срок поставки: ' + months + ' мес.</p>' +
     (noRkm ? '<p class="mini-note" style="text-align:left">РКМ не требуется</p>' : '') +
     '<hr class="hr">' +
     '<p>Отсчёт ведётся с: <b>' + fmtDate(base) + '</b>' + (toll ? ' <span class="note" style="margin:0">(позже из двух дат)</span>' : '') + '</p>' +
@@ -1090,7 +1014,7 @@ function renderSupplyHistory() {
     const safeId = String(e.id || '').replace(/'/g, "\\'");
     return '<div class="task" style="border-left-color:#1e293b">' +
       '<div class="info">' +
-      '<div class="name">' + esc(e.num) + (e.contr ? ' · ' + esc(e.contr) : '') + ' · ' + (e.targetDate ? 'до ' + fmtDate(e.targetDate) : e.months + ' мес.') + (e.noRkm ? ' · без РКМ' : '') + '</div>' +
+      '<div class="name">' + esc(e.num) + (e.contr ? ' · ' + esc(e.contr) : '') + ' · ' + e.months + ' мес.' + (e.noRkm ? ' · без РКМ' : '') + '</div>' +
       '<div class="meta">' +
       '<span>аванс: ' + fmtDate(e.prepay) + '</span>' +
       (e.toll ? '<span>давальческое: ' + fmtDate(e.toll) + '</span>' : '') +
@@ -1142,28 +1066,6 @@ function clearSupplyHistory() {
 // ===== график поставок: поиск + фильтр по месяцам =====
 let schedSearchOpen = false;
 let schedMonthFilter = 'all';
-let schedView = (function(){ try { return localStorage.getItem('strazh_schedview') || 'all'; } catch(e) { return 'all'; } })();
-function setSchedView(v) {
-  schedView = v;
-  try { localStorage.setItem('strazh_schedview', v); } catch(e) {}
-  const ids = { all: 'viewBtnAll', rkm: 'viewBtnRkm', noempty: 'viewBtnNoEmpty' };
-  Object.keys(ids).forEach(k => {
-    const b = document.getElementById(ids[k]);
-    if (b) b.classList.toggle('on', k === v);
-  });
-  renderSched();
-}
-(function(){ const ids = { all: 'viewBtnAll', rkm: 'viewBtnRkm', noempty: 'viewBtnNoEmpty' };
-  Object.keys(ids).forEach(k => { const el = document.getElementById(ids[k]); if (el) el.classList.toggle('on', k === schedView); }); })();
-function loadShipped() { try { return JSON.parse(localStorage.getItem('strazh_shipped')) || {}; } catch(e) { return {}; } }
-function saveShipped(o) { localStorage.setItem('strazh_shipped', JSON.stringify(o)); }
-function toggleShipped(id, ev) {
-  ev.stopPropagation();
-  const o = loadShipped();
-  if (o[id]) delete o[id]; else o[id] = true;
-  saveShipped(o);
-  renderSched();
-}
 function toggleSchedSearch() {
   schedSearchOpen = !schedSearchOpen;
   const wrap = document.getElementById('schedSearchWrap');
@@ -1201,25 +1103,17 @@ function schedEntries() {
   let entries = loadSupply().filter(e => e.delivery);
   if (q) entries = entries.filter(e => ((e.num || '') + ' ' + (e.contr || '')).toLowerCase().indexOf(q) !== -1);
   if (schedMonthFilter !== 'all') entries = entries.filter(e => e.delivery.slice(0, 7) === schedMonthFilter);
-  if (schedView === 'rkm') entries = entries.filter(e => e.rkm);
   return entries;
 }
 function schedMonthHtml(mk, arr, todayStr) {
   const y = parseInt(mk.slice(0,4),10);
   const m = parseInt(mk.slice(5,7),10) - 1;
-  const shippedMap = loadShipped();
   const rows = arr
     .slice()
     .sort((a,b) => a.delivery.localeCompare(b.delivery))
-    .map(e => {
-      const hasRkm = !!e.rkm;
-      const shipped = !!shippedMap[e.id];
-      const safeId = String(e.id || '').replace(/'/g, "\'");
-      return '<div class="sch-row' + (e.delivery < todayStr ? ' past' : '') + (hasRkm ? ' has-rkm' : '') + (shipped ? ' shipped' : '') + '">' +
-        '<span class="ship-box' + (shipped ? ' on' : '') + '" title="Отметить отгрузку" onclick="toggleShipped(\'' + safeId + '\', event)">' + (shipped ? '✓' : '') + '</span>' +
-        '<span class="snum">' + esc(e.num) + (e.contr ? ' · ' + esc(e.contr) : '') + (hasRkm ? ' <span class="sch-rkm">РКМ ' + fmtDate(e.rkm) + '</span>' : '') + '</span>' +
-        '<span class="sdate">' + fmtDate(e.delivery) + '</span></div>';
-    })
+    .map(e => '<div class="sch-row' + (e.delivery < todayStr ? ' past' : '') + '">' +
+      '<span class="snum">' + esc(e.num) + (e.contr ? ' · ' + esc(e.contr) : '') + '</span>' +
+      '<span class="sdate">' + fmtDate(e.delivery) + '</span></div>')
     .join('');
   return '<div class="sch-month">' +
     '<div class="sch-month-title">' + MONTHS[m] + ' ' + y + '</div>' +
@@ -1256,9 +1150,7 @@ function buildPrintHtml() {
   const q = schedSearchQuery();
   let entries = loadSupply().filter(e => e.delivery);
   if (q) entries = entries.filter(e => ((e.num || '') + ' ' + (e.contr || '')).toLowerCase().indexOf(q) !== -1);
-  if (schedView === 'rkm') entries = entries.filter(e => e.rkm);
   if (!entries.length) return null;
-  const viewLabel = schedView === 'rkm' ? 'с РКМ' : (schedView === 'noempty' ? 'без пустых месяцев' : 'все месяца');
   const filterLabel = schedMonthFilter === 'all' ? 'все месяцы' : schedMonthLabel(schedMonthFilter);
   let byMonth = {};
   entries.forEach(e => {
@@ -1285,7 +1177,6 @@ function buildPrintHtml() {
       keys = all;
     }
   }
-  if (schedView === 'noempty') keys = keys.filter(mk => byMonth[mk] && byMonth[mk].length);
   const todayStr = isoOfDate(new Date());
   const now = new Date();
   const whoNow = currentUser ? currentUser.name : '';
@@ -1304,48 +1195,15 @@ function buildPrintHtml() {
       now.toLocaleDateString('ru-RU') + ' ' + now.toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'}) +
       (whoNow ? ' · ' + whoNow : '') +
     '</div>' +
-    '<div class="pr-criteria">Поиск: ' + (q ? '«' + esc(q) + '»' : '—') + ' · Фильтр по месяцам: ' + esc(filterLabel) + ' · Вид: ' + esc(viewLabel) + '</div>' +
+    '<div class="pr-criteria">Поиск: ' + (q ? '«' + esc(q) + '»' : '—') + ' · Фильтр по месяцам: ' + esc(filterLabel) + '</div>' +
     monthsHtml +
     '<div class="pr-note">Тестовый режим. Данные получены из локального хранилища устройства на момент выгрузки.</div>';
 }
-function exportSchedPdf() {
+function printSched() {
   const html = buildPrintHtml();
-  if (!html) { alert('Нечего выгружать: график поставок пуст или поиск не дал совпадений'); return; }
-  if (typeof window.html2pdf !== 'function') {
-    if (confirm('Библиотека для PDF не загрузилась (нужен интернет при открытии страницы).\nСделать через окно печати — в нём выберите «Сохранить как PDF»?')) {
-      document.getElementById('printArea').innerHTML = html;
-      window.print();
-    }
-    return;
-  }
-  const btn = document.getElementById('schedPdfBtn');
-  const oldText = btn ? btn.textContent : '';
-  if (btn) { btn.textContent = '⏳ Формирую…'; btn.disabled = true; }
-  const holder = document.createElement('div');
-  holder.className = 'pdf-area';
-  holder.style.cssText = 'position:fixed; left:-10000px; top:0; width:190mm;';
-  holder.innerHTML = html;
-  document.body.appendChild(holder);
-  const n = new Date();
-  const p2 = v => (v < 10 ? '0' : '') + v;
-  const fname = 'график_поставки_' + p2(n.getDate()) + '.' + p2(n.getMonth() + 1) + '.' + n.getFullYear() + '.pdf';
-  window.html2pdf().set({
-    margin: [8, 8, 8, 8],
-    filename: fname,
-    image: { type: 'jpeg', quality: 0.95 },
-    html2canvas: { scale: 2, useCORS: true },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-    pagebreak: { mode: ['css', 'legacy'], avoid: ['.sch-month'] }
-  }).then(function () {
-    holder.remove();
-    if (btn) { btn.textContent = oldText; btn.disabled = false; }
-  }).catch(function () {
-    holder.remove();
-    if (btn) { btn.textContent = oldText; btn.disabled = false; }
-    alert('Не получилось сформировать PDF. Открою окно печати — в нём выберите «Сохранить как PDF».');
-    document.getElementById('printArea').innerHTML = html;
-    window.print();
-  });
+  if (!html) { alert('Нечего печатать: график поставок пуст или поиск не дал совпадений'); return; }
+  document.getElementById('printArea').innerHTML = html;
+  window.print();
 }
 
 function fmt(x) { return x.toLocaleString('ru-RU', {maximumFractionDigits: 2}) + ' руб.'; }
