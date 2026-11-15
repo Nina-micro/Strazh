@@ -387,9 +387,9 @@ function renderUsersAdmin() {
   const users = loadUsers();
   const list = document.getElementById('userList');
   if (!users.length) { list.innerHTML = '<p class="note" style="text-align:left">Пока никого — выдайте первый доступ ниже</p>'; return; }
-  list.innerHTML = users.map((u, i) =>
+  list.innerHTML = users.map(u =>
     '<div class="user-list-row"><div><b>' + esc(u.name) + '</b> <span class="u-login">· логин: ' + esc(u.login) + '</span></div>' +
-    '<button class="del" title="Отозвать доступ" onclick="delUser(' + i + ')">✕</button></div>'
+    '<button class="del" title="Отозвать доступ" onclick="delUser(\'' + u.id + '\')">✕</button></div>'
   ).join('');
 }
 function addUser() {
@@ -400,7 +400,7 @@ function addUser() {
   if (login.toLowerCase() === ADMIN_LOGIN.toLowerCase()) { alert('Этот логин занят администратором'); return; }
   const users = loadUsers();
   if (users.some(u => u.login.toLowerCase() === login.toLowerCase())) { alert('Такой логин уже выдан — придумайте другой'); return; }
-  users.push({ name: name, login: login, pass: hashStr(pass) });
+  users.push({ id: 'u' + Date.now().toString(36) + Math.random().toString(36).slice(2,7), name: name, login: login, pass: hashStr(pass) });
   saveUsers(users);
   document.getElementById('aName').value = '';
   document.getElementById('aLogin').value = '';
@@ -408,11 +408,9 @@ function addUser() {
   renderUsersAdmin();
   buildWhoSelect();
 }
-function delUser(i) {
+function delUser(id) {
   if (!confirm('Отозвать доступ этому сотруднику? Его задачи останутся.')) return;
-  const users = loadUsers();
-  users.splice(i, 1);
-  saveUsers(users);
+  saveUsers(loadUsers().filter(u => u.id !== id));
   renderUsersAdmin();
   buildWhoSelect();
 }
@@ -532,7 +530,7 @@ function sortByChoice(arr) {
     return la - lb;
   });
 }
-function taskRow(t, idx) {
+function taskRow(t) {
   const cat = taskCat(t);
   const left = daysLeft(t.date);
   let badgeCat = '';
@@ -543,17 +541,18 @@ function taskRow(t, idx) {
   const status = t.status || 'в работе';
   const stCls = STATUS_CLS[status] || 'ss-work';
   const strip = STATUS_STRIP[status] || '#64748b';
+  const safeId = String(t.id || '').replace(/'/g, "\\'");
   return '<div class="task' + (cat === 'done' ? ' is-done' : '') + '" style="border-left-color:' + strip + '">' +
     '<div class="info"><div class="name">' + (cat === 'done' ? '✅ ' : '') + esc(t.name) + '</div>' +
     '<div class="meta">' +
-    '<span class="who' + (t.who ? '' : ' no-who') + '" title="Нажми, чтобы сменить исполнителя" onclick="openWhoMenu(event, \'' + t.id + '\')">' + (t.who ? esc(t.who) : '— без исполнителя —') + '</span>' +
+    '<span class="who' + (t.who ? '' : ' no-who') + '" title="Нажми, чтобы сменить исполнителя" onclick="openWhoMenu(event, \'' + safeId + '\')">' + (t.who ? esc(t.who) : '— без исполнителя —') + '</span>' +
     '<span>' + (t.date ? fmtDate(t.date) : '') + '</span>' +
     (badgeCat ? '<span class="badge ' + badgeCls + '">' + badgeCat + '</span>' : '') +
-    '<span class="status-pill ' + stCls + '" onclick="openStatusMenu(event, \'' + t.id + '\')">' + esc(status) + '</span>' +
+    '<span class="status-pill ' + stCls + '" onclick="openStatusMenu(event, \'' + safeId + '\')">' + esc(status) + '</span>' +
     (t.statusDate ? '<span class="stdate">' + fmtDT(t.statusDate) + '</span>' : '') +
     '</div></div>' +
     '<div>' +
-    '<button class="del" title="Удалить" onclick="delTask(' + idx + ')">✕</button>' +
+    '<button class="del" title="Удалить" onclick="delTaskById(\'' + safeId + '\')">✕</button>' +
     '</div></div>';
 }
 
@@ -662,7 +661,7 @@ function renderStats(tasks) {
     .sort((a,b) => (daysLeft(a.date)||0) - (daysLeft(b.date)||0));
   const hotCard = document.getElementById('hotCard');
   if (!hot.length) hotCard.classList.add('hidden');
-  else { hotCard.classList.remove('hidden'); document.getElementById('hotList').innerHTML = hot.map(t => taskRow(t, tasks.indexOf(t))).join(''); }
+  else { hotCard.classList.remove('hidden'); document.getElementById('hotList').innerHTML = hot.map(t => taskRow(t)).join(''); }
 }
 function render() {
   const tasks = loadTasks();
@@ -681,7 +680,7 @@ function render() {
       const group = shown.filter(t => (t.status || 'в работе') === s);
       if (!group.length) return;
       html += '<div class="group"><div class="group-head ' + STATUS_HEAD[s] + '"><span>' + esc(s) + '</span><small>' + group.length + '</small></div>' +
-        '<div class="group-body">' + group.map(t => taskRow(t, tasks.indexOf(t))).join('') + '</div></div>';
+        '<div class="group-body">' + group.map(t => taskRow(t)).join('') + '</div></div>';
     });
     list.innerHTML = html;
   } else if (view === 'who') {
@@ -693,12 +692,12 @@ function render() {
       const safeName = name.replace(/'/g, "\\'");
       return '<div class="group"><div class="group-head g-who" onclick="toggleWho(\'' + safeName + '\')">' +
         '<span>' + (isOpen ? '▾ ' : '▸ ') + esc(name) + '</span><small>' + group.length + '</small></div>' +
-        (isOpen ? '<div class="group-body">' + group.map(t => taskRow(t, tasks.indexOf(t))).join('') + '</div>' : '') + '</div>';
+        (isOpen ? '<div class="group-body">' + group.map(t => taskRow(t)).join('') + '</div>' : '') + '</div>';
     }).join('');
   } else {
     const active = shown.filter(t => taskCat(t) !== 'done');
     const doneT = shown.filter(t => taskCat(t) === 'done');
-    list.innerHTML = active.map(t => taskRow(t, tasks.indexOf(t))).join('') + doneT.map(t => taskRow(t, tasks.indexOf(t))).join('');
+    list.innerHTML = active.map(t => taskRow(t)).join('') + doneT.map(t => taskRow(t)).join('');
   }
 }
 function toggleWho(name) { whoOpen[name] = (whoOpen[name] === false) ? true : false; render(); }
@@ -708,6 +707,10 @@ function setStatusById(id, val) {
   if (!t) return;
   t.status = val; t.statusDate = new Date().toISOString(); t.done = (val === 'выполнено');
   saveTasks(tasks); render();
+}
+function delTaskById(id) {
+  saveTasks(loadTasks().filter(t => t.id !== id));
+  render();
 }
 function addTask() {
   const name = document.getElementById('tName').value.trim();
@@ -721,7 +724,6 @@ function addTask() {
   tasks.unshift({ id: 't' + Date.now().toString(36) + Math.random().toString(36).slice(2,7), name: name, who: who, date: document.getElementById('tDate').value, status: 'в очереди', statusDate: new Date().toISOString(), createdAt: new Date().toISOString(), done: false });
   saveTasks(tasks); closeTaskModal(); render();
 }
-function delTask(i) { const tasks = loadTasks(); tasks.splice(i, 1); saveTasks(tasks); render(); }
 
 // ===== календарь =====
 let calYear, calMonth, calSel = null;
@@ -846,10 +848,11 @@ function renderSupplyHistory() {
   const arr = loadSupply();
   const list = document.getElementById('dcHistory');
   if (!arr.length) { list.innerHTML = '<p class="note">Расчётов пока нет</p>'; return; }
-  list.innerHTML = arr.map((e, i) => {
+  list.innerHTML = arr.map(e => {
     const dl = daysLeft(e.delivery);
     let badge = '';
     if (dl !== null) badge = dl < 0 ? '<span class="badge over">поставка прошла</span>' : '<span class="badge ok">до поставки ' + dl + ' дн.</span>';
+    const safeId = String(e.id || '').replace(/'/g, "\\'");
     return '<div class="task" style="border-left-color:#1e293b">' +
       '<div class="info">' +
       '<div class="name">' + esc(e.num) + ' · ' + e.months + ' мес.</div>' +
@@ -864,14 +867,13 @@ function renderSupplyHistory() {
       badge +
       '</div></div>' +
       '<div style="display:flex; flex-direction:column; gap:4px;">' +
-      '<button class="btn clear" style="font-size:11px; padding:5px 10px;" onclick="supplyToCalendar(' + i + ')">В календарь</button>' +
-      '<button class="del" title="Удалить" onclick="delSupply(' + i + ')">✕</button>' +
+      '<button class="btn clear" style="font-size:11px; padding:5px 10px;" onclick="supplyToCalendar(\'' + safeId + '\')">В календарь</button>' +
+      '<button class="del" title="Удалить" onclick="delSupply(\'' + safeId + '\')">✕</button>' +
       '</div></div>';
   }).join('');
 }
-function supplyToCalendar(i) {
-  const arr = loadSupply();
-  const e = arr[i];
+function supplyToCalendar(id) {
+  const e = loadSupply().find(x => x.id === id);
   if (!e) return;
   const who = currentUser ? currentUser.name : '';
   const tasks = loadTasks();
@@ -881,10 +883,8 @@ function supplyToCalendar(i) {
   render();
   alert('Добавлена задача «РКМ — ' + e.num + '» до ' + fmtDate(e.rkm) + '. День поставки ' + fmtDate(e.delivery) + ' подсвечен в календаре.');
 }
-function delSupply(i) {
-  const arr = loadSupply();
-  arr.splice(i, 1);
-  saveSupply(arr);
+function delSupply(id) {
+  saveSupply(loadSupply().filter(e => e.id !== id));
   renderSupplyHistory();
   if (currentTab === 'cal') { renderCal(); renderCalDay(); }
 }
