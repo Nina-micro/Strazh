@@ -234,7 +234,7 @@ body.theme-graphite .sch-month-line { background:#f87171; }
 .load-fill { background: var(--accent); }
 .cal-day.today { box-shadow: inset 0 0 0 2px var(--accent); }
 .cal-day.sel { background: var(--accent-soft); }
-/* красный режим вкладки «Договорная работа» — поверх акцента */
+/* красный режим вкладки «ДОГОВОРА» — поверх акцента */
 body.red-mode .tabs button.on { background:#dc2626; }
 body.red-mode .fab { background:#dc2626; box-shadow:0 4px 14px rgba(220,38,38,0.4); }
 body.red-mode .btn { background:#dc2626; }
@@ -304,7 +304,7 @@ body.red-mode #tabPrices { border-color:#dc2626; color:#b91c1c; animation:none; 
   <button id="tabCal" onclick="showTab('cal')">Календарь экономиста</button>
   <button id="tabCalc" onclick="showTab('calc')">Калькулятор</button>
   <button id="tabPrices" onclick="showTab('prices')">ЦЕНЫ</button>
-<button id="tabDoc" onclick="showTab('doc')">Договорная работа</button>
+<button id="tabDoc" onclick="showTab('doc')">ДОГОВОРА</button>
 </div>
 
 <div id="secTasks">
@@ -1007,7 +1007,7 @@ function renderCalDay() {
   listEl.innerHTML = html;
 }
 
-// ===== договорная работа: расчёт срока поставки и РКМ =====
+// ===== ДОГОВОРА: расчёт срока поставки и РКМ =====
 function parseISO(s) { const p = s.split('-'); return new Date(parseInt(p[0],10), parseInt(p[1],10)-1, parseInt(p[2],10)); }
 function isoOfDate(d) { const p = n => (n < 10 ? '0' : '') + n; return d.getFullYear() + '-' + p(d.getMonth()+1) + '-' + p(d.getDate()); }
 function addMonthsISO(iso, n) {
