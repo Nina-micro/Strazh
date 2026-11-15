@@ -137,14 +137,16 @@
   body.red-mode .sub-tabs button.on { background: #b91c1c; }
   /* ===== график поставок ===== */
   .sch-month { margin-bottom: 18px; }
-  .sch-month-title { font-size: 15px; font-weight: 700; color: #1e293b; text-transform: capitalize; }
-  .sch-month-line { width: 46px; height: 2px; background: #1e293b; border-radius: 2px; margin: 5px 0 8px; }
+  .sch-month-title { font-size: 15px; font-weight: 700; color: #dc2626; text-transform: capitalize; }
+  .sch-month-line { width: 100%; height: 1.5px; background: #dc2626; opacity: 0.55; margin: 5px 0 8px; }
   .sch-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 5px 2px; border-bottom: 1px solid #f1f5f9; font-size: 13.5px; }
   .sch-row:last-child { border-bottom: none; }
-  .sch-row .snum { font-weight: 600; color: #1e293b; }
-  .sch-row .sdate { color: #64748b; white-space: nowrap; }
-  .sch-row.past .sdate { color: #b91c1c; }
+  .sch-row .snum { font-weight: 500; color: #94a3b8; }
+  .sch-row .sdate { color: #94a3b8; white-space: nowrap; }
+  .sch-row.past .snum, .sch-row.past .sdate { color: #dc2626; opacity: 0.75; }
   .sch-empty { font-size: 12px; color: #94a3b8; padding: 4px 2px; }
+  .sch-search { margin-bottom: 12px; }
+  .sch-search input { margin-top: 0; }
 </style>
 </head>
 <body>
@@ -298,7 +300,10 @@
 
   <div id="docSubSched" class="hidden">
     <div class="card">
-      <h3>График поставок</h3>
+      <h3>График поставок <button class="btn clear" id="schedSearchBtn" onclick="toggleSchedSearch()">🔍 Поиск</button></h3>
+      <div class="sch-search hidden" id="schedSearchWrap">
+        <input type="text" id="schedSearchInput" placeholder="Номер договора или часть номера" oninput="renderSched()">
+      </div>
       <div id="schedList"><p class="note">Поставок пока нет — сделайте расчёт на первой вкладке</p></div>
     </div>
   </div>
@@ -943,12 +948,26 @@ function clearSupplyHistory() {
 }
 
 // ===== график поставок =====
+let schedSearchOpen = false;
+function toggleSchedSearch() {
+  schedSearchOpen = !schedSearchOpen;
+  const wrap = document.getElementById('schedSearchWrap');
+  wrap.classList.toggle('hidden', !schedSearchOpen);
+  const btn = document.getElementById('schedSearchBtn');
+  btn.textContent = schedSearchOpen ? '✕ Закрыть' : '🔍 Поиск';
+  if (schedSearchOpen) document.getElementById('schedSearchInput').focus();
+  else { document.getElementById('schedSearchInput').value = ''; renderSched(); }
+}
 function renderSched() {
   const list = document.getElementById('schedList');
   if (!list) return;
-  const entries = loadSupply().filter(e => e.delivery);
+  const q = (schedSearchOpen ? (document.getElementById('schedSearchInput').value || '') : '').trim().toLowerCase();
+  let entries = loadSupply().filter(e => e.delivery);
+  if (q) entries = entries.filter(e => (e.num || '').toLowerCase().indexOf(q) !== -1);
   if (!entries.length) {
-    list.innerHTML = '<p class="note">Поставок пока нет — сделайте расчёт на первой вкладке</p>';
+    list.innerHTML = loadSupply().some(e => e.delivery)
+      ? '<p class="note">По запросу договоров нет</p>'
+      : '<p class="note">Поставок пока нет — сделайте расчёт на первой вкладке</p>';
     return;
   }
   const byMonth = {};
