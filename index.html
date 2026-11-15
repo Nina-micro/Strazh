@@ -151,6 +151,24 @@
   .sch-empty { font-size: 12px; color: #94a3b8; padding: 4px 2px; }
   .sch-search { margin-bottom: 12px; }
   .sch-search input { margin-top: 0; }
+  /* ===== печатный блок (выгрузка графика в PDF) ===== */
+  #printArea { display: none; }
+  @media print {
+    body { background: #fff; padding: 0; max-width: none; }
+    body > *:not(#printArea) { display: none !important; }
+    #printArea { display: block !important; }
+    #printArea .pr-title { font-size: 20px; font-weight: 700; color: #1e293b; margin-bottom: 4px; }
+    #printArea .pr-sub { font-size: 12px; color: #64748b; margin-bottom: 20px; }
+    #printArea .sch-month { margin-bottom: 16px; page-break-inside: avoid; }
+    #printArea .sch-month-title { font-size: 15px; font-weight: 700; color: #b91c1c; text-transform: capitalize; }
+    #printArea .sch-month-line { width: 100%; height: 1.2px; background: #b91c1c; margin: 5px 0 8px; }
+    #printArea .sch-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 5px 2px; border-bottom: 1px solid #e5e7eb; font-size: 13px; color: #6b7280; }
+    #printArea .sch-row:last-child { border-bottom: none; }
+    #printArea .sch-row .snum { font-weight: 500; color: #6b7280; }
+    #printArea .sch-row .sdate { color: #6b7280; white-space: nowrap; }
+    #printArea .sch-row.past .snum, #printArea .sch-row.past .sdate { color: #b91c1c; }
+    #printArea .pr-note { margin-top: 24px; font-size: 10px; color: #9ca3af; }
+  }
 </style>
 </head>
 <body>
@@ -256,7 +274,7 @@
     <label>Ф4 — материалы, руб. <input type="number" id="f4" step="0.01"></label>
     <label>Ф6 — ПКИ, руб. <input type="number" id="f6" step="0.01"></label>
     <label>Ф7 — услуги сторонних организаций, руб. <input type="number" id="f7" step="0.01"></label>
-    <h4>Заработная плata</h4>
+    <h4>Заработная плата</h4>
     <label>Средняя ЗП (норматив), руб./мес. <input type="number" id="avg" step="0.01"></label>
     <label>Трудоёмкость <input type="number" id="labor" step="0.1">
       <select id="unit"><option value="mm">чел./мес.</option><option value="h">часы</option></select>
@@ -314,7 +332,12 @@
 
   <div id="docSubSched" class="hidden">
     <div class="card">
-      <h3>График поставок <button class="btn clear" id="schedSearchBtn" onclick="toggleSchedSearch()">🔍 Поиск</button></h3>
+      <h3>График поставок
+        <span style="display:flex; gap:6px;">
+          <button class="btn clear" id="schedSearchBtn" onclick="toggleSchedSearch()">🔍 Поиск</button>
+          <button class="btn clear" onclick="exportSchedPdf()">⤓ PDF</button>
+        </span>
+      </h3>
       <div class="sch-search hidden" id="schedSearchWrap">
         <input type="text" id="schedSearchInput" placeholder="Номер договора или контрагент" oninput="renderSched()">
       </div>
@@ -324,6 +347,9 @@
 
   <p class="note">ТЕСТОВЫЙ РЕЖИМ. Расчёты хранятся только на этом устройстве. Реестр договоров — в разработке.</p>
 </div>
+
+<!-- печатный блок: наполняется перед выгрузкой в PDF -->
+<div id="printArea"></div>
 
 <div id="statusMenu" class="status-menu hidden"></div>
 
@@ -784,7 +810,7 @@ function addTask() {
     if (!who) { alert('Впишите исполнителя или выберите из списка'); return; }
   }
   const tasks = loadTasks();
-  tasks.unshift({ id: 't' + Date.now().toString(36) + Math.random().toString(36).slice(2,7), name: name, who: who, date: document.getElementById('tDate').value, status: 'в очереди', statusDate: new Date().toISOString(), createdAt: new Date().toISOString(), done: false });
+  tasks.unshift({ id: 't' + Date.now().toString(36) + Math.random().toString(36).slice(2,7), name: name, who: who, date: document.getElementById('tDate').value, status: 'в очередi', statusDate: new Date().toISOString(), createdAt: new Date().toISOString(), done: false });
   saveTasks(tasks); closeTaskModal(); render();
 }
 
@@ -1040,12 +1066,16 @@ function toggleSchedSearch() {
   if (schedSearchOpen) document.getElementById('schedSearchInput').focus();
   else { document.getElementById('schedSearchInput').value = ''; renderSched(); }
 }
-function renderSched() {
-  const list = document.getElementById('schedList');
-  if (!list) return;
+function schedEntries() {
   const q = (schedSearchOpen ? (document.getElementById('schedSearchInput').value || '') : '').trim().toLowerCase();
   let entries = loadSupply().filter(e => e.delivery);
   if (q) entries = entries.filter(e => ((e.num || '') + ' ' + (e.contr || '')).toLowerCase().indexOf(q) !== -1);
+  return entries;
+}
+function renderSched() {
+  const list = document.getElementById('schedList');
+  if (!list) return;
+  const entries = schedEntries();
   if (!entries.length) {
     list.innerHTML = loadSupply().some(e => e.delivery)
       ? '<p class="note">По запросу договоров нет</p>'
@@ -1060,22 +1090,48 @@ function renderSched() {
   });
   const todayStr = isoOfDate(new Date());
   const keys = Object.keys(byMonth).sort();
-  list.innerHTML = keys.map(mk => {
-    const y = parseInt(mk.slice(0,4),10);
-    const m = parseInt(mk.slice(5,7),10) - 1;
-    const rows = byMonth[mk]
-      .slice()
-      .sort((a,b) => a.delivery.localeCompare(b.delivery))
-      .map(e => '<div class="sch-row' + (e.delivery < todayStr ? ' past' : '') + '">' +
-        '<span class="snum">' + esc(e.num) + (e.contr ? ' · ' + esc(e.contr) : '') + '</span>' +
-        '<span class="sdate">' + fmtDate(e.delivery) + '</span></div>')
-      .join('');
-    return '<div class="sch-month">' +
-      '<div class="sch-month-title">' + MONTHS[m] + ' ' + y + '</div>' +
-      '<div class="sch-month-line"></div>' +
-      rows +
-      '</div>';
-  }).join('');
+  list.innerHTML = keys.map(mk => schedMonthHtml(mk, byMonth[mk], todayStr)).join('');
+}
+function schedMonthHtml(mk, arr, todayStr) {
+  const y = parseInt(mk.slice(0,4),10);
+  const m = parseInt(mk.slice(5,7),10) - 1;
+  const rows = arr
+    .slice()
+    .sort((a,b) => a.delivery.localeCompare(b.delivery))
+    .map(e => '<div class="sch-row' + (e.delivery < todayStr ? ' past' : '') + '">' +
+      '<span class="snum">' + esc(e.num) + (e.contr ? ' · ' + esc(e.contr) : '') + '</span>' +
+      '<span class="sdate">' + fmtDate(e.delivery) + '</span></div>')
+    .join('');
+  return '<div class="sch-month">' +
+    '<div class="sch-month-title">' + MONTHS[m] + ' ' + y + '</div>' +
+    '<div class="sch-month-line"></div>' +
+    rows +
+    '</div>';
+}
+
+// ===== выгрузка графика в PDF (через печать браузера) =====
+function exportSchedPdf() {
+  const entries = schedEntries();
+  if (!entries.length) { alert('Нечего выгружать: график поставок пуст или поиск не дал совпадений'); return; }
+  const byMonth = {};
+  entries.forEach(e => {
+    const mk = e.delivery.slice(0, 7);
+    if (!byMonth[mk]) byMonth[mk] = [];
+    byMonth[mk].push(e);
+  });
+  const todayStr = isoOfDate(new Date());
+  const keys = Object.keys(byMonth).sort();
+  const now = new Date();
+  const whoNow = currentUser ? currentUser.name : '';
+  document.getElementById('printArea').innerHTML =
+    '<div class="pr-title">График поставок</div>' +
+    '<div class="pr-sub">СТРАЖ · отдел ПЭО · сформировано ' +
+      now.toLocaleDateString('ru-RU') + ' ' + now.toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'}) +
+      (whoNow ? ' · ' + whoNow : '') +
+    '</div>' +
+    keys.map(mk => schedMonthHtml(mk, byMonth[mk], todayStr)).join('') +
+    '<div class="pr-note">Тестовый режим. Данные получены из локального хранилища устройства на момент выгрузки.</div>';
+  window.print();
 }
 
 function fmt(x) { return x.toLocaleString('ru-RU', {maximumFractionDigits: 2}) + ' руб.'; }
