@@ -130,6 +130,8 @@
   .login-box h2 { font-size: 22px; text-align: center; margin-bottom: 4px; }
   .login-box .sub { text-align: center; font-size: 12px; color: #94a3b8; margin-bottom: 14px; }
   .login-err { color: #b91c1c; font-size: 13px; text-align: center; min-height: 18px; margin-top: 8px; }
+  .chk-row { display: flex; align-items: center; gap: 8px; font-size: 14px; margin: 8px 0; }
+  .chk-row input { width: 20px; height: 20px; margin: 0; flex-shrink: 0; }
   /* ===== вкладки внутри договорной работы ===== */
   .sub-tabs { display: flex; background: #e2e8f0; border-radius: 10px; padding: 4px; margin-bottom: 16px; }
   .sub-tabs button { flex: 1; padding: 9px 4px; border: none; background: none; color: #475569; font-size: 12px; font-weight: 600; border-radius: 8px; cursor: pointer; }
@@ -289,6 +291,11 @@
       <label>Давальческое — дата получения <input type="date" id="dcToll"></label>
       <p class="mini-note" style="margin-bottom:8px">Нет давальческого — оставьте поле пустым.</p>
       <label>Срок поставки, мес. с момента оплаты аванса <input type="number" id="dcMonths" step="1" min="1"></label>
+      <div class="chk-row">
+        <input type="checkbox" id="dcNoRkm">
+        <span>РКМ не требуется</span>
+      </div>
+      <p class="mini-note" style="margin-bottom:8px">Если галочка стоит — дата РКМ не считается и задача РКМ не создаётся.</p>
       <button class="btn" onclick="calcSupply()">Рассчитать</button>
       <div id="dcRes"></div>
     </div>
@@ -854,7 +861,12 @@ function addMonthsISO(iso, n) {
   d.setDate(Math.min(day, dim));
   return isoOfDate(d);
 }
-function loadSupply() { try { return JSON.parse(localStorage.getItem('strazh_supply')) || []; } catch(e) { return []; } }
+function loadSupply() {
+  let arr = [];
+  try { arr = JSON.parse(localStorage.getItem('strazh_supply')) || []; } catch(e) { arr = []; }
+  arr.forEach(e => { if (typeof e.noRkm !== 'boolean') e.noRkm = false; });
+  return arr;
+}
 function saveSupply(arr) { localStorage.setItem('strazh_supply', JSON.stringify(arr)); }
 
 function calcSupply() {
@@ -863,14 +875,15 @@ function calcSupply() {
   const prepay = document.getElementById('dcPrepay').value;
   const toll = document.getElementById('dcToll').value;
   const months = parseInt(document.getElementById('dcMonths').value, 10);
+  const noRkm = document.getElementById('dcNoRkm').checked;
   if (!prepay) { alert('Укажите дату оплаты аванса'); return; }
   if (!months || months <= 0) { alert('Укажите срок поставки в месяцах'); return; }
   const base = (toll && toll > prepay) ? toll : prepay;
   const delivery = addMonthsISO(base, months);
-  const rkm = addMonthsISO(delivery, -3);
+  const rkm = noRkm ? '' : addMonthsISO(delivery, -3);
   const entry = {
     id: 's' + Date.now().toString(36) + Math.random().toString(36).slice(2,7),
-    num: num, prepay: prepay, toll: toll, months: months,
+    num: num, prepay: prepay, toll: toll, months: months, noRkm: noRkm,
     base: base, delivery: delivery, rkm: rkm,
     createdAt: new Date().toISOString()
   };
@@ -884,10 +897,13 @@ function calcSupply() {
     '<p>Аванс (оплата): ' + fmtDate(prepay) + '</p>' +
     (toll ? '<p>Давальческое (получено): ' + fmtDate(toll) + '</p>' : '') +
     '<p>Срок поставки: ' + months + ' мес.</p>' +
+    (noRkm ? '<p class="mini-note" style="text-align:left">РКМ не требуется</p>' : '') +
     '<hr class="hr">' +
     '<p>Отсчёт ведётся с: <b>' + fmtDate(base) + '</b>' + (toll ? ' <span class="note" style="margin:0">(позже из двух дат)</span>' : '') + '</p>' +
     '<p class="big">Поставка: <b>' + fmtDate(delivery) + '</b> <span class="note" style="margin:0">(день подсвечен в календаре и виден в графике поставок)</span></p>' +
-    '<p class="big">Формирование РКМ: <b>' + fmtDate(rkm) + '</b> <span class="note" style="margin:0">(за 3 мес. до поставки)</span></p>' +
+    (noRkm
+      ? '<p class="big" style="color:#94a3b8">Формирование РКМ: не требуется</p>'
+      : '<p class="big">Формирование РКМ: <b>' + fmtDate(rkm) + '</b> <span class="note" style="margin:0">(за 3 мес. до поставки)</span></p>') +
     '</div>';
   renderSupplyHistory();
   if (currentTab === 'cal') { renderCal(); renderCalDay(); }
@@ -904,19 +920,19 @@ function renderSupplyHistory() {
     const safeId = String(e.id || '').replace(/'/g, "\\'");
     return '<div class="task" style="border-left-color:#1e293b">' +
       '<div class="info">' +
-      '<div class="name">' + esc(e.num) + ' · ' + e.months + ' мес.</div>' +
+      '<div class="name">' + esc(e.num) + ' · ' + e.months + ' мес.' + (e.noRkm ? ' · без РКМ' : '') + '</div>' +
       '<div class="meta">' +
       '<span>аванс: ' + fmtDate(e.prepay) + '</span>' +
       (e.toll ? '<span>давальческое: ' + fmtDate(e.toll) + '</span>' : '') +
       '<span>отсчёт: ' + fmtDate(e.base) + '</span>' +
       '</div>' +
       '<div class="meta">' +
-      '<span class="who">РКМ: ' + fmtDate(e.rkm) + '</span>' +
+      (e.rkm ? '<span class="who">РКМ: ' + fmtDate(e.rkm) + '</span>' : '') +
       '<span><b>Поставка: ' + fmtDate(e.delivery) + '</b></span>' +
       badge +
       '</div></div>' +
       '<div style="display:flex; flex-direction:column; gap:4px;">' +
-      '<button class="btn clear" style="font-size:11px; padding:5px 10px;" onclick="supplyToCalendar(\'' + safeId + '\')">В календарь</button>' +
+      (e.rkm ? '<button class="btn clear" style="font-size:11px; padding:5px 10px;" onclick="supplyToCalendar(\'' + safeId + '\')">В календарь</button>' : '') +
       '<button class="del" title="Удалить" onclick="delSupply(\'' + safeId + '\')">✕</button>' +
       '</div></div>';
   }).join('');
@@ -924,6 +940,7 @@ function renderSupplyHistory() {
 function supplyToCalendar(id) {
   const e = loadSupply().find(x => x.id === id);
   if (!e) return;
+  if (!e.rkm) { alert('У этого договора РКМ не требуется — задачи не создаются. Поставка видна в календаре и графике.'); return; }
   const who = currentUser ? currentUser.name : '';
   const tasks = loadTasks();
   const now = new Date().toISOString();
