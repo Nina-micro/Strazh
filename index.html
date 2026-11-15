@@ -130,6 +130,21 @@
   .login-box h2 { font-size: 22px; text-align: center; margin-bottom: 4px; }
   .login-box .sub { text-align: center; font-size: 12px; color: #94a3b8; margin-bottom: 14px; }
   .login-err { color: #b91c1c; font-size: 13px; text-align: center; min-height: 18px; margin-top: 8px; }
+  /* ===== вкладки внутри договорной работы ===== */
+  .sub-tabs { display: flex; background: #e2e8f0; border-radius: 10px; padding: 4px; margin-bottom: 16px; }
+  .sub-tabs button { flex: 1; padding: 9px 4px; border: none; background: none; color: #475569; font-size: 12px; font-weight: 600; border-radius: 8px; cursor: pointer; }
+  .sub-tabs button.on { background: #1e293b; color: #fff; }
+  body.red-mode .sub-tabs button.on { background: #b91c1c; }
+  /* ===== график поставок ===== */
+  .sch-month { margin-bottom: 18px; }
+  .sch-month-title { font-size: 15px; font-weight: 700; color: #1e293b; text-transform: capitalize; }
+  .sch-month-line { width: 46px; height: 2px; background: #1e293b; border-radius: 2px; margin: 5px 0 8px; }
+  .sch-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 5px 2px; border-bottom: 1px solid #f1f5f9; font-size: 13.5px; }
+  .sch-row:last-child { border-bottom: none; }
+  .sch-row .snum { font-weight: 600; color: #1e293b; }
+  .sch-row .sdate { color: #64748b; white-space: nowrap; }
+  .sch-row.past .sdate { color: #b91c1c; }
+  .sch-empty { font-size: 12px; color: #94a3b8; padding: 4px 2px; }
 </style>
 </head>
 <body>
@@ -259,20 +274,35 @@
 </div>
 
 <div id="secDoc" class="hidden">
-  <div class="card">
-    <h3>Расчёт срока поставки и РКМ</h3>
-    <label>Номер договора <input type="text" id="dcNum" placeholder="Например: 0142ХХП, 0317ХХУС, 0521ХХОКР"></label>
-    <label>Аванс — дата оплаты <input type="date" id="dcPrepay"></label>
-    <label>Давальческое — дата получения <input type="date" id="dcToll"></label>
-    <p class="mini-note" style="margin-bottom:8px">Нет давальческого — оставьте поле пустым.</p>
-    <label>Срок поставки, мес. с момента оплаты аванса <input type="number" id="dcMonths" step="1" min="1"></label>
-    <button class="btn" onclick="calcSupply()">Рассчитать</button>
-    <div id="dcRes"></div>
+  <div class="sub-tabs">
+    <button id="subDocCalc" class="on" onclick="showDocSub('calc')">Расчёт срока поставки и РКМ</button>
+    <button id="subDocSched" onclick="showDocSub('sched')">График поставок</button>
   </div>
-  <div class="card">
-    <h3>История расчётов <button class="btn clear" onclick="clearSupplyHistory()">очистить</button></h3>
-    <div id="dcHistory"><p class="note">Расчётов пока нет</p></div>
+
+  <div id="docSubCalc">
+    <div class="card">
+      <h3>Расчёт срока поставки и РКМ</h3>
+      <label>Номер договора <input type="text" id="dcNum" placeholder="Например: 0142ХХП, 0317ХХУС, 0521ХХОКР"></label>
+      <label>Аванс — дата оплаты <input type="date" id="dcPrepay"></label>
+      <label>Давальческое — дата получения <input type="date" id="dcToll"></label>
+      <p class="mini-note" style="margin-bottom:8px">Нет давальческого — оставьте поле пустым.</p>
+      <label>Срок поставки, мес. с момента оплаты аванса <input type="number" id="dcMonths" step="1" min="1"></label>
+      <button class="btn" onclick="calcSupply()">Рассчитать</button>
+      <div id="dcRes"></div>
+    </div>
+    <div class="card">
+      <h3>История расчётов <button class="btn clear" onclick="clearSupplyHistory()">очистить</button></h3>
+      <div id="dcHistory"><p class="note">Расчётов пока нет</p></div>
+    </div>
   </div>
+
+  <div id="docSubSched" class="hidden">
+    <div class="card">
+      <h3>График поставок</h3>
+      <div id="schedList"><p class="note">Поставок пока нет — сделайте расчёт на первой вкладке</p></div>
+    </div>
+  </div>
+
   <p class="note">ТЕСТОВЫЙ РЕЖИМ. Расчёты хранятся только на этом устройстве. Реестр договоров — в разработке.</p>
 </div>
 
@@ -317,7 +347,9 @@ const ADMIN_LOGIN = 'admin';
 const ADMIN_PASS = 'strazh2026';
 
 const TEAM = ['Нина', 'Аня', 'Маша', 'Вика', 'Алина'];
+const MONTHS = ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
 let currentTab = 'tasks';
+let docSub = 'calc';
 
 function esc(v) {
   return String(v === null || v === undefined ? '' : v)
@@ -355,6 +387,7 @@ function tryLogin(e) {
   err.textContent = '';
   document.getElementById('inPass').value = '';
   applyAuth();
+  showTab(localStorage.getItem('strazh_tab') || 'tasks');
 }
 function doLogout() {
   closeStatusMenu();
@@ -427,6 +460,7 @@ const whoOpen = {};
 function showTab(name) {
   closeStatusMenu();
   currentTab = name;
+  localStorage.setItem('strazh_tab', name);
   document.getElementById('secTasks').classList.toggle('hidden', name !== 'tasks');
   document.getElementById('secCal').classList.toggle('hidden', name !== 'cal');
   document.getElementById('secCalc').classList.toggle('hidden', name !== 'calc');
@@ -436,8 +470,18 @@ function showTab(name) {
   document.getElementById('tabCalc').classList.toggle('on', name === 'calc');
   document.getElementById('tabDoc').classList.toggle('on', name === 'doc');
   if (name === 'cal') { renderCal(); renderCalDay(); }
-  if (name === 'doc') renderSupplyHistory();
+  if (name === 'doc') { showDocSub(docSub); }
   document.body.classList.toggle('red-mode', name === 'doc');
+}
+function showDocSub(name) {
+  docSub = name;
+  localStorage.setItem('strazh_docsub', name);
+  document.getElementById('docSubCalc').classList.toggle('hidden', name !== 'calc');
+  document.getElementById('docSubSched').classList.toggle('hidden', name !== 'sched');
+  document.getElementById('subDocCalc').classList.toggle('on', name === 'calc');
+  document.getElementById('subDocSched').classList.toggle('on', name === 'sched');
+  if (name === 'calc') renderSupplyHistory();
+  if (name === 'sched') renderSched();
 }
 function fabClick() { if (currentTab === 'doc') return; openTaskModal(); }
 
@@ -728,7 +772,6 @@ function addTask() {
 // ===== календарь =====
 let calYear, calMonth, calSel = null;
 (function initCal() { const n = new Date(); calYear = n.getFullYear(); calMonth = n.getMonth(); })();
-const MONTHS = ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
 function calKey(y, m, d) { const p = n => (n < 10 ? '0' : '') + n; return y + '-' + p(m+1) + '-' + p(d); }
 function calMove(dir) {
   calMonth += dir;
@@ -838,7 +881,7 @@ function calcSupply() {
     '<p>Срок поставки: ' + months + ' мес.</p>' +
     '<hr class="hr">' +
     '<p>Отсчёт ведётся с: <b>' + fmtDate(base) + '</b>' + (toll ? ' <span class="note" style="margin:0">(позже из двух дат)</span>' : '') + '</p>' +
-    '<p class="big">Поставка: <b>' + fmtDate(delivery) + '</b> <span class="note" style="margin:0">(день подсвечен в календаре)</span></p>' +
+    '<p class="big">Поставка: <b>' + fmtDate(delivery) + '</b> <span class="note" style="margin:0">(день подсвечен в календаре и виден в графике поставок)</span></p>' +
     '<p class="big">Формирование РКМ: <b>' + fmtDate(rkm) + '</b> <span class="note" style="margin:0">(за 3 мес. до поставки)</span></p>' +
     '</div>';
   renderSupplyHistory();
@@ -847,6 +890,7 @@ function calcSupply() {
 function renderSupplyHistory() {
   const arr = loadSupply();
   const list = document.getElementById('dcHistory');
+  if (!list) return;
   if (!arr.length) { list.innerHTML = '<p class="note">Расчётов пока нет</p>'; return; }
   list.innerHTML = arr.map(e => {
     const dl = daysLeft(e.delivery);
@@ -887,13 +931,50 @@ function delSupply(id) {
   saveSupply(loadSupply().filter(e => e.id !== id));
   renderSupplyHistory();
   if (currentTab === 'cal') { renderCal(); renderCalDay(); }
+  if (currentTab === 'doc' && docSub === 'sched') renderSched();
 }
 function clearSupplyHistory() {
-  if (!confirm('Очистить всю историю расчётов? Подсветка поставок в календаре исчезнет, а задачи РКМ останутся.')) return;
+  if (!confirm('Очистить всю историю расчётов? Подсветка поставок в календаре и график поставок обновятся, а задачи РКМ останутся.')) return;
   saveSupply([]);
   document.getElementById('dcRes').innerHTML = '';
   renderSupplyHistory();
   if (currentTab === 'cal') { renderCal(); renderCalDay(); }
+  if (currentTab === 'doc' && docSub === 'sched') renderSched();
+}
+
+// ===== график поставок =====
+function renderSched() {
+  const list = document.getElementById('schedList');
+  if (!list) return;
+  const entries = loadSupply().filter(e => e.delivery);
+  if (!entries.length) {
+    list.innerHTML = '<p class="note">Поставок пока нет — сделайте расчёт на первой вкладке</p>';
+    return;
+  }
+  const byMonth = {};
+  entries.forEach(e => {
+    const mk = e.delivery.slice(0, 7);
+    if (!byMonth[mk]) byMonth[mk] = [];
+    byMonth[mk].push(e);
+  });
+  const todayStr = isoOfDate(new Date());
+  const keys = Object.keys(byMonth).sort();
+  list.innerHTML = keys.map(mk => {
+    const y = parseInt(mk.slice(0,4),10);
+    const m = parseInt(mk.slice(5,7),10) - 1;
+    const rows = byMonth[mk]
+      .slice()
+      .sort((a,b) => a.delivery.localeCompare(b.delivery))
+      .map(e => '<div class="sch-row' + (e.delivery < todayStr ? ' past' : '') + '">' +
+        '<span class="snum">' + esc(e.num) + '</span>' +
+        '<span class="sdate">' + fmtDate(e.delivery) + '</span></div>')
+      .join('');
+    return '<div class="sch-month">' +
+      '<div class="sch-month-title">' + MONTHS[m] + ' ' + y + '</div>' +
+      '<div class="sch-month-line"></div>' +
+      rows +
+      '</div>';
+  }).join('');
 }
 
 function fmt(x) { return x.toLocaleString('ru-RU', {maximumFractionDigits: 2}) + ' руб.'; }
@@ -999,6 +1080,8 @@ function sumWords() {
 buildWhoSelect();
 render();
 applyAuth();
+showTab(localStorage.getItem('strazh_tab') || 'tasks');
+docSub = localStorage.getItem('strazh_docsub') || 'calc';
 </script>
 </body>
 </html>
