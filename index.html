@@ -153,17 +153,16 @@
   .sch-filter { margin-top: 12px; }
   .sch-filter select { margin-top: 0; }
   .sch-hint { font-size: 11px; color: #94a3b8; text-align: center; margin-top: 8px; }
-  /* ===== квадратик отгрузки и РКМ-запись в строке графика ===== */
-  .sch-chk { width:16px; height:16px; min-width:16px; border:1.5px solid #94a3b8; border-radius:4px; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; font-size:11px; color:#16a34a; user-select:none; align-self:center; flex-shrink:0; }
-  .sch-chk.on { background:#dcfce7; border-color:#16a34a; }
-  .sch-row .snum.rkm { color:#1e293b; font-weight:700; }
-  .sch-row .sright { display:flex; align-items:baseline; gap:8px; margin-left:auto; }
-  .sch-row .srkm { font-size:10px; font-weight:300; color:#dc2626; white-space:nowrap; }
-  .sch-row.is-shipped { text-decoration: line-through; opacity:0.55; }
-  .sch-row.is-shipped .sch-chk { text-decoration: none; }
-  .sch-views { display:flex; gap:6px; margin-top:8px; flex-wrap:wrap; }
-  .view-btn { padding:5px 10px; font-size:12px; border:1px solid #cbd5e1; border-radius:8px; background:#fff; color:#475569; cursor:pointer; font-weight:600; }
-  .view-btn.on { background:#1e293b; color:#fff; border-color:#1e293b; }
+  .sch-view-btns { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+  .sch-view-btn { padding: 5px 10px; font-size: 11px; border: 1px solid #cbd5e1; background: #fff; color: #475569; border-radius: 999px; cursor: pointer; font-weight: 600; }
+  .sch-view-btn.on { background: #1e293b; color: #fff; border-color: #1e293b; }
+  .sch-row .rkm-tag { display: block; font-size: 10px; font-weight: 300; color: #dc2626; line-height: 1.2; }
+  .sch-row .snum.rkm-black { color: #1e293b; font-weight: 700; }
+  .sch-row .sdate { text-align: right; }
+  .sch-check { flex-shrink: 0; width: 16px; height: 16px; align-self: center; border: 1.5px solid #94a3b8; border-radius: 4px; background: #fff; cursor: pointer; padding: 0; font-size: 11px; line-height: 1; color: #16a34a; font-weight: 700; }
+  .sch-check.on { background: #dcfce7; border-color: #16a34a; }
+  .sch-row.done .snum, .sch-row.done .sdate { text-decoration: line-through; opacity: 0.55; }
+  .sch-row.done { opacity: 0.6; }
   /* ===== печатный блок (выгрузка графика в PDF) ===== */
   #printArea { display: none; }
   @media print {
@@ -182,13 +181,12 @@
     #printArea .sch-row .sdate { color: #6b7280; white-space: nowrap; }
     #printArea .sch-row.past .snum, #printArea .sch-row.past .sdate { color: #b91c1c; }
     #printArea .sch-empty { font-size: 12px; color: #9ca3af; padding: 4px 2px; }
+    #printArea .sch-row .rkm-tag { font-size: 9px; font-weight: 300; color: #b91c1c; }
+    #printArea .sch-row .snum.rkm-black { color: #1e293b; font-weight: 700; }
+    #printArea .sch-check { display: none; }
+    #printArea .sch-row.done .snum, #printArea .sch-row.done .sdate { text-decoration: line-through; color: #9ca3af; }
+    #printArea .sch-row.done { opacity: 0.6; }
     #printArea .pr-note { margin-top: 24px; font-size: 10px; color: #9ca3af; }
-    #printArea .sch-chk { width:14px; height:14px; min-width:14px; border:1px solid #9ca3af; border-radius:3px; display:inline-flex; align-items:center; justify-content:center; font-size:10px; color:#15803d; margin-right:6px; }
-    #printArea .sch-row .snum.rkm { font-weight:700; color:#1e293b; }
-    #printArea .sch-row .sright { display:flex; align-items:baseline; gap:8px; margin-left:auto; }
-    #printArea .sch-row .srkm { font-size:10px; font-weight:300; color:#dc2626; white-space:nowrap; }
-    #printArea .sch-row.is-shipped { text-decoration: line-through; opacity:0.6; }
-    #printArea .sch-row.is-shipped .sch-chk { text-decoration: none; }
   }
 </style>
 </head>
@@ -333,12 +331,12 @@
       </div>
       <label>Номер договора <input type="text" id="dcNum" placeholder="Например: 0142ХХП, 0317ХХУС, 0521ХХОКР"></label>
       <label>Контрагент <input type="text" id="dcContr" placeholder="Организация (можно не заполнять)"></label>
-      <label>Аванс — дата оплаты <input type="date" id="dcPrepay"></label>
-      <label>Давальческое — дата получения <input type="date" id="dcToll"></label>
+      <label>Аванс — дата оплаты <input type="date" id="dcPrepay" onchange="updateDcExactHint()"></label>
+      <label>Давальческое — дата получения <input type="date" id="dcToll" onchange="updateDcExactHint()"></label>
       <p class="mini-note" style="margin-bottom:8px">Нет давальческого — оставьте поле пустым.</p>
       <label>Срок поставки, мес. с момента оплаты аванса <input type="number" id="dcMonths" step="1" min="1"></label>
-      <label>…или конкретная дата поставки <input type="date" id="dcExact" oninput="updateExactHint()"></label>
-      <p class="mini-note" id="dcExactHint" style="margin:-2px 0 8px; text-align:left">Укажете дату — срок в месяцах посчитается сам: от даты аванса (или давальческого, если он позже) до этой даты.</p>
+      <label>…или конкретная дата поставки <input type="date" id="dcExact" onchange="updateDcExactHint()"></label>
+      <p class="mini-note" id="dcExactHint" style="margin:-4px 0 8px; text-align:left;"></p>
       <div class="chk-row">
         <input type="checkbox" id="dcNoRkm">
         <span>РКМ не требуется</span>
@@ -366,14 +364,14 @@
       </div>
       <div class="sch-filter">
         <select id="schedMonthFilter" onchange="renderSched()"><option value="all">Месяц: все</option></select>
-      </div>
-      <div class="sch-views">
-        <button class="view-btn on" id="vvAll" onclick="setSchedView('all')">Все месяца</button>
-        <button class="view-btn" id="vvRkm" onclick="setSchedView('rkm')">С РКМ</button>
-        <button class="view-btn" id="vvNoEmpty" onclick="setSchedView('noempty')">Без пустых месяцев</button>
+        <div class="sch-view-btns">
+          <button type="button" class="sch-view-btn" id="vbAll" onclick="setSchedView('all')">Все месяца</button>
+          <button type="button" class="sch-view-btn" id="vbRkm" onclick="setSchedView('rkm')">С РКМ</button>
+          <button type="button" class="sch-view-btn" id="vbNoEmpty" onclick="setSchedView('noempty')">Без пустых месяцев</button>
+        </div>
       </div>
       <div id="schedList"><p class="note">Поставок пока нет — сделайте расчёт на первой вкладке</p></div>
-      <p class="sch-hint">В окне печати выберите «Сохранить как PDF», чтобы получить файл на диск.</p>
+      <p class="sch-hint">Кнопка «🖨 Распечатать» открывает окно печати — там можно сохранить график в PDF.</p>
     </div>
   </div>
 
@@ -932,7 +930,6 @@ function loadSupply() {
   arr.forEach(e => {
     if (typeof e.noRkm !== 'boolean') e.noRkm = false;
     if (typeof e.contr !== 'string') e.contr = '';
-    if (typeof e.shipped !== 'boolean') e.shipped = false;
   });
   return arr;
 }
@@ -947,8 +944,8 @@ function setSupplyForm(e) {
   document.getElementById('dcToll').value = e ? (e.toll || '') : '';
   document.getElementById('dcMonths').value = e ? (e.months || '') : '';
   document.getElementById('dcExact').value = e ? (e.exact || '') : '';
-  updateExactHint();
   document.getElementById('dcNoRkm').checked = e ? !!e.noRkm : false;
+  updateDcExactHint();
 }
 function enterEditSupply(id) {
   const e = loadSupply().find(x => x.id === id);
@@ -968,71 +965,27 @@ function cancelEditSupply() {
   document.getElementById('dcRes').innerHTML = '';
 }
 
-function monthsDaysBetween(startISO, endISO) {
-  const a = parseISO(startISO), b = parseISO(endISO);
-  if (!a || !b) return null;
-  if (b < a) return null;
-  let months = (b.getFullYear() - a.getFullYear()) * 12 + (b.getMonth() - a.getMonth());
-  const anchor = (m) => {
-    const d = new Date(a.getFullYear(), a.getMonth() + m, 1);
-    const dim = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
-    d.setDate(Math.min(a.getDate(), dim));
-    return d;
-  };
-  let anc = anchor(months);
-  if (anc > b) { months--; anc = anchor(months); }
-  const days = Math.round((b - anc) / 86400000);
-  return { months: months, days: days };
-}
-function supplyTermLabel(e) {
-  if (e.exact) {
-    const days = e.mDays ? ' ' + e.mDays + ' дн.' : '';
-    return 'до ' + fmtDate(e.exact) + ' (' + e.months + ' мес.' + days + ')';
-  }
-  return e.months + ' мес.';
-}
-function updateExactHint() {
-  const hint = document.getElementById('dcExactHint');
-  const monthsInput = document.getElementById('dcMonths');
-  const exact = document.getElementById('dcExact').value;
-  if (!exact) {
-    hint.textContent = 'Укажете дату — срок в месяцах посчитается сам: от даты аванса (или давальческого, если он позже) до этой даты.';
-    monthsInput.readOnly = false;
-    return;
-  }
-  const prepay = document.getElementById('dcPrepay').value;
-  const toll = document.getElementById('dcToll').value;
-  if (!prepay) { hint.textContent = 'Сначала укажите дату аванса — тогда посчитаю месяцы до этой даты.'; return; }
-  const base = (toll && toll > prepay) ? toll : prepay;
-  const md = monthsDaysBetween(base, exact);
-  if (!md) { hint.textContent = 'Дата поставки не может быть раньше даты отсчёта (' + fmtDate(base) + ').'; return; }
-  const days = md.days ? ' ' + md.days + ' дн.' : '';
-  hint.textContent = 'От ' + fmtDate(base) + ' до ' + fmtDate(exact) + ' — это ' + md.months + ' мес.' + days + '.';
-  monthsInput.value = md.months;
-  monthsInput.readOnly = true;
-}
-
 function calcSupply() {
   const num = document.getElementById('dcNum').value.trim();
   if (!num) { alert('Укажите номер договора'); return; }
   const contr = document.getElementById('dcContr').value.trim();
   const prepay = document.getElementById('dcPrepay').value;
   const toll = document.getElementById('dcToll').value;
-  const noRkm = document.getElementById('dcNoRkm').checked;
   const exact = document.getElementById('dcExact').value;
+  const noRkm = document.getElementById('dcNoRkm').checked;
   if (!prepay) { alert('Укажите дату оплаты аванса'); return; }
   const base = (toll && toll > prepay) ? toll : prepay;
-  let months = parseInt(document.getElementById('dcMonths').value, 10) || 0;
-  let mDays = 0;
+  let months, delivery;
   if (exact) {
-    const md = monthsDaysBetween(base, exact);
-    if (!md) { alert('Конкретная дата поставки должна быть позже даты отсчёта (' + fmtDate(base) + ')'); return; }
-    months = md.months; mDays = md.days;
-  } else if (!months || months <= 0) {
-    alert('Укажите срок поставки в месяцах или конкретную дату поставки');
-    return;
+    if (exact <= base) { alert('Конкретная дата поставки должна быть позже даты отсчёта (' + fmtDate(base) + ')'); return; }
+    delivery = exact;
+    months = monthsDiffISO(base, exact).m;
+    if (!months) { alert('Дата поставки должна отстоять от даты отсчёта хотя бы на месяц'); return; }
+  } else {
+    months = parseInt(document.getElementById('dcMonths').value, 10);
+    if (!months || months <= 0) { alert('Укажите срок поставки в месяцах'); return; }
+    delivery = addMonthsISO(base, months);
   }
-  const delivery = exact || addMonthsISO(base, months);
   const rkm = noRkm ? '' : addMonthsISO(delivery, -3);
   const arr = loadSupply();
   let entry;
@@ -1042,13 +995,13 @@ function calcSupply() {
   }
   if (entry) {
     entry.num = num; entry.contr = contr; entry.prepay = prepay; entry.toll = toll;
-    entry.months = months; entry.noRkm = noRkm; entry.exact = exact; entry.mDays = mDays;
+    entry.months = months; entry.exact = exact || ''; entry.noRkm = noRkm;
     entry.base = base; entry.delivery = delivery; entry.rkm = rkm;
     entry.updatedAt = new Date().toISOString();
   } else {
     entry = {
       id: 's' + Date.now().toString(36) + Math.random().toString(36).slice(2,7),
-      num: num, contr: contr, prepay: prepay, toll: toll, months: months, noRkm: noRkm, exact: exact, mDays: mDays,
+      num: num, contr: contr, prepay: prepay, toll: toll, months: months, exact: exact || '', noRkm: noRkm,
       base: base, delivery: delivery, rkm: rkm,
       createdAt: new Date().toISOString()
     };
@@ -1058,14 +1011,13 @@ function calcSupply() {
   saveSupply(arr);
   const wasEdit = !!editingSupplyId;
   cancelEditSupplyStateOnly();
+  const diff = monthsDiffISO(base, delivery);
   document.getElementById('dcRes').innerHTML =
     '<div class="calc-result">' +
     '<p>Договор: <b>' + esc(num) + '</b>' + (contr ? ' · ' + esc(contr) : '') + '</p>' +
     '<p>Аванс (оплата): ' + fmtDate(prepay) + '</p>' +
     (toll ? '<p>Давальческое (получено): ' + fmtDate(toll) + '</p>' : '') +
-    '<p>Срок поставки: ' + (exact
-      ? 'до <b>' + fmtDate(exact) + '</b>' + (mDays ? ' <span class="note" style="margin:0">(' + months + ' мес. ' + mDays + ' дн. от даты отсчёта)</span>' : '')
-      : months + ' мес.') + '</p>' +
+    '<p>Срок поставки: ' + (exact ? diffLabel(diff) + ' (по конкретной дате)' : months + ' мес.') + '</p>' +
     (noRkm ? '<p class="mini-note" style="text-align:left">РКМ не требуется</p>' : '') +
     '<hr class="hr">' +
     '<p>Отсчёт ведётся с: <b>' + fmtDate(base) + '</b>' + (toll ? ' <span class="note" style="margin:0">(позже из двух дат)</span>' : '') + '</p>' +
@@ -1078,6 +1030,51 @@ function calcSupply() {
   renderSupplyHistory();
   if (currentTab === 'cal') { renderCal(); renderCalDay(); }
   if (currentTab === 'doc' && docSub === 'sched') { rebuildSchedFilter(); renderSched(); }
+}
+function monthsDiffISO(fromISO, toISO) {
+  const a = parseISO(fromISO), b = parseISO(toISO);
+  if (b <= a) return { m: 0, d: 0 };
+  let m = (b.getFullYear() - a.getFullYear()) * 12 + (b.getMonth() - a.getMonth());
+  const clampOf = (base, mm) => {
+    const total = base.getFullYear() * 12 + base.getMonth() + mm;
+    const y = Math.floor(total / 12);
+    const mo = total % 12;
+    const day = Math.min(base.getDate(), new Date(y, mo + 1, 0).getDate());
+    return new Date(y, mo, day);
+  };
+  if (clampOf(a, m) > b) m -= 1;
+  if (m < 0) m = 0;
+  const d = Math.round((b - clampOf(a, m)) / 86400000);
+  return { m: m, d: d };
+}
+function diffLabel(diff) {
+  const parts = [];
+  if (diff.m) parts.push(diff.m + ' ' + pluralForm(diff.m, 'мес.', 'мес.', 'мес.'));
+  if (diff.d || !diff.m) parts.push(diff.d + ' ' + pluralForm(diff.d, 'дн.', 'дн.', 'дн.'));
+  return parts.join(' ');
+}
+function updateDcExactHint() {
+  const hint = document.getElementById('dcExactHint');
+  const monthsInput = document.getElementById('dcMonths');
+  if (!hint || !monthsInput) return;
+  const exact = document.getElementById('dcExact').value;
+  if (exact) {
+    const prepay = document.getElementById('dcPrepay').value;
+    const toll = document.getElementById('dcToll').value;
+    const base = (toll && prepay && toll > prepay) ? toll : (prepay || '');
+    if (base && exact > base) {
+      const diff = monthsDiffISO(base, exact);
+      hint.textContent = 'От ' + fmtDate(base) + ' до ' + fmtDate(exact) + ' — это ' + diffLabel(diff) + '. Поставка придётся на выбранную дату.';
+      monthsInput.value = diff.m;
+    } else {
+      hint.textContent = base ? 'Дата должна быть позже ' + fmtDate(base) : 'Сначала укажите дату аванса';
+      monthsInput.value = '';
+    }
+    monthsInput.disabled = true;
+  } else {
+    hint.textContent = '';
+    monthsInput.disabled = false;
+  }
 }
 function cancelEditSupplyStateOnly() {
   editingSupplyId = null;
@@ -1096,7 +1093,7 @@ function renderSupplyHistory() {
     const safeId = String(e.id || '').replace(/'/g, "\\'");
     return '<div class="task" style="border-left-color:#1e293b">' +
       '<div class="info">' +
-      '<div class="name">' + esc(e.num) + (e.contr ? ' · ' + esc(e.contr) : '') + ' · ' + supplyTermLabel(e) + (e.noRkm ? ' · без РКМ' : '') + '</div>' +
+      '<div class="name">' + esc(e.num) + (e.contr ? ' · ' + esc(e.contr) : '') + ' · ' + (e.exact ? 'до ' + fmtDate(e.exact) : e.months + ' мес.') + (e.noRkm ? ' · без РКМ' : '') + '</div>' +
       '<div class="meta">' +
       '<span>аванс: ' + fmtDate(e.prepay) + '</span>' +
       (e.toll ? '<span>давальческое: ' + fmtDate(e.toll) + '</span>' : '') +
@@ -1145,9 +1142,13 @@ function clearSupplyHistory() {
   if (currentTab === 'doc' && docSub === 'sched') { rebuildSchedFilter(); renderSched(); }
 }
 
-// ===== график поставок: поиск + фильтр по месяцам =====
+// ===== график поставок: поиск + фильтр + вид =====
 let schedSearchOpen = false;
 let schedMonthFilter = 'all';
+let schedView = localStorage.getItem('strazh_schedview') || 'all';
+if (['all','rkm','noempty'].indexOf(schedView) === -1) schedView = 'all';
+const VIEW_LABELS = { all: 'Все месяца', rkm: 'С РКМ', noempty: 'Без пустых месяцев' };
+
 function toggleSchedSearch() {
   schedSearchOpen = !schedSearchOpen;
   const wrap = document.getElementById('schedSearchWrap');
@@ -1156,6 +1157,19 @@ function toggleSchedSearch() {
   btn.textContent = schedSearchOpen ? '✕ Закрыть' : '🔍 Поиск';
   if (schedSearchOpen) document.getElementById('schedSearchInput').focus();
   else { document.getElementById('schedSearchInput').value = ''; renderSched(); }
+}
+function setSchedView(v) {
+  schedView = v;
+  localStorage.setItem('strazh_schedview', v);
+  updateViewButtons();
+  renderSched();
+}
+function updateViewButtons() {
+  const ids = { all: 'vbAll', rkm: 'vbRkm', noempty: 'vbNoEmpty' };
+  Object.keys(ids).forEach(k => {
+    const el = document.getElementById(ids[k]);
+    if (el) el.classList.toggle('on', schedView === k);
+  });
 }
 function schedAllMonthKeys() {
   const set = {};
@@ -1180,142 +1194,133 @@ function rebuildSchedFilter() {
 function schedSearchQuery() {
   return (schedSearchOpen ? (document.getElementById('schedSearchInput').value || '') : '').trim().toLowerCase();
 }
-let schedView = localStorage.getItem('strazh_schedview') || 'all';
-function setSchedView(v) {
-  schedView = v;
-  localStorage.setItem('strazh_schedview', v);
-  const all = document.getElementById('vvAll');
-  if (all) {
-    document.getElementById('vvAll').classList.toggle('on', v === 'all');
-    document.getElementById('vvRkm').classList.toggle('on', v === 'rkm');
-    document.getElementById('vvNoEmpty').classList.toggle('on', v === 'noempty');
-  }
-  renderSched();
-}
-function toggleShipped(id) {
-  const arr = loadSupply();
-  const e = arr.find(x => x.id === id);
-  if (!e) return;
-  e.shipped = !e.shipped;
-  saveSupply(arr);
-  renderSched();
-}
 function schedEntries() {
   const q = schedSearchQuery();
   let entries = loadSupply().filter(e => e.delivery);
+  if (schedView === 'rkm') entries = entries.filter(e => e.rkm);
   if (q) entries = entries.filter(e => ((e.num || '') + ' ' + (e.contr || '')).toLowerCase().indexOf(q) !== -1);
   if (schedMonthFilter !== 'all') entries = entries.filter(e => e.delivery.slice(0, 7) === schedMonthFilter);
-  if (schedView === 'rkm') entries = entries.filter(e => e.rkm);
   return entries;
+}
+// ===== отметка отгрузки =====
+function loadShipped() {
+  try { return JSON.parse(localStorage.getItem('strazh_shipped')) || {}; } catch(e) { return {}; }
+}
+function isShipped(id) { return !!loadShipped()[id]; }
+function toggleShipped(id) {
+  const o = loadShipped();
+  if (o[id]) delete o[id]; else o[id] = true;
+  localStorage.setItem('strazh_shipped', JSON.stringify(o));
+  renderSched();
+}
+function monthRangeKeys(byMonth) {
+  const keys = Object.keys(byMonth).sort();
+  if (!keys.length) return [];
+  const start = parseISO(keys[0] + '-01');
+  const end = parseISO(keys[keys.length - 1] + '-01');
+  const all = [];
+  const cursor = new Date(start.getFullYear(), start.getMonth(), 1);
+  while (cursor <= end) {
+    const mk = cursor.getFullYear() + '-' + (cursor.getMonth() + 1 < 10 ? '0' : '') + (cursor.getMonth() + 1);
+    all.push(mk);
+    cursor.setMonth(cursor.getMonth() + 1);
+  }
+  return all;
+}
+function schedRowHtml(e, todayStr) {
+  const done = isShipped(e.id);
+  const safeId = String(e.id || '').replace(/'/g, "\\'");
+  const rkmTag = e.rkm ? '<span class="rkm-tag">РКМ ' + fmtDate(e.rkm) + '</span>' : '';
+  return '<div class="sch-row' + (e.delivery < todayStr ? ' past' : '') + (done ? ' done' : '') + '">' +
+    '<button type="button" class="sch-check' + (done ? ' on' : '') + '" title="Отметить отгрузку" onclick="toggleShipped(\'' + safeId + '\')">' + (done ? '✓' : '') + '</button>' +
+    '<span class="snum' + (e.rkm ? ' rkm-black' : '') + '">' + esc(e.num) + (e.contr ? ' · ' + esc(e.contr) : '') + '</span>' +
+    '<span class="sdate">' + rkmTag + fmtDate(e.delivery) + '</span></div>';
 }
 function schedMonthHtml(mk, arr, todayStr) {
   const y = parseInt(mk.slice(0,4),10);
   const m = parseInt(mk.slice(5,7),10) - 1;
-  const rows = arr
+  const rows = (arr || [])
     .slice()
     .sort((a,b) => a.delivery.localeCompare(b.delivery))
-    .map(e => {
-      const safeId = String(e.id || '').replace(/'/g, "\\'");
-      const hasRkm = !!e.rkm && !e.noRkm;
-      return '<div class="sch-row' + (e.delivery < todayStr ? ' past' : '') + (e.shipped ? ' is-shipped' : '') + '">' +
-        '<span class="sch-chk' + (e.shipped ? ' on' : '') + '" title="Отметить отгрузку" onclick="toggleShipped(\'' + safeId + '\')">' + (e.shipped ? '✓' : '') + '</span>' +
-        '<span class="snum' + (hasRkm ? ' rkm' : '') + '">' + esc(e.num) + (e.contr ? ' · ' + esc(e.contr) : '') + '</span>' +
-        '<span class="sright">' +
-        (hasRkm ? '<span class="srkm">РКМ ' + fmtDate(e.rkm) + '</span>' : '') +
-        '<span class="sdate">' + fmtDate(e.delivery) + '</span>' +
-        '</span></div>';
-    })
+    .map(e => schedRowHtml(e, todayStr))
     .join('');
+  const empty = (!arr || !arr.length) ? '<div class="sch-empty">нет поставок</div>' : '';
   return '<div class="sch-month">' +
     '<div class="sch-month-title">' + MONTHS[m] + ' ' + y + '</div>' +
     '<div class="sch-month-line"></div>' +
-    rows +
+    rows + empty +
     '</div>';
 }
 function renderSched() {
   const list = document.getElementById('schedList');
   if (!list) return;
   rebuildSchedFilter();
-  const entries = schedEntries();
-  if (!entries.length) {
-    list.innerHTML = schedMonthFilter !== 'all'
-      ? '<p class="note">В этом месяце поставок нет' + (schedSearchQuery() ? ' по вашему поиску' : '') + '</p>'
-      : (schedSearchQuery()
-          ? '<p class="note">По запросу договоров нет</p>'
-          : '<p class="note">Поставок пока нет — сделайте расчёт на первой вкладке</p>');
+  updateViewButtons();
+  const byMonth = {};
+  schedEntries().forEach(e => {
+    const mk = e.delivery.slice(0, 7);
+    if (!byMonth[mk]) byMonth[mk] = [];
+    byMonth[mk].push(e);
+  });
+  const todayStr = isoOfDate(new Date());
+  let keys;
+  if (schedMonthFilter !== 'all') keys = [schedMonthFilter];
+  else if (schedView === 'all') keys = monthRangeKeys(byMonth);
+  else keys = Object.keys(byMonth).sort();
+  const html = keys.map(mk => {
+    const arr = byMonth[mk] || [];
+    if (!arr.length && schedView !== 'all') return '';
+    return schedMonthHtml(mk, arr, todayStr);
+  }).join('');
+  if (!html) {
+    list.innerHTML = schedSearchQuery()
+      ? '<p class="note">По запросу договоров нет</p>'
+      : (schedMonthFilter !== 'all'
+          ? (schedView === 'rkm' ? '<p class="note">В этом месяце договоров с РКМ нет</p>' : '<p class="note">В этом месяце поставок нет</p>')
+          : (schedView === 'rkm'
+              ? '<p class="note">Договоров с РКМ нет</p>'
+              : '<p class="note">Поставок пока нет — сделайте расчёт на первой вкладке</p>'));
     return;
   }
+  list.innerHTML = html;
+}
+// ===== печать графика: тот же принцип видов =====
+function buildPrintHtml() {
+  const q = schedSearchQuery();
+  const entries = schedEntries();
+  if (!entries.length) return null;
+  const filterLabel = schedMonthFilter === 'all' ? 'все месяцы' : schedMonthLabel(schedMonthFilter);
   const byMonth = {};
   entries.forEach(e => {
     const mk = e.delivery.slice(0, 7);
     if (!byMonth[mk]) byMonth[mk] = [];
     byMonth[mk].push(e);
   });
-  const todayStr = isoOfDate(new Date());
-  const keys = Object.keys(byMonth).sort();
-  list.innerHTML = keys.map(mk => schedMonthHtml(mk, byMonth[mk], todayStr)).join('');
-}
-
-// ===== выгрузка/печать графика =====
-function buildPrintHtml() {
-  const q = schedSearchQuery();
-  let entries = loadSupply().filter(e => e.delivery);
-  if (q) entries = entries.filter(e => ((e.num || '') + ' ' + (e.contr || '')).toLowerCase().indexOf(q) !== -1);
-  if (schedView === 'rkm') entries = entries.filter(e => e.rkm);
-  if (!entries.length) return null;
-  const filterLabel = schedMonthFilter === 'all' ? 'все месяцы' : schedMonthLabel(schedMonthFilter);
-  let byMonth = {};
-  entries.forEach(e => {
-    const mk = e.delivery.slice(0, 7);
-    if (!byMonth[mk]) byMonth[mk] = [];
-    byMonth[mk].push(e);
-  });
   let keys;
-  if (schedMonthFilter !== 'all') {
-    keys = [schedMonthFilter];
-    if (!byMonth[schedMonthFilter]) byMonth[schedMonthFilter] = [];
-  } else if (schedView === 'noempty') {
-    keys = Object.keys(byMonth).sort();
-  } else {
-    keys = Object.keys(byMonth).sort();
-    if (keys.length) {
-      const start = parseISO(keys[0] + '-01');
-      const end = parseISO(keys[keys.length - 1] + '-01');
-      const all = [];
-      const cursor = new Date(start.getFullYear(), start.getMonth(), 1);
-      while (cursor <= end) {
-        const mk = cursor.getFullYear() + '-' + (cursor.getMonth() + 1 < 10 ? '0' : '') + (cursor.getMonth() + 1);
-        all.push(mk);
-        cursor.setMonth(cursor.getMonth() + 1);
-      }
-      keys = all;
-    }
-  }
+  if (schedMonthFilter !== 'all') keys = [schedMonthFilter];
+  else if (schedView === 'all') keys = monthRangeKeys(byMonth);
+  else keys = Object.keys(byMonth).sort();
   const todayStr = isoOfDate(new Date());
   const now = new Date();
   const whoNow = currentUser ? currentUser.name : '';
   const monthsHtml = keys.map(mk => {
-    if (!byMonth[mk] || !byMonth[mk].length) {
-      return '<div class="sch-month">' +
-        '<div class="sch-month-title">' + schedMonthLabel(mk) + '</div>' +
-        '<div class="sch-month-line"></div>' +
-        '<div class="sch-empty">нет поставок</div>' +
-        '</div>';
-    }
-    return schedMonthHtml(mk, byMonth[mk], todayStr);
+    const arr = byMonth[mk] || [];
+    if (!arr.length && schedView !== 'all') return '';
+    return schedMonthHtml(mk, arr, todayStr);
   }).join('');
+  if (!monthsHtml) return null;
   return '<div class="pr-title">График поставки</div>' +
     '<div class="pr-sub">СТРАЖ · отдел ПЭО · сформировано ' +
       now.toLocaleDateString('ru-RU') + ' ' + now.toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'}) +
       (whoNow ? ' · ' + whoNow : '') +
     '</div>' +
-    '<div class="pr-criteria">Поиск: ' + (q ? '«' + esc(q) + '»' : '—') + ' · Фильтр по месяцам: ' + esc(filterLabel) + ' · Вид: ' + (schedView === 'rkm' ? 'с РКМ' : (schedView === 'noempty' ? 'без пустых месяцев' : 'все месяца')) + '</div>' +
+    '<div class="pr-criteria">Поиск: ' + (q ? '«' + esc(q) + '»' : '—') + ' · Фильтр по месяцам: ' + esc(filterLabel) + ' · Вид: ' + esc(VIEW_LABELS[schedView] || '') + '</div>' +
     monthsHtml +
     '<div class="pr-note">Тестовый режим. Данные получены из локального хранилища устройства на момент выгрузки.</div>';
 }
 function printSched() {
   const html = buildPrintHtml();
-  if (!html) { alert('Нечего печатать: график поставок пуст или поиск не дал совпадений'); return; }
+  if (!html) { alert('Нечего выгружать: график поставок пуст или поиск не дал совпадений'); return; }
   document.getElementById('printArea').innerHTML = html;
   window.print();
 }
