@@ -142,7 +142,7 @@
   .sch-month { margin-bottom: 10px; }
   .sch-month-title { font-size: 15px; font-weight: 700; color: #dc2626; text-transform: capitalize; }
   .sch-month-line { width: 100%; height: 1px; background: #dc2626; margin: 5px 0 8px; }
-  .sch-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 4px 2px; border-bottom: 1px solid #f1f5f9; font-size: 13.5px; }
+  .sch-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 4px 2px; border-bottom: 1px solid #f1f5f9; font-size: 13.5px; }
   .sch-row:last-child { border-bottom: none; }
   .sch-row .snum { font-weight: 500; color: #94a3b8; }
   .sch-row .sdate { color: #94a3b8; white-space: nowrap; }
@@ -157,8 +157,10 @@
   .sch-view-btn { background: #e2e8f0; border: none; border-radius: 8px; padding: 5px 10px; font-size: 11px; font-weight: 600; color: #475569; cursor: pointer; }
   .sch-view-btn.on { background: #1e293b; color: #fff; }
   .sch-chk { width: 16px; height: 16px; margin: 0; flex-shrink: 0; cursor: pointer; accent-color: #16a34a; }
-  .sch-left { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
-  .srkm { display: block; font-size: 10px; font-weight: 300; color: #dc2626; white-space: nowrap; text-align: right; }
+  .sch-left { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; }
+  .sch-row .snum { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sdate { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+  .srkm { display: inline; font-size: 10px; font-weight: 300; color: #dc2626; white-space: nowrap; }
   .sch-row .snum.rkm-done { font-weight: 700; color: #1e293b; }
   .sch-row.done .snum, .sch-row.done .sdate, .sch-row.done .srkm { text-decoration: line-through; opacity: 0.5; }
   /* ===== печатный блок (выгрузка графика в PDF) ===== */
@@ -173,7 +175,7 @@
     #printArea .sch-month { margin-bottom: 14px; page-break-inside: avoid; }
     #printArea .sch-month-title { font-size: 15px; font-weight: 700; color: #b91c1c; text-transform: capitalize; }
     #printArea .sch-month-line { width: 100%; height: 1px; background: #b91c1c; margin: 5px 0 8px; }
-    #printArea .sch-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 5px 2px; border-bottom: 1px solid #e5e7eb; font-size: 13px; }
+    #printArea .sch-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 5px 2px; border-bottom: 1px solid #e5e7eb; font-size: 13px; }
     #printArea .sch-row:last-child { border-bottom: none; }
     #printArea .sch-row .snum { font-weight: 500; color: #6b7280; }
     #printArea .sch-row .sdate { color: #6b7280; white-space: nowrap; }
@@ -181,8 +183,10 @@
     #printArea .sch-empty { font-size: 12px; color: #9ca3af; padding: 4px 2px; }
     #printArea .sch-views { display: none; }
     #printArea .sch-chk { width: 11px; height: 11px; margin: 0; }
-    #printArea .sch-left { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
-    #printArea .srkm { display: block; font-size: 9px; font-weight: 300; color: #b91c1c; white-space: nowrap; text-align: right; }
+    #printArea .sch-left { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; }
+    #printArea .sch-row .snum { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    #printArea .sdate { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    #printArea .srkm { display: inline; font-size: 9px; font-weight: 300; color: #b91c1c; white-space: nowrap; }
     #printArea .sch-row .snum.rkm-done { font-weight: 700; color: #1e293b; }
     #printArea .sch-row.done .snum, #printArea .sch-row.done .sdate, #printArea .sch-row.done .srkm { text-decoration: line-through; color: #9ca3af; }
     #printArea .pr-note { margin-top: 24px; font-size: 10px; color: #9ca3af; }
@@ -1237,7 +1241,7 @@ function schedRowHtml(e, todayStr) {
     '</span>' +
     '<span class="sdate">' +
     (hasRkm ? '<span class="srkm">РКМ ' + fmtDate(e.rkm) + '</span>' : '') +
-    fmtDate(e.delivery) +
+    '<span class="sdt">' + fmtDate(e.delivery) + '</span>' +
     '</span></div>';
 }
 function schedMonthHtml(mk, arr, todayStr) {
