@@ -50,7 +50,8 @@
   .task.is-done .name { text-decoration: line-through; color: #94a3b8; }
   .task.is-done { opacity: 0.65; }
   .task .meta { color: #64748b; font-size: 12px; margin-top: 3px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-  .who { color: #2563eb; font-weight: 600; }
+  .who { color: #2563eb; font-weight: 600; cursor: pointer; user-select: none; }
+  .who.no-who { color: #94a3b8; font-style: italic; }
   .stdate { font-size: 8px; color: #94a3b8; }
   .task .clickable { cursor: pointer; }
   .status-pill { display: inline-block; padding: 2px 10px; font-size: 11px; font-weight: 600; border-radius: 999px; border: 1px solid; cursor: pointer; user-select: none; }
@@ -209,7 +210,7 @@
     </div>
     <div id="taskList"><p class="note">Задач пока нет</p></div>
   </div>
-  <p class="note">ВНИМАНИЕ. ТЕСТОВЫЙ РЕЖИМ. Задачи хранятся только на этом устройстве — переноси в Kaiten.</p>
+  <p class="note">ВНИМАНИЕ. ТЕСТОВЫЙ РЕЖИМ. Задачи хранятся только на этом устройстве — переноси в Kaiten. Имя исполнителя в строке задачи — нажми, чтобы поменять.</p>
 </div>
 
 <div id="secCal" class="hidden">
@@ -545,21 +546,20 @@ function taskRow(t, idx) {
   return '<div class="task' + (cat === 'done' ? ' is-done' : '') + '" style="border-left-color:' + strip + '">' +
     '<div class="info"><div class="name">' + (cat === 'done' ? '✅ ' : '') + esc(t.name) + '</div>' +
     '<div class="meta">' +
-    (t.who ? '<span class="who">' + esc(t.who) + '</span>' : '') +
+    '<span class="who' + (t.who ? '' : ' no-who') + '" title="Нажми, чтобы сменить исполнителя" onclick="openWhoMenu(event, \'' + t.id + '\')">' + (t.who ? esc(t.who) : '— без исполнителя —') + '</span>' +
     '<span>' + (t.date ? fmtDate(t.date) : '') + '</span>' +
     (badgeCat ? '<span class="badge ' + badgeCls + '">' + badgeCat + '</span>' : '') +
     '<span class="status-pill ' + stCls + '" onclick="openStatusMenu(event, \'' + t.id + '\')">' + esc(status) + '</span>' +
     (t.statusDate ? '<span class="stdate">' + fmtDT(t.statusDate) + '</span>' : '') +
     '</div></div>' +
     '<div>' +
-    (cat !== 'done' ? '<button class="del" title="Закрыть" onclick="closeTask(' + idx + ')">✓</button>' : '') +
     '<button class="del" title="Удалить" onclick="delTask(' + idx + ')">✕</button>' +
     '</div></div>';
 }
 
-let menuTaskId = null;
+let menuTaskId = null, menuWhoTaskId = null;
 function openStatusMenu(ev, id) {
-  ev.stopPropagation(); menuTaskId = id;
+  ev.stopPropagation(); menuTaskId = id; menuWhoTaskId = null;
   const menu = document.getElementById('statusMenu');
   const r = ev.currentTarget.getBoundingClientRect();
   menu.style.top = Math.min(r.bottom + 6, window.innerHeight - 320) + 'px';
@@ -567,10 +567,19 @@ function openStatusMenu(ev, id) {
   renderStatusMenu();
   menu.classList.remove('hidden');
 }
+function openWhoMenu(ev, id) {
+  ev.stopPropagation(); menuTaskId = null; menuWhoTaskId = id;
+  const menu = document.getElementById('statusMenu');
+  const r = ev.currentTarget.getBoundingClientRect();
+  menu.style.top = Math.min(r.bottom + 6, window.innerHeight - 360) + 'px';
+  menu.style.left = Math.max(8, Math.min(r.left, window.innerWidth - 246)) + 'px';
+  renderWhoMenu();
+  menu.classList.remove('hidden');
+}
 function closeStatusMenu() {
   const menu = document.getElementById('statusMenu');
   if (menu) menu.classList.add('hidden');
-  menuTaskId = null;
+  menuTaskId = null; menuWhoTaskId = null;
 }
 function renderStatusMenu() {
   const menu = document.getElementById('statusMenu');
@@ -584,7 +593,33 @@ function renderStatusMenu() {
     }).join('');
   }
 }
+function renderWhoMenu() {
+  const menu = document.getElementById('statusMenu');
+  if (!menuWhoTaskId) return;
+  const tasks = loadTasks();
+  const t = tasks.find(x => x.id === menuWhoTaskId);
+  const cur = t ? (t.who || '') : '';
+  const names = allNames();
+  let html = '';
+  names.forEach(n => {
+    const safeName = n.replace(/'/g, "\\'");
+    html += '<div class="opt" onclick="pickWho(\'' + safeName + '\')"><span><span class="sdot" style="background:#2563eb"></span>' + esc(n) + '</span>' + (cur === n ? '<b>✓</b>' : '') + '</div>';
+  });
+  html += '<div class="opt" onclick="pickWho(\'\')"><span><span class="sdot" style="background:#94a3b8"></span>— без исполнителя —</span>' + (cur === '' ? '<b>✓</b>' : '') + '</div>';
+  menu.innerHTML = html;
+}
 function pickStatus(s) { const id = menuTaskId; closeStatusMenu(); if (id) setStatusById(id, s); }
+function pickWho(n) {
+  const id = menuWhoTaskId;
+  closeStatusMenu();
+  if (!id) return;
+  const tasks = loadTasks();
+  const t = tasks.find(x => x.id === id);
+  if (!t) return;
+  t.who = n;
+  saveTasks(tasks);
+  render();
+}
 document.addEventListener('click', function(e) {
   const menu = document.getElementById('statusMenu');
   if (!menu.classList.contains('hidden') && !menu.contains(e.target)) closeStatusMenu();
@@ -685,11 +720,6 @@ function addTask() {
   const tasks = loadTasks();
   tasks.unshift({ id: 't' + Date.now().toString(36) + Math.random().toString(36).slice(2,7), name: name, who: who, date: document.getElementById('tDate').value, status: 'в очереди', statusDate: new Date().toISOString(), createdAt: new Date().toISOString(), done: false });
   saveTasks(tasks); closeTaskModal(); render();
-}
-function closeTask(i) {
-  const tasks = loadTasks();
-  tasks[i].status = 'выполнено'; tasks[i].statusDate = new Date().toISOString(); tasks[i].done = true;
-  saveTasks(tasks); render();
 }
 function delTask(i) { const tasks = loadTasks(); tasks.splice(i, 1); saveTasks(tasks); render(); }
 
