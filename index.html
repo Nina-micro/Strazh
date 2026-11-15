@@ -42,7 +42,6 @@
   .btn:active { background: #1d4ed8; }
   .btn.clear { background: #e2e8f0; color: #475569; width: auto; padding: 8px 14px; margin-top: 0; font-size: 13px; }
   .btn.ghost { background: #e2e8f0; color: #475569; }
-  .btn.danger { background: #fff; color: #ef4444; border: 1px solid rgba(239,68,68,0.5); width: 100%; font-size: 13px; padding: 9px; }
   .hot-title { color: #ef4444; }
   .task { display: flex; justify-content: space-between; align-items: flex-start; padding: 10px 10px 10px 12px; border-bottom: 1px solid #e2e8f0; font-size: 14px; gap: 8px; border-left-width: 4px; border-left-style: solid; }
   .task:last-child { border-bottom: none; }
@@ -68,7 +67,6 @@
   .sdot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 7px; vertical-align: middle; }
   .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; color: #fff; background: #64748b; cursor: pointer; user-select: none; }
   .badge.over { background: #ef4444; } .badge.soon { background: #f59e0b; } .badge.ok { background: #2563eb; }
-  .badge.paid { background: #16a34a; } .badge.wait { background: #94a3b8; }
   .group { border: 1px solid #e2e8f0; border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
   .group-head { padding: 8px 12px; font-size: 13px; font-weight: 700; color: #fff; display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
   .group-head small { font-weight: 600; opacity: 0.9; }
@@ -78,10 +76,8 @@
   .group-body { border-top: 1px solid #e2e8f0; }
   .del { background: none; border: none; color: #ef4444; font-size: 18px; cursor: pointer; }
   .hr { border: none; border-top: 1px solid #e2e8f0; margin: 10px 0; }
-  #res p, #swRes p { font-size: 14px; margin: 4px 0; }
+  #res p, #swRes p, #dcRes p { font-size: 14px; margin: 4px 0; }
   .note { font-size: 12px; color: #94a3b8; text-align: center; margin-top: 4px; }
-  .sum-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 12px; margin-top: 10px; font-size: 13px; line-height: 1.5; }
-  .sum-box .sum-title { font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 4px; }
   .fab { position: fixed; right: 20px; bottom: 20px; width: 58px; height: 58px; border-radius: 50%; background: #2563eb; color: #fff; border: none; font-size: 30px; line-height: 1; cursor: pointer; z-index: 40; box-shadow: 0 4px 14px rgba(37,99,235,0.4); display: flex; align-items: center; justify-content: center; }
   .fab:active { background: #1d4ed8; }
   .overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.45); z-index: 60; display: flex; align-items: flex-end; justify-content: center; padding: 16px; }
@@ -112,30 +108,21 @@
   body.red-mode .fab { background: #dc2626; box-shadow: 0 4px 14px rgba(220,38,38,0.4); }
   body.red-mode .btn { background: #dc2626; }
   body.red-mode .btn.clear, body.red-mode .btn.ghost { background: #fee2e2; color: #b91c1c; }
-  body.red-mode .btn.danger { background: #fff; color: #ef4444; }
-  body.red-mode #secDoc .card h3 { color: #b91c1c; }
-  .view-toggle { display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 12px; font-weight: 600; color: #475569; margin: 4px 0 10px; }
-  .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
-  .switch input { opacity: 0; width: 0; height: 0; }
-  .slider { position: absolute; inset: 0; border-radius: 999px; background: #cbd5e1; transition: 0.2s; cursor: pointer; }
-  .slider::before { content: ''; position: absolute; width: 18px; height: 18px; border-radius: 50%; left: 3px; top: 3px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.25); transition: 0.2s; }
-  .switch input:checked + .slider { background: #dc2626; }
-  .switch input:checked + .slider::before { transform: translateX(20px); }
-  .month-now { outline: 2px solid #2563eb; outline-offset: -2px; }
-  /* ===== экран входа ===== */
+  .calc-result { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; margin-top: 10px; }
+  .calc-result .big { font-size: 17px; }
+  .user-list-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding: 8px 4px; font-size: 14px; gap: 8px; }
+  .user-list-row:last-child { border-bottom: none; }
+  .user-list-row .u-login { color: #64748b; font-size: 12px; }
+  .user-bar { display: flex; justify-content: space-between; align-items: center; background: #fff; border-radius: 10px; padding: 8px 12px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); font-size: 13px; }
+  .user-bar .who-now { font-weight: 700; color: #1e293b; }
+  .user-bar button { background: #e2e8f0; border: none; border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: 600; color: #475569; cursor: pointer; margin-left: 6px; }
+  .user-bar button.admin-btn { background: #1e293b; color: #fff; }
   #loginOverlay { position: fixed; inset: 0; background: #f1f5f9; z-index: 100; display: flex; align-items: center; justify-content: center; padding: 16px; }
   #loginOverlay.hidden { display: none !important; }
   .login-box { background: #fff; border-radius: 16px; padding: 24px; width: 100%; max-width: 380px; box-shadow: 0 8px 30px rgba(0,0,0,0.15); }
   .login-box h2 { font-size: 22px; text-align: center; margin-bottom: 4px; }
   .login-box .sub { text-align: center; font-size: 12px; color: #94a3b8; margin-bottom: 14px; }
   .login-err { color: #b91c1c; font-size: 13px; text-align: center; min-height: 18px; margin-top: 8px; }
-  .user-bar { display: flex; justify-content: space-between; align-items: center; background: #fff; border-radius: 10px; padding: 8px 12px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); font-size: 13px; }
-  .user-bar .who-now { font-weight: 700; color: #1e293b; }
-  .user-bar button { background: #e2e8f0; border: none; border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: 600; color: #475569; cursor: pointer; margin-left: 6px; }
-  .user-bar button.admin-btn { background: #1e293b; color: #fff; }
-  .user-list-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding: 8px 4px; font-size: 14px; gap: 8px; }
-  .user-list-row:last-child { border-bottom: none; }
-  .user-list-row .u-login { color: #64748b; font-size: 12px; }
 </style>
 </head>
 <body>
@@ -265,11 +252,21 @@
 </div>
 
 <div id="secDoc" class="hidden">
-  <div class="card" style="text-align:center; padding:40px 16px;">
-    <div style="font-size:44px; margin-bottom:10px;">🚧</div>
-    <h3 style="display:block; justify-content:center;">В РАЗРАБОТКЕ</h3>
-    <p class="note">Раздел «Договорная работа» сейчас обновляется.</p>
+  <div class="card">
+    <h3>Расчёт срока поставки и РКМ</h3>
+    <label>Номер договора <input type="text" id="dcNum" placeholder="Например: 0142ХХП, 0317ХХУС, 0521ХХОКР"></label>
+    <label>Аванс — дата оплаты <input type="date" id="dcPrepay"></label>
+    <label>Давальческое — дата получения <input type="date" id="dcToll"></label>
+    <p class="mini-note" style="margin-bottom:8px">Нет давальческого — оставьте поле пустым.</p>
+    <label>Срок поставки, мес. с момента оплаты аванса <input type="number" id="dcMonths" step="1" min="1"></label>
+    <button class="btn" onclick="calcSupply()">Рассчитать</button>
+    <div id="dcRes"></div>
   </div>
+  <div class="card">
+    <h3>История расчётов <button class="btn clear" onclick="clearSupplyHistory()">очистить</button></h3>
+    <div id="dcHistory"><p class="note">Расчётов пока нет</p></div>
+  </div>
+  <p class="note">ТЕСТОВЫЙ РЕЖИМ. Расчёты хранятся только на этом устройстве. Реестр договоров — в разработке.</p>
 </div>
 
 <div id="statusMenu" class="status-menu hidden"></div>
@@ -413,7 +410,7 @@ function delUser(i) {
   buildWhoSelect();
 }
 
-// ===== статусы и данные =====
+// ===== статусы =====
 const STATUS_LIST = ['в очереди', 'в работе', 'на паузе', 'на согласовании у ГЭ', 'на согласовании у МВ', 'на доработке', 'выполнено'];
 const STATUS_CLS = { 'в очереди':'ss-queue','в работе':'ss-work','на паузе':'ss-pause','на согласовании у ГЭ':'ss-ge','на согласовании у МВ':'ss-mv','на доработке':'ss-rework','выполнено':'ss-done' };
 const STATUS_HEAD = { 'в очереди':'g-queue','в работе':'g-work','на паузе':'g-pause','на согласовании у ГЭ':'g-ge','на согласовании у МВ':'g-mv','на доработке':'g-rework','выполнено':'g-done' };
@@ -434,6 +431,7 @@ function showTab(name) {
   document.getElementById('tabCalc').classList.toggle('on', name === 'calc');
   document.getElementById('tabDoc').classList.toggle('on', name === 'doc');
   if (name === 'cal') { renderCal(); renderCalDay(); }
+  if (name === 'doc') renderSupplyHistory();
   document.body.classList.toggle('red-mode', name === 'doc');
 }
 function fabClick() { if (currentTab === 'doc') return; openTaskModal(); }
@@ -744,6 +742,108 @@ function renderCalDay() {
   }).join('');
 }
 
+// ===== договорная работа: расчёт срока поставки и РКМ =====
+function parseISO(s) { const p = s.split('-'); return new Date(parseInt(p[0],10), parseInt(p[1],10)-1, parseInt(p[2],10)); }
+function isoOfDate(d) { const p = n => (n < 10 ? '0' : '') + n; return d.getFullYear() + '-' + p(d.getMonth()+1) + '-' + p(d.getDate()); }
+function addMonthsISO(iso, n) {
+  const d = parseISO(iso);
+  const day = d.getDate();
+  d.setDate(1);
+  d.setMonth(d.getMonth() + n);
+  const dim = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+  d.setDate(Math.min(day, dim));
+  return isoOfDate(d);
+}
+function loadSupply() { try { return JSON.parse(localStorage.getItem('strazh_supply')) || []; } catch(e) { return []; } }
+function saveSupply(arr) { localStorage.setItem('strazh_supply', JSON.stringify(arr)); }
+
+function calcSupply() {
+  const num = document.getElementById('dcNum').value.trim();
+  if (!num) { alert('Укажите номер договора'); return; }
+  const prepay = document.getElementById('dcPrepay').value;
+  const toll = document.getElementById('dcToll').value;
+  const months = parseInt(document.getElementById('dcMonths').value, 10);
+  if (!prepay) { alert('Укажите дату оплаты аванса'); return; }
+  if (!months || months <= 0) { alert('Укажите срок поставки в месяцах'); return; }
+  const base = (toll && toll > prepay) ? toll : prepay;
+  const delivery = addMonthsISO(base, months);
+  const rkm = addMonthsISO(delivery, -3);
+  const entry = {
+    id: 's' + Date.now().toString(36) + Math.random().toString(36).slice(2,7),
+    num: num, prepay: prepay, toll: toll, months: months,
+    base: base, delivery: delivery, rkm: rkm,
+    createdAt: new Date().toISOString()
+  };
+  const arr = loadSupply();
+  arr.unshift(entry);
+  if (arr.length > 50) arr.length = 50;
+  saveSupply(arr);
+  document.getElementById('dcRes').innerHTML =
+    '<div class="calc-result">' +
+    '<p>Договор: <b>' + esc(num) + '</b></p>' +
+    '<p>Аванс (оплата): ' + fmtDate(prepay) + '</p>' +
+    (toll ? '<p>Давальческое (получено): ' + fmtDate(toll) + '</p>' : '') +
+    '<p>Срок поставки: ' + months + ' мес.</p>' +
+    '<hr class="hr">' +
+    '<p>Отсчёт ведётся с: <b>' + fmtDate(base) + '</b>' + (toll ? ' <span class="note" style="margin:0">(позже из двух дат)</span>' : '') + '</p>' +
+    '<p class="big">Поставка: <b>' + fmtDate(delivery) + '</b></p>' +
+    '<p class="big">Формирование РКМ: <b>' + fmtDate(rkm) + '</b> <span class="note" style="margin:0">(за 3 мес. до поставки)</span></p>' +
+    '</div>';
+  renderSupplyHistory();
+}
+function renderSupplyHistory() {
+  const arr = loadSupply();
+  const list = document.getElementById('dcHistory');
+  if (!arr.length) { list.innerHTML = '<p class="note">Расчётов пока нет</p>'; return; }
+  list.innerHTML = arr.map((e, i) => {
+    const dl = daysLeft(e.delivery);
+    let badge = '';
+    if (dl !== null) badge = dl < 0 ? '<span class="badge over">поставка прошла</span>' : '<span class="badge ok">до поставки ' + dl + ' дн.</span>';
+    return '<div class="task" style="border-left-color:#1e293b">' +
+      '<div class="info">' +
+      '<div class="name">' + esc(e.num) + ' · ' + e.months + ' мес.</div>' +
+      '<div class="meta">' +
+      '<span>аванс: ' + fmtDate(e.prepay) + '</span>' +
+      (e.toll ? '<span>давальческое: ' + fmtDate(e.toll) + '</span>' : '') +
+      '<span>отсчёт: ' + fmtDate(e.base) + '</span>' +
+      '</div>' +
+      '<div class="meta">' +
+      '<span class="who">РКМ: ' + fmtDate(e.rkm) + '</span>' +
+      '<span><b>Поставка: ' + fmtDate(e.delivery) + '</b></span>' +
+      badge +
+      '</div></div>' +
+      '<div style="display:flex; flex-direction:column; gap:4px;">' +
+      '<button class="btn clear" style="font-size:11px; padding:5px 10px;" onclick="supplyToCalendar(' + i + ')">В календарь</button>' +
+      '<button class="del" title="Удалить" onclick="delSupply(' + i + ')">✕</button>' +
+      '</div></div>';
+  }).join('');
+}
+function supplyToCalendar(i) {
+  const arr = loadSupply();
+  const e = arr[i];
+  if (!e) return;
+  const who = currentUser ? currentUser.name : '';
+  const tasks = loadTasks();
+  const now = new Date().toISOString();
+  tasks.unshift({ id: 't' + Date.now().toString(36) + Math.random().toString(36).slice(2,7), name: 'РКМ — ' + e.num, who: who, date: e.rkm, status: 'в очереди', statusDate: now, createdAt: now, done: false });
+  tasks.unshift({ id: 't' + Date.now().toString(36) + Math.random().toString(36).slice(2,8), name: 'Поставка — ' + e.num, who: who, date: e.delivery, status: 'в очереди', statusDate: now, createdAt: now, done: false });
+  saveTasks(tasks);
+  render();
+  alert('Добавлены задачи: «РКМ — ' + e.num + '» до ' + fmtDate(e.rkm) + ' и «Поставка — ' + e.num + '» до ' + fmtDate(e.delivery));
+}
+function delSupply(i) {
+  const arr = loadSupply();
+  arr.splice(i, 1);
+  saveSupply(arr);
+  renderSupplyHistory();
+}
+function clearSupplyHistory() {
+  if (!confirm('Очистить всю историю расчётов? Задачи в календаре не пострадают.')) return;
+  saveSupply([]);
+  document.getElementById('dcRes').innerHTML = '';
+  renderSupplyHistory();
+}
+
 function fmt(x) { return x.toLocaleString('ru-RU', {maximumFractionDigits: 2}) + ' руб.'; }
 
 const W_UNITS_M = ['', 'один', 'два', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять'];
@@ -840,8 +940,7 @@ function sumWords() {
     '<hr class="hr">' +
     '<p>Цена без НДС: <b>' + fmt(priceNoNds) + '</b></p>' +
     '<p>в том числе НДС 22%: <b>' + fmt(nds) + '</b></p>' +
-    '<div class="sum-box"><div class="sum-title">Стоимость договора</div>' +
-    '<p>' + sumInWords(s) + ', в том числе НДС 22% — ' + sumInWords(nds) + '</p></div>';
+    '<div class="calc-result"><p>' + sumInWords(s) + ', в том числе НДС 22% — ' + sumInWords(nds) + '</p></div>';
 }
 
 // старт
