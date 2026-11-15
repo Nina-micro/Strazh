@@ -142,7 +142,7 @@
   .sch-month { margin-bottom: 10px; }
   .sch-month-title { font-size: 15px; font-weight: 700; color: #dc2626; text-transform: capitalize; }
   .sch-month-line { width: 100%; height: 1px; background: #dc2626; margin: 5px 0 8px; }
-  .sch-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 4px 2px; border-bottom: 1px solid #f1f5f9; font-size: 13.5px; }
+  .sch-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 4px 2px; border-bottom: 1px solid #f1f5f9; font-size: 13.5px; }
   .sch-row:last-child { border-bottom: none; }
   .sch-row .snum { font-weight: 500; color: #94a3b8; }
   .sch-row .sdate { color: #94a3b8; white-space: nowrap; }
@@ -157,15 +157,14 @@
   .sch-view-btn { background: #e2e8f0; border: none; border-radius: 8px; padding: 5px 10px; font-size: 11px; font-weight: 600; color: #475569; cursor: pointer; }
   .sch-view-btn.on { background: #1e293b; color: #fff; }
   .sch-chk { width: 16px; height: 16px; margin: 0; flex-shrink: 0; cursor: pointer; accent-color: #16a34a; }
-  .sch-left { display: flex; align-items: center; gap: 8px; min-width: 0; }
-  .sch-left .snum { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .srkm { display: inline; font-size: 10px; font-weight: 300; color: #dc2626; white-space: nowrap; margin-right: 6px; }
+  .sch-left { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+  .srkm { display: block; font-size: 10px; font-weight: 300; color: #dc2626; white-space: nowrap; text-align: right; }
   .sch-row .snum.rkm-done { font-weight: 700; color: #1e293b; }
   .sch-row.done .snum, .sch-row.done .sdate, .sch-row.done .srkm { text-decoration: line-through; opacity: 0.5; }
   /* ===== печатный блок (выгрузка графика в PDF) ===== */
   #printArea { display: none; }
   @media print {
-    body, body.bg-dark { background: #fff; color: #1e293b; padding: 0; max-width: none; }
+    body { background: #fff; padding: 0; max-width: none; }
     body > *:not(#printArea) { display: none !important; }
     #printArea { display: block !important; }
     #printArea .pr-title { font-size: 20px; font-weight: 700; color: #1e293b; margin-bottom: 4px; }
@@ -174,7 +173,7 @@
     #printArea .sch-month { margin-bottom: 14px; page-break-inside: avoid; }
     #printArea .sch-month-title { font-size: 15px; font-weight: 700; color: #b91c1c; text-transform: capitalize; }
     #printArea .sch-month-line { width: 100%; height: 1px; background: #b91c1c; margin: 5px 0 8px; }
-    #printArea .sch-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 5px 2px; border-bottom: 1px solid #e5e7eb; font-size: 13px; }
+    #printArea .sch-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 5px 2px; border-bottom: 1px solid #e5e7eb; font-size: 13px; }
     #printArea .sch-row:last-child { border-bottom: none; }
     #printArea .sch-row .snum { font-weight: 500; color: #6b7280; }
     #printArea .sch-row .sdate { color: #6b7280; white-space: nowrap; }
@@ -182,103 +181,86 @@
     #printArea .sch-empty { font-size: 12px; color: #9ca3af; padding: 4px 2px; }
     #printArea .sch-views { display: none; }
     #printArea .sch-chk { width: 11px; height: 11px; margin: 0; }
-    #printArea .sch-left { display: flex; align-items: center; gap: 8px; min-width: 0; }
-    #printArea .sch-left .snum { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    #printArea .srkm { display: inline; font-size: 9px; font-weight: 300; color: #b91c1c; white-space: nowrap; margin-right: 6px; }
+    #printArea .sch-left { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+    #printArea .srkm { display: block; font-size: 9px; font-weight: 300; color: #b91c1c; white-space: nowrap; text-align: right; }
     #printArea .sch-row .snum.rkm-done { font-weight: 700; color: #1e293b; }
     #printArea .sch-row.done .snum, #printArea .sch-row.done .sdate, #printArea .sch-row.done .srkm { text-decoration: line-through; color: #9ca3af; }
     #printArea .pr-note { margin-top: 24px; font-size: 10px; color: #9ca3af; }
   }
 
-  /* ===== палитра: фон и акцентный цвет ===== */
-  :root { --acc:#2563eb; --acc-act:#1d4ed8; --acc-tx:#1d4ed8; --acc-sh:rgba(37,99,235,0.4);
-          --acc-s1:rgba(37,99,235,0.15); --acc-s2:rgba(37,99,235,0.08); --acc-bd:rgba(37,99,235,0.5); }
-  body.acc-orange  { --acc:#f59e0b; --acc-act:#d97706; --acc-tx:#b45309; --acc-sh:rgba(245,158,11,0.4);
-                     --acc-s1:rgba(245,158,11,0.18); --acc-s2:rgba(245,158,11,0.1); --acc-bd:rgba(245,158,11,0.55); }
-  body.acc-teal    { --acc:#14b8a6; --acc-act:#0d9488; --acc-tx:#0f766e; --acc-sh:rgba(20,184,166,0.4);
-                     --acc-s1:rgba(20,184,166,0.18); --acc-s2:rgba(20,184,166,0.1); --acc-bd:rgba(20,184,166,0.55); }
-  body.acc-violet  { --acc:#8b5cf6; --acc-act:#7c3aed; --acc-tx:#6d28d9; --acc-sh:rgba(139,92,246,0.4);
-                     --acc-s1:rgba(139,92,246,0.18); --acc-s2:rgba(139,92,246,0.1); --acc-bd:rgba(139,92,246,0.55); }
-  body.acc-pink    { --acc:#ec4899; --acc-act:#db2777; --acc-tx:#be185d; --acc-sh:rgba(236,72,153,0.4);
-                     --acc-s1:rgba(236,72,153,0.18); --acc-s2:rgba(236,72,153,0.1); --acc-bd:rgba(236,72,153,0.55); }
-  .tabs button.on { background: var(--acc); }
-  .btn { background: var(--acc); }
-  .btn:active { background: var(--acc-act); }
-  .fab { background: var(--acc); box-shadow: 0 4px 14px var(--acc-sh); }
-  .who { color: var(--acc-tx); }
-  .ss-work { color: var(--acc-tx); border-color: var(--acc-bd); background: var(--acc-s2); }
-  .badge.ok { background: var(--acc); }
-  .sb-work { background: var(--acc); }
-  .g-work { background: var(--acc); }
-  .load-fill { background: var(--acc); }
-  .num.c-blue { color: var(--acc-tx); }
-  .cal-chip.c-work { background: var(--acc-s1); color: var(--acc-tx); }
-  .cal-day.today { box-shadow: inset 0 0 0 2px var(--acc); }
-  .cal-day.sel { background: var(--acc-s1); }
-
-  /* ===== панель выбора темы ===== */
-  .theme-bar { display:flex; align-items:center; gap:10px; flex-wrap:wrap; background:#fff; border-radius:10px; padding:8px 12px; margin-bottom:12px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); font-size:12px; }
-  .theme-bar.hidden { display:none; }
-  .tb-lbl { color:#64748b; font-weight:600; }
-  .tb-group { display:flex; gap:6px; align-items:center; }
-  .tb-btn { background:#e2e8f0; border:none; border-radius:8px; padding:5px 10px; font-size:11px; font-weight:600; color:#475569; cursor:pointer; }
-  .tb-btn.on { background:#1e293b; color:#fff; }
-  .tb-swatch { width:18px; height:18px; border-radius:50%; border:2px solid transparent; cursor:pointer; padding:0; flex-shrink:0; }
-  .tb-swatch.on { border-color:#1e293b; }
-  .tb-swatch.acc-blue { background:#2563eb; } .tb-swatch.acc-orange { background:#f59e0b; }
-  .tb-swatch.acc-teal { background:#14b8a6; } .tb-swatch.acc-violet { background:#8b5cf6; }
-  .tb-swatch.acc-pink { background:#ec4899; }
-
-  /* ===== графитовая (тёмная) тема ===== */
-  body.bg-dark { background:#232629; color:#e5e7eb; color-scheme: dark; }
-  body.bg-dark.acc-blue   { --acc-tx:#93c5fd; }
-  body.bg-dark.acc-orange { --acc-tx:#fbbf24; }
-  body.bg-dark.acc-teal   { --acc-tx:#5eead4; }
-  body.bg-dark.acc-violet { --acc-tx:#c4b5fd; }
-  body.bg-dark.acc-pink   { --acc-tx:#f9a8d4; }
-  body.bg-dark .card, body.bg-dark .modal, body.bg-dark .status-menu, body.bg-dark .login-box,
-  body.bg-dark .user-bar, body.bg-dark .theme-bar { background:#2d3136; }
-  body.bg-dark #loginOverlay { background:#1b1e21; }
-  body.bg-dark h1, body.bg-dark .user-bar .who-now, body.bg-dark .status-menu .opt,
-  body.bg-dark .num.c-black, body.bg-dark .sch-row .snum.rkm-done { color:#e5e7eb; }
-  body.bg-dark .subtitle, body.bg-dark .note, body.bg-dark .counter .lbl, body.bg-dark .mini-note,
-  body.bg-dark .stdate, body.bg-dark .u-login, body.bg-dark .status-legend, body.bg-dark .cal-week div,
-  body.bg-dark .small-lbl, body.bg-dark .card h4, body.bg-dark .task .meta, body.bg-dark .tb-lbl,
-  body.bg-dark .sch-hint, body.bg-dark .sch-empty, body.bg-dark .sch-row .snum, body.bg-dark .sch-row .sdate,
-  body.bg-dark .who.no-who, body.bg-dark .load-title { color:#9aa3ad; }
-  body.bg-dark .load-row .lr-top { color:#cfd4da; }
-  body.bg-dark label { color:#e5e7eb; }
-  body.bg-dark input, body.bg-dark select { background:#2d3136; color:#e5e7eb; border-color:#3f444a; }
-  body.bg-dark .tabs, body.bg-dark .sub-tabs, body.bg-dark .btn.clear, body.bg-dark .btn.ghost,
-  body.bg-dark .cal-nav button, body.bg-dark .sch-view-btn, body.bg-dark .user-bar button,
-  body.bg-dark .tb-btn { background:#31353a; color:#cfd4da; }
-  body.bg-dark .btn.clear, body.bg-dark .btn.ghost { background:#31353a; }
-  body.bg-dark .sch-view-btn.on, body.bg-dark .sub-tabs button.on, body.bg-dark .user-bar button.admin-btn { background:#4a515a; color:#fff; }
-  body.bg-dark .tb-btn.on { background:#e5e7eb; color:#1e293b; }
-  body.bg-dark .tb-swatch.on { border-color:#e5e7eb; }
-  body.bg-dark .task, body.bg-dark .user-list-row { border-bottom-color:#33383d; }
-  body.bg-dark .group, body.bg-dark .group-body, body.bg-dark .status-menu,
-  body.bg-dark .calc-result { border-color:#3f444a; }
-  body.bg-dark .hr { border-top-color:#3f444a; }
-  body.bg-dark .calc-result { background:#31353a; }
-  body.bg-dark .status-bar, body.bg-dark .load-track { background:#3f444a; }
-  body.bg-dark .cal-day { background:#31353a; }
-  body.bg-dark .cal-day.dlv { background:rgba(245,158,11,0.14); }
-  body.bg-dark .cal-day.dlv.sel { background:rgba(245,158,11,0.28); }
-  body.bg-dark .cal-delivery-note { background:rgba(245,158,11,0.1); border-color:rgba(245,158,11,0.4); }
-  body.bg-dark .cal-delivery-note .cdn-title { color:#fbbf24; }
-  body.bg-dark .cal-delivery-note .cdn-row { color:#e5e7eb; }
-  body.bg-dark .edit-banner { background:rgba(245,158,11,0.12); border-color:rgba(245,158,11,0.4); color:#fbbf24; }
-  body.bg-dark .edit-banner button { color:#fbbf24; }
-  body.bg-dark .cal-chip.c-soon { color:#fbbf24; }
-  body.bg-dark .cal-chip.c-over { color:#fca5a5; }
-  body.bg-dark .cal-chip.c-done { color:#4ade80; }
-  body.bg-dark .ss-pause { color:#22d3ee; }
-  body.bg-dark .ss-ge, body.bg-dark .ss-mv { color:#eab308; border-color:rgba(234,179,8,0.55); background:rgba(234,179,8,0.12); }
-  body.bg-dark .ss-rework { color:#fb923c; border-color:rgba(251,146,60,0.55); background:rgba(251,146,60,0.12); }
-  body.bg-dark .ss-done { color:#4ade80; border-color:rgba(74,222,128,0.55); background:rgba(74,222,128,0.12); }
-  body.bg-dark .sch-row { border-bottom-color:#33383d; }
-  body.bg-dark .login-err { color:#fca5a5; }
+  /* ===== палитра оформления ===== */
+  body { --accent: #2563eb; --accent-dark: #1d4ed8; --accent-soft: #dbeafe; }
+  body.accent-blue   { --accent: #2563eb; --accent-dark: #1d4ed8; --accent-soft: #dbeafe; }
+  body.accent-orange { --accent: #ea580c; --accent-dark: #c2410c; --accent-soft: #ffedd5; }
+  body.accent-teal   { --accent: #0d9488; --accent-dark: #0f766e; --accent-soft: #ccfbf1; }
+  body.accent-violet { --accent: #7c3aed; --accent-dark: #6d28d9; --accent-soft: #ede9fe; }
+  body.accent-pink   { --accent: #db2777; --accent-dark: #be185d; --accent-soft: #fce7f3; }
+  .tabs button.on { background: var(--accent); }
+  #tabPrice { box-shadow: inset 0 0 0 2px var(--accent); }
+  #tabPrice.on { box-shadow: none; }
+  .btn { background: var(--accent); }
+  .btn:active { background: var(--accent-dark); }
+  .fab { background: var(--accent); box-shadow: 0 4px 14px rgba(0,0,0,0.25); }
+  .fab:active { background: var(--accent-dark); }
+  .who { color: var(--accent); }
+  .load-fill { background: var(--accent); }
+  .num.c-blue { color: var(--accent); }
+  .badge.ok { background: var(--accent); }
+  .cal-day.today { box-shadow: inset 0 0 0 2px var(--accent); }
+  .cal-day.sel { background: var(--accent-soft); }
+  .theme-panel { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; background: #fff; border-radius: 10px; padding: 8px 12px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); font-size: 12px; color: #475569; }
+  .theme-panel .tp-lbl { font-weight: 600; }
+  .tp-btn { background: #e2e8f0; border: none; border-radius: 8px; padding: 5px 10px; font-size: 12px; font-weight: 600; color: #475569; cursor: pointer; }
+  .tp-btn.on { background: #1e293b; color: #fff; }
+  .swatch { width: 22px; height: 22px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; padding: 0; flex-shrink: 0; }
+  .swatch.on { border-color: #1e293b; box-shadow: inset 0 0 0 2px #fff; }
+  /* выравнивание строки графика в одну строчку (экран и печать) */
+  .sch-row, #printArea .sch-row { align-items: center; }
+  .sch-left, #printArea .sch-left { align-items: center; flex-wrap: nowrap; }
+  .sch-row .snum, #printArea .sch-row .snum { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .srkm, #printArea .srkm { display: inline; }
+  /* ===== графитовая тема ===== */
+  body.bg-dark { background: #22262b; color: #e5e7eb; color-scheme: dark; }
+  body.bg-dark .card { background: #2b3138; box-shadow: 0 1px 4px rgba(0,0,0,0.4); }
+  body.bg-dark .theme-panel { background: #2b3138; color: #cbd5e1; }
+  body.bg-dark .tp-btn { background: #3b444d; color: #cbd5e1; }
+  body.bg-dark .tp-btn.on { background: #e5e7eb; color: #1f2428; }
+  body.bg-dark .swatch.on { border-color: #e5e7eb; box-shadow: inset 0 0 0 2px #2b3138; }
+  body.bg-dark input, body.bg-dark select { background: #333b44; color: #e5e7eb; border-color: #4b5563; }
+  body.bg-dark .tabs, body.bg-dark .sub-tabs { background: #333b44; }
+  body.bg-dark .tabs button, body.bg-dark .sub-tabs button { color: #cbd5e1; }
+  body.bg-dark .sub-tabs button.on { background: #e5e7eb; color: #1f2428; }
+  body.bg-dark .sch-view-btn { background: #3b444d; color: #cbd5e1; }
+  body.bg-dark .sch-view-btn.on { background: #e5e7eb; color: #1f2428; }
+  body.bg-dark .status-menu { background: #2b3138; border-color: #4b5563; }
+  body.bg-dark .status-menu .opt { color: #e5e7eb; }
+  body.bg-dark .status-menu .opt:active { background: #3b444d; }
+  body.bg-dark .modal, body.bg-dark .login-box, body.bg-dark .user-bar { background: #2b3138; }
+  body.bg-dark #loginOverlay { background: #22262b; }
+  body.bg-dark .user-bar .who-now { color: #e5e7eb; }
+  body.bg-dark .user-bar button { background: #3b444d; color: #cbd5e1; }
+  body.bg-dark .cal-nav button { background: #3b444d; color: #cbd5e1; }
+  body.bg-dark .cal-day { background: #333b44; }
+  body.bg-dark .cal-delivery-note, body.bg-dark .edit-banner { background: #3b3020; }
+  body.bg-dark .group { border-color: #4b5563; }
+  body.bg-dark .group-body { border-top-color: #4b5563; }
+  body.bg-dark .hr { border-top-color: #4b5563; }
+  body.bg-dark .calc-result { background: #333b44; border-color: #4b5563; }
+  body.bg-dark .task { border-bottom-color: #3b444d; }
+  body.bg-dark .sch-row { border-bottom-color: #333b44; }
+  body.bg-dark .num.c-black { color: #e5e7eb; }
+  body.bg-dark .num.c-gray { color: #64748b; }
+  body.bg-dark .sch-row .snum.rkm-done { color: #e5e7eb; }
+  body.bg-dark .ss-queue { color: #cbd5e1; }
+  body.bg-dark .ss-ge, body.bg-dark .ss-mv { color: #facc15; }
+  body.bg-dark .g-queue { background: #64748b; }
+  body.bg-dark .sb-queue, body.bg-dark .lg-queue::before { background: #cbd5e1; }
+  body.bg-dark .subtitle, body.bg-dark .note, body.bg-dark .mini-note, body.bg-dark .counter .lbl,
+  body.bg-dark .status-legend, body.bg-dark .small-lbl, body.bg-dark .card h4, body.bg-dark .load-title,
+  body.bg-dark .task .meta, body.bg-dark .stdate, body.bg-dark .sch-row .sdate, body.bg-dark .sch-empty,
+  body.bg-dark .sch-hint, body.bg-dark .user-list-row .u-login, body.bg-dark .login-box .sub,
+  body.bg-dark .cal-week div, body.bg-dark .cal-nav .mon, body.bg-dark #res p, body.bg-dark #swRes p,
+  body.bg-dark #dcRes p { color: #cbd5e1; }
 </style>
 </head>
 <body>
@@ -304,21 +286,16 @@
   </span>
 </div>
 
-<!-- палитра: фон и цвет -->
-<div id="themeBar" class="theme-bar hidden">
-  <span class="tb-lbl">Фон</span>
-  <span class="tb-group">
-    <button type="button" class="tb-btn" id="btnBgLight" onclick="setBg('light')">белый</button>
-    <button type="button" class="tb-btn" id="btnBgDark" onclick="setBg('dark')">графит</button>
-  </span>
-  <span class="tb-lbl">Цвет</span>
-  <span class="tb-group">
-    <button type="button" class="tb-swatch acc-blue" id="sw-blue" onclick="setAcc('blue')" title="Голубой"></button>
-    <button type="button" class="tb-swatch acc-orange" id="sw-orange" onclick="setAcc('orange')" title="Оранжевый"></button>
-    <button type="button" class="tb-swatch acc-teal" id="sw-teal" onclick="setAcc('teal')" title="Бирюзовый"></button>
-    <button type="button" class="tb-swatch acc-violet" id="sw-violet" onclick="setAcc('violet')" title="Фиолетовый"></button>
-    <button type="button" class="tb-swatch acc-pink" id="sw-pink" onclick="setAcc('pink')" title="Розовый"></button>
-  </span>
+<div id="themePanel" class="theme-panel hidden">
+  <span class="tp-lbl">Фон:</span>
+  <button type="button" class="tp-btn" id="bgLight" onclick="setBg('light')">белый</button>
+  <button type="button" class="tp-btn" id="bgDark" onclick="setBg('dark')">графит</button>
+  <span class="tp-lbl">Цвет:</span>
+  <button type="button" class="swatch" id="swBlue"   style="background:#2563eb" title="голубой"    onclick="setAccent('blue')"></button>
+  <button type="button" class="swatch" id="swOrange" style="background:#ea580c" title="оранжевый"  onclick="setAccent('orange')"></button>
+  <button type="button" class="swatch" id="swTeal"   style="background:#0d9488" title="бирюзовый"  onclick="setAccent('teal')"></button>
+  <button type="button" class="swatch" id="swViolet" style="background:#7c3aed" title="фиолетовый" onclick="setAccent('violet')"></button>
+  <button type="button" class="swatch" id="swPink"   style="background:#db2777" title="розовый"    onclick="setAccent('pink')"></button>
 </div>
 
 <h1>СТРАЖ</h1>
@@ -329,6 +306,7 @@
   <button id="tabCal" onclick="showTab('cal')">Календарь экономиста</button>
   <button id="tabCalc" onclick="showTab('calc')">Калькулятор</button>
   <button id="tabDoc" onclick="showTab('doc')">Договорная работа</button>
+<button id="tabPrice" onclick="showTab('price')">Ценообразование</button>
 </div>
 
 <div id="secTasks">
@@ -486,6 +464,14 @@
   <p class="note">ТЕСТОВЫЙ РЕЖИМ. Расчёты хранятся только на этом устройстве. Реестр договоров — в разработке.</p>
 </div>
 
+<div id="secPrice" class="hidden">
+  <div class="card">
+    <h3>Ценообразование</h3>
+    <p class="note" style="text-align:left; margin-bottom:6px">Раздел в разработке. Планируемое содержание: расчёт цены, контроль цен и плановая стоимость.</p>
+    <p class="note" style="text-align:left">Что положить сюда первым — напишите, соберу в этой вкладке.</p>
+  </div>
+</div>
+
 <!-- печатный блок: наполняется перед выгрузкой в PDF -->
 <div id="printArea"></div>
 
@@ -585,14 +571,29 @@ function applyAuth() {
     bar.classList.remove('hidden');
     document.getElementById('whoNow').textContent = currentUser.name;
     document.getElementById('btnAdmin').classList.toggle('hidden', !currentUser.admin);
-    document.getElementById('themeBar').classList.remove('hidden');
+    document.getElementById('themePanel').classList.remove('hidden');
   } else {
     overlay.classList.remove('hidden');
     bar.classList.add('hidden');
-    document.getElementById('themeBar').classList.add('hidden');
     document.getElementById('inLogin').focus();
+    document.getElementById('themePanel').classList.add('hidden');
   }
 }
+// ===== палитра оформления =====
+function applyTheme() {
+  const bg = localStorage.getItem('strazh_bg') || 'light';
+  const ac = localStorage.getItem('strazh_accent') || 'blue';
+  document.body.classList.toggle('bg-dark', bg === 'dark');
+  document.body.classList.remove('accent-blue','accent-orange','accent-teal','accent-violet','accent-pink');
+  document.body.classList.add('accent-' + ac);
+  document.getElementById('bgLight').classList.toggle('on', bg !== 'dark');
+  document.getElementById('bgDark').classList.toggle('on', bg === 'dark');
+  const ids = { blue:'swBlue', orange:'swOrange', teal:'swTeal', violet:'swViolet', pink:'swPink' };
+  Object.keys(ids).forEach(c => document.getElementById(ids[c]).classList.toggle('on', ac === c));
+}
+function setBg(b) { localStorage.setItem('strazh_bg', b); applyTheme(); }
+function setAccent(c) { localStorage.setItem('strazh_accent', c); applyTheme(); }
+
 function openAdminModal() {
   document.getElementById('adminOverlay').classList.remove('hidden');
   document.getElementById('aName').value = '';
@@ -650,10 +651,12 @@ function showTab(name) {
   document.getElementById('secCal').classList.toggle('hidden', name !== 'cal');
   document.getElementById('secCalc').classList.toggle('hidden', name !== 'calc');
   document.getElementById('secDoc').classList.toggle('hidden', name !== 'doc');
+  document.getElementById('secPrice').classList.toggle('hidden', name !== 'price');
   document.getElementById('tabTasks').classList.toggle('on', name === 'tasks');
   document.getElementById('tabCal').classList.toggle('on', name === 'cal');
   document.getElementById('tabCalc').classList.toggle('on', name === 'calc');
   document.getElementById('tabDoc').classList.toggle('on', name === 'doc');
+  document.getElementById('tabPrice').classList.toggle('on', name === 'price');
   if (name === 'cal') { renderCal(); renderCalDay(); }
   if (name === 'doc') { showDocSub(docSub); }
   document.body.classList.toggle('red-mode', name === 'doc');
@@ -668,7 +671,7 @@ function showDocSub(name) {
   if (name === 'calc') renderSupplyHistory();
   if (name === 'sched') { rebuildSchedFilter(); renderSched(); }
 }
-function fabClick() { if (currentTab === 'doc') return; openTaskModal(); }
+function fabClick() { if (currentTab === 'doc' || currentTab === 'price') return; openTaskModal(); }
 
 function allNames() {
   const names = TEAM.slice();
@@ -1539,28 +1542,10 @@ function sumWords() {
     '<div class="calc-result"><p>' + sumInWords(s) + ', в том числе НДС 22% — ' + sumInWords(nds) + '</p></div>';
 }
 
-// ===== палитра: фон и цвет =====
-function applyTheme() {
-  const bg = localStorage.getItem('strazh_bg') || 'light';
-  const acc = localStorage.getItem('strazh_acc') || 'blue';
-  document.body.classList.toggle('bg-dark', bg === 'dark');
-  ['blue','orange','teal','violet','pink'].forEach(a => document.body.classList.remove('acc-' + a));
-  document.body.classList.add('acc-' + acc);
-  const bgl = document.getElementById('btnBgLight');
-  const bgd = document.getElementById('btnBgDark');
-  if (bgl) { bgl.classList.toggle('on', bg !== 'dark'); bgd.classList.toggle('on', bg === 'dark'); }
-  ['blue','orange','teal','violet','pink'].forEach(a => {
-    const el = document.getElementById('sw-' + a);
-    if (el) el.classList.toggle('on', a === acc);
-  });
-}
-function setBg(v) { localStorage.setItem('strazh_bg', v); applyTheme(); }
-function setAcc(a) { localStorage.setItem('strazh_acc', a); applyTheme(); }
-
 // старт
+applyTheme();
 buildWhoSelect();
 render();
-applyTheme();
 applyAuth();
 showTab(localStorage.getItem('strazh_tab') || 'tasks');
 docSub = localStorage.getItem('strazh_docsub') || 'calc';
