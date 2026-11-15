@@ -97,12 +97,18 @@
   .cal-day.other { opacity: 0.35; }
   .cal-day.today { box-shadow: inset 0 0 0 2px #2563eb; }
   .cal-day.sel { background: #dbeafe; }
+  .cal-day.dlv { box-shadow: inset 0 0 0 2.5px #f59e0b; background: #fffbeb; }
+  .cal-day.dlv.sel { box-shadow: inset 0 0 0 2.5px #f59e0b; background: #fef3c7; }
+  .cal-day.today.dlv { box-shadow: inset 0 0 0 2.5px #f59e0b; }
   .cal-day .d { font-size: 12px; font-weight: 600; }
   .cal-chip { font-size: 9px; line-height: 1.3; padding: 1px 4px; border-radius: 4px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
   .cal-chip.c-work { background: rgba(37,99,235,0.15); color: #1d4ed8; }
   .cal-chip.c-soon { background: rgba(245,158,11,0.2); color: #b45309; }
   .cal-chip.c-over { background: rgba(239,68,68,0.18); color: #b91c1c; }
   .cal-chip.c-done { background: rgba(22,163,74,0.15); color: #15803d; }
+  .cal-delivery-note { margin-top: 10px; background: #fffbeb; border: 1px solid rgba(245,158,11,0.5); border-radius: 10px; padding: 10px 12px; font-size: 13px; }
+  .cal-delivery-note .cdn-title { font-weight: 700; color: #b45309; margin-bottom: 6px; }
+  .cal-delivery-note .cdn-row { padding: 3px 0; color: #1e293b; }
   .hidden { display: none; }
   body.red-mode .tabs button.on { background: #dc2626; }
   body.red-mode .fab { background: #dc2626; box-shadow: 0 4px 14px rgba(220,38,38,0.4); }
@@ -218,7 +224,7 @@
     <h3 id="calDayTitle">Выберите день</h3>
     <div id="calDayList"><p class="note">Нажмите на день в календаре</p></div>
   </div>
-  <p class="note">В календаре задачи стоят на день дедлайна. Просроченные — красным.</p>
+  <p class="note">Оранжевая рамка — день поставки из расчётов. В календаре задачи стоят на день дедлайна. Просроченные — красным.</p>
 </div>
 
 <div id="secCalc" class="hidden">
@@ -699,6 +705,7 @@ function calMove(dir) {
   renderCal();
 }
 function calTasksOn(key) { return loadTasks().filter(t => t.date === key); }
+function deliveriesOn(key) { return loadSupply().filter(e => e.delivery === key); }
 function renderCal() {
   document.getElementById('calTitle').textContent = MONTHS[calMonth] + ' ' + calYear;
   const grid = document.getElementById('calGrid');
@@ -718,7 +725,8 @@ function renderCal() {
     let chips = '';
     dayTasks.slice(0, 2).forEach(t => { chips += '<div class="cal-chip c-' + taskCat(t) + '">' + esc(t.name) + '</div>'; });
     if (dayTasks.length > 2) chips += '<div class="cal-chip c-work">+ ещё ' + (dayTasks.length - 2) + '</div>';
-    const cls = 'cal-day' + (inMonth ? '' : ' other') + (key === todayKey ? ' today' : '') + (key === calSel ? ' sel' : '');
+    const hasDelivery = deliveriesOn(key).length > 0;
+    const cls = 'cal-day' + (inMonth ? '' : ' other') + (key === todayKey ? ' today' : '') + (key === calSel ? ' sel' : '') + (hasDelivery ? ' dlv' : '');
     html += '<div class="' + cls + '" onclick="calPick(\'' + key + '\')"><div class="d">' + d.getDate() + '</div>' + chips + '</div>';
   }
   grid.innerHTML = html;
@@ -730,16 +738,28 @@ function renderCalDay() {
   if (!calSel) { title.textContent = 'Выберите день'; listEl.innerHTML = '<p class="note">Нажмите на день в календаре</p>'; return; }
   title.textContent = 'Дедлайны: ' + fmtDate(calSel);
   const dayTasks = calTasksOn(calSel);
-  if (!dayTasks.length) { listEl.innerHTML = '<p class="note">На этот день задач нет</p>'; return; }
-  listEl.innerHTML = dayTasks.map(t => {
-    const cat = taskCat(t);
-    const status = t.status || 'в работе';
-    const bCls = cat === 'over' ? 'over' : (cat === 'soon' ? 'soon' : (cat === 'done' ? '' : 'ok'));
-    return '<div class="task"><div class="info"><div class="name">' + (cat === 'done' ? '✅ ' : '') + esc(t.name) + '</div>' +
-      '<div class="meta">' + (t.who ? '<span class="who">' + esc(t.who) + '</span>' : '') +
-      '<span class="badge ' + bCls + '">' + (cat === 'done' ? 'закрыто' : esc(status)) + '</span>' +
-      '</div></div></div>';
-  }).join('');
+  const deliveries = deliveriesOn(calSel);
+  let html = '';
+  if (dayTasks.length) {
+    html += dayTasks.map(t => {
+      const cat = taskCat(t);
+      const status = t.status || 'в работе';
+      const bCls = cat === 'over' ? 'over' : (cat === 'soon' ? 'soon' : (cat === 'done' ? '' : 'ok'));
+      return '<div class="task"><div class="info"><div class="name">' + (cat === 'done' ? '✅ ' : '') + esc(t.name) + '</div>' +
+        '<div class="meta">' + (t.who ? '<span class="who">' + esc(t.who) + '</span>' : '') +
+        '<span class="badge ' + bCls + '">' + (cat === 'done' ? 'закрыто' : esc(status)) + '</span>' +
+        '</div></div></div>';
+    }).join('');
+  } else {
+    html += '<p class="note">На этот день задач нет</p>';
+  }
+  if (deliveries.length) {
+    html += '<div class="cal-delivery-note">' +
+      '<div class="cdn-title">' + (deliveries.length === 1 ? '📦 Поставка сегодня' : '📦 Поставки сегодня: ' + deliveries.length) + '</div>' +
+      deliveries.map(e => '<div class="cdn-row"><b>' + esc(e.num) + '</b> · срок ' + e.months + ' мес. · отсчёт с ' + fmtDate(e.base) + '</div>').join('') +
+      '</div>';
+  }
+  listEl.innerHTML = html;
 }
 
 // ===== договорная работа: расчёт срока поставки и РКМ =====
@@ -786,10 +806,11 @@ function calcSupply() {
     '<p>Срок поставки: ' + months + ' мес.</p>' +
     '<hr class="hr">' +
     '<p>Отсчёт ведётся с: <b>' + fmtDate(base) + '</b>' + (toll ? ' <span class="note" style="margin:0">(позже из двух дат)</span>' : '') + '</p>' +
-    '<p class="big">Поставка: <b>' + fmtDate(delivery) + '</b></p>' +
+    '<p class="big">Поставка: <b>' + fmtDate(delivery) + '</b> <span class="note" style="margin:0">(день подсвечен в календаре)</span></p>' +
     '<p class="big">Формирование РКМ: <b>' + fmtDate(rkm) + '</b> <span class="note" style="margin:0">(за 3 мес. до поставки)</span></p>' +
     '</div>';
   renderSupplyHistory();
+  if (currentTab === 'cal') { renderCal(); renderCalDay(); }
 }
 function renderSupplyHistory() {
   const arr = loadSupply();
@@ -826,22 +847,23 @@ function supplyToCalendar(i) {
   const tasks = loadTasks();
   const now = new Date().toISOString();
   tasks.unshift({ id: 't' + Date.now().toString(36) + Math.random().toString(36).slice(2,7), name: 'РКМ — ' + e.num, who: who, date: e.rkm, status: 'в очереди', statusDate: now, createdAt: now, done: false });
-  tasks.unshift({ id: 't' + Date.now().toString(36) + Math.random().toString(36).slice(2,8), name: 'Поставка — ' + e.num, who: who, date: e.delivery, status: 'в очереди', statusDate: now, createdAt: now, done: false });
   saveTasks(tasks);
   render();
-  alert('Добавлены задачи: «РКМ — ' + e.num + '» до ' + fmtDate(e.rkm) + ' и «Поставка — ' + e.num + '» до ' + fmtDate(e.delivery));
+  alert('Добавлена задача «РКМ — ' + e.num + '» до ' + fmtDate(e.rkm) + '. День поставки ' + fmtDate(e.delivery) + ' подсвечен в календаре.');
 }
 function delSupply(i) {
   const arr = loadSupply();
   arr.splice(i, 1);
   saveSupply(arr);
   renderSupplyHistory();
+  if (currentTab === 'cal') { renderCal(); renderCalDay(); }
 }
 function clearSupplyHistory() {
-  if (!confirm('Очистить всю историю расчётов? Задачи в календаре не пострадают.')) return;
+  if (!confirm('Очистить всю историю расчётов? Подсветка поставок в календаре исчезнет, а задачи РКМ останутся.')) return;
   saveSupply([]);
   document.getElementById('dcRes').innerHTML = '';
   renderSupplyHistory();
+  if (currentTab === 'cal') { renderCal(); renderCalDay(); }
 }
 
 function fmt(x) { return x.toLocaleString('ru-RU', {maximumFractionDigits: 2}) + ' руб.'; }
