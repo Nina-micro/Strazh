@@ -141,7 +141,7 @@
   /* ===== график поставок ===== */
   .sch-month { margin-bottom: 18px; }
   .sch-month-title { font-size: 15px; font-weight: 700; color: #dc2626; text-transform: capitalize; }
-  .sch-month-line { width: 100%; height: 1.5px; background: #dc2626; opacity: 0.55; margin: 5px 0 8px; }
+  .sch-month-line { width: 100%; height: 1px; background: #dc2626; margin: 5px 0 8px; }
   .sch-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 5px 2px; border-bottom: 1px solid #f1f5f9; font-size: 13.5px; }
   .sch-row:last-child { border-bottom: none; }
   .sch-row .snum { font-weight: 500; color: #94a3b8; }
@@ -162,7 +162,7 @@
     #printArea .pr-criteria { font-size: 12px; color: #475569; background: #f3f4f6; border-radius: 6px; padding: 6px 10px; margin-bottom: 18px; }
     #printArea .sch-month { margin-bottom: 16px; page-break-inside: avoid; }
     #printArea .sch-month-title { font-size: 15px; font-weight: 700; color: #b91c1c; text-transform: capitalize; }
-    #printArea .sch-month-line { width: 100%; height: 1.2px; background: #b91c1c; margin: 5px 0 8px; }
+    #printArea .sch-month-line { width: 100%; height: 1px; background: #b91c1c; margin: 5px 0 8px; }
     #printArea .sch-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 5px 2px; border-bottom: 1px solid #e5e7eb; font-size: 13px; }
     #printArea .sch-row:last-child { border-bottom: none; }
     #printArea .sch-row .snum { font-weight: 500; color: #6b7280; }
@@ -337,7 +337,8 @@
       <h3>График поставок
         <span style="display:flex; gap:6px;">
           <button class="btn clear" id="schedSearchBtn" onclick="toggleSchedSearch()">🔍 Поиск</button>
-          <button class="btn clear" onclick="exportSchedPdf()">⤓ PDF</button>
+          <button class="btn clear" onclick="exportSchedPdf()">⤓ Скачать в PDF</button>
+          <button class="btn clear" onclick="printSched()">🖨 Распечатать</button>
         </span>
       </h3>
       <div class="sch-search hidden" id="schedSearchWrap">
@@ -1142,12 +1143,12 @@ function renderSched() {
   list.innerHTML = keys.map(mk => schedMonthHtml(mk, byMonth[mk], todayStr)).join('');
 }
 
-// ===== выгрузка графика в PDF (через печать браузера) =====
-function exportSchedPdf() {
+// ===== выгрузка/печать графика =====
+function buildPrintHtml() {
   const q = schedSearchQuery();
   let entries = loadSupply().filter(e => e.delivery);
   if (q) entries = entries.filter(e => ((e.num || '') + ' ' + (e.contr || '')).toLowerCase().indexOf(q) !== -1);
-  if (!entries.length) { alert('Нечего выгружать: график поставок пуст или поиск не дал совпадений'); return; }
+  if (!entries.length) return null;
   const filterLabel = schedMonthFilter === 'all' ? 'все месяцы' : schedMonthLabel(schedMonthFilter);
   let byMonth = {};
   entries.forEach(e => {
@@ -1160,12 +1161,10 @@ function exportSchedPdf() {
     keys = [schedMonthFilter];
     if (!byMonth[schedMonthFilter]) byMonth[schedMonthFilter] = [];
   } else {
-    const first = keys = Object.keys(byMonth).sort();
-    // диапазон месяцев от самой ранней до самой поздней поставки, включая пустые
-    if (first.length) {
-      const start = parseISO(first[0] + '-01');
-      const endMk = first[first.length - 1];
-      const end = parseISO(endMk + '-01');
+    keys = Object.keys(byMonth).sort();
+    if (keys.length) {
+      const start = parseISO(keys[0] + '-01');
+      const end = parseISO(keys[keys.length - 1] + '-01');
       const all = [];
       const cursor = new Date(start.getFullYear(), start.getMonth(), 1);
       while (cursor <= end) {
@@ -1189,8 +1188,7 @@ function exportSchedPdf() {
     }
     return schedMonthHtml(mk, byMonth[mk], todayStr);
   }).join('');
-  document.getElementById('printArea').innerHTML =
-    '<div class="pr-title">График поставки</div>' +
+  return '<div class="pr-title">График поставки</div>' +
     '<div class="pr-sub">СТРАЖ · отдел ПЭО · сформировано ' +
       now.toLocaleDateString('ru-RU') + ' ' + now.toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'}) +
       (whoNow ? ' · ' + whoNow : '') +
@@ -1200,7 +1198,15 @@ function exportSchedPdf() {
       : '<div class="pr-criteria">Поиск: — · Фильтр по месяцам: все месяцы</div>') +
     monthsHtml +
     '<div class="pr-note">Тестовый режим. Данные получены из локального хранилища устройства на момент выгрузки.</div>';
+}
+function exportSchedPdf() {
+  const html = buildPrintHtml();
+  if (!html) { alert('Нечего выгружать: график поставок пуст или поиск не дал совпадений'); return; }
+  document.getElementById('printArea').innerHTML = html;
   window.print();
+}
+function printSched() {
+  exportSchedPdf();
 }
 
 function fmt(x) { return x.toLocaleString('ru-RU', {maximumFractionDigits: 2}) + ' руб.'; }
