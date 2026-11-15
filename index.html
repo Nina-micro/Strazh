@@ -188,79 +188,20 @@
     #printArea .pr-note { margin-top: 24px; font-size: 10px; color: #9ca3af; }
   }
 
-/* ===== палитра приложения ===== */
-body { --accent:#2563eb; --accent-dark:#1d4ed8; --accent-soft:#dbeafe; --accent-glow:rgba(37,99,235,0.4); }
-body.theme-graphite { --page-bg:#2b2f36; --card-bg:#3a3f47; --text:#e5e7eb; --muted:#9ca3af; --line:#4b5563; --input-bg:#3f4450; color-scheme: dark; }
-body.theme-graphite { background: var(--page-bg); color: var(--text); }
-body.theme-graphite h1 { color:#fff; }
-body.theme-graphite .subtitle, body.theme-graphite .note, body.theme-graphite .mini-note { color: var(--muted); }
-body.theme-graphite .card, body.theme-graphite .modal, body.theme-graphite .login-box, body.theme-graphite .user-bar, body.theme-graphite .theme-panel { background: var(--card-bg); }
-body.theme-graphite #loginOverlay { background:#23262c; }
-body.theme-graphite label { color: var(--text); }
-body.theme-graphite input, body.theme-graphite select { background: var(--input-bg); color: var(--text); border-color:#5b616c; }
-body.theme-graphite .tabs, body.theme-graphite .sub-tabs { background:#22252b; }
-body.theme-graphite .tabs button, body.theme-graphite .sub-tabs button { color:#cbd5e1; }
-body.theme-graphite .task { border-bottom-color: var(--line); }
-body.theme-graphite .task .name { color: var(--text); }
-body.theme-graphite .status-menu { background: var(--card-bg); }
-body.theme-graphite .status-menu .opt { color: var(--text); }
-body.theme-graphite .status-menu .opt:active { background:#4b5563; }
-body.theme-graphite .calc-result { background:#323742; border-color: var(--line); }
-body.theme-graphite .cal-day { background: var(--input-bg); }
-body.theme-graphite .cal-nav button { background: var(--input-bg); color:#cbd5e1; }
-body.theme-graphite .cal-delivery-note { background: var(--card-bg); border-color:#5b616c; color: var(--text); }
-body.theme-graphite .cal-delivery-note .cdn-title { color:#fbbf24; }
-body.theme-graphite .group { border-color: var(--line); }
-body.theme-graphite .group-body { border-top-color: var(--line); }
-body.theme-graphite .sch-row { border-bottom-color:#3f4450; }
-body.theme-graphite .sch-view-btn { background: var(--input-bg); color:#cbd5e1; }
-body.theme-graphite .sch-view-btn.on { background: var(--accent); color:#fff; }
-body.theme-graphite .btn.clear, body.theme-graphite .btn.ghost { background: var(--input-bg); color:#cbd5e1; }
-body.theme-graphite .user-bar button { background: var(--input-bg); color:#cbd5e1; }
-body.theme-graphite hr.hr { border-top-color: var(--line); }
-body.theme-graphite .login-err { color:#fca5a5; }
-body.theme-graphite .hot-title { color:#f87171; }
-body.theme-graphite .edit-banner { background:#3a342a; border-color:#f59e0b; color:#fbbf24; }
-body.theme-graphite .edit-banner button { color:#fbbf24; }
-body.theme-graphite .sch-month-title { color:#f87171; }
-body.theme-graphite .sch-month-line { background:#f87171; }
-/* акцентный цвет */
-.tabs button.on { background: var(--accent); }
-.btn { background: var(--accent); }
-.btn:active { background: var(--accent-dark); }
-.fab { background: var(--accent); box-shadow: 0 4px 14px var(--accent-glow); }
-.fab:active { background: var(--accent-dark); }
-.who { color: var(--accent); }
-.load-fill { background: var(--accent); }
-.cal-day.today { box-shadow: inset 0 0 0 2px var(--accent); }
-.cal-day.sel { background: var(--accent-soft); }
 /* красный режим вкладки «ДОГОВОРА» — поверх акцента */
 body.red-mode .tabs button.on { background:#dc2626; }
 body.red-mode .fab { background:#dc2626; box-shadow:0 4px 14px rgba(220,38,38,0.4); }
 body.red-mode .btn { background:#dc2626; }
 body.red-mode .btn.clear, body.red-mode .btn.ghost { background:#fee2e2; color:#b91c1c; }
-/* панель палитры */
-.theme-panel { display:flex; align-items:center; gap:8px; flex-wrap:wrap; border-radius:10px; padding:8px 12px; margin-bottom:12px; box-shadow:0 1px 4px rgba(0,0,0,0.08); font-size:12px; background:#fff; }
-.tp-lbl { color:#64748b; font-weight:600; }
-.tp-bg { border:1px solid #cbd5e1; background:none; border-radius:8px; padding:4px 10px; font-size:12px; font-weight:600; color:#475569; cursor:pointer; }
-.tp-bg.on { background:#1e293b; color:#fff; border-color:#1e293b; }
-.tp-dot { width:20px; height:20px; border-radius:50%; border:2px solid transparent; cursor:pointer; padding:0; }
-.tp-dot.on { border-color:#1e293b; }
-body.theme-graphite .tp-lbl { color:#9ca3af; }
-body.theme-graphite .tp-bg { color:#cbd5e1; border-color:#5b616c; }
-body.theme-graphite .tp-bg.on { background: var(--accent); color:#fff; border-color: var(--accent); }
-body.theme-graphite .tp-dot.on { border-color:#e5e7eb; }
-/* вкладка ЦЕНЫ: свечение янтарно-золотым */
-#tabPrices { border:2px solid #f59e0b; color:#b45309; font-weight:700; animation: pricesGlow 2.2s ease-in-out infinite; }
+/* вкладка ЦЕНЫ: жёлто-золотое свечение только когда активна */
+#tabPrices.on { background:#f59e0b; color:#fff; animation: pricesGlow 2.2s ease-in-out infinite; }
 @keyframes pricesGlow {
   0%,100% { box-shadow: 0 0 5px rgba(245,158,11,0.55); }
   50%     { box-shadow: 0 0 16px rgba(245,158,11,0.95); }
 }
-#tabPrices.on { background: var(--accent); color:#fff; border-color: transparent; animation: none; box-shadow:none; }
-body.theme-graphite #tabPrices { color:#fbbf24; }
-/* вкладка ДОГОВОРА: красное свечение в красном режиме */
-body.red-mode #tabDoc { border:2px solid #dc2626; animation: docGlowRed 2.2s ease-in-out infinite; }
-@keyframes docGlowRed {
+/* вкладка ДОГОВОРА: красное свечение только когда активна */
+#tabDoc.on { background:#dc2626; animation: docGlow 2.2s ease-in-out infinite; }
+@keyframes docGlow {
   0%,100% { box-shadow: 0 0 5px rgba(220,38,38,0.55); }
   50%     { box-shadow: 0 0 16px rgba(220,38,38,0.95); }
 }
@@ -291,18 +232,6 @@ body.red-mode #tabDoc { border:2px solid #dc2626; animation: docGlowRed 2.2s eas
 
 <h1>СТРАЖ</h1>
 <p class="subtitle">Отдел ПЭО · задачи и дедлайны</p>
-
-<div id="themePanel" class="theme-panel hidden">
-  <span class="tp-lbl">Фон</span>
-  <button type="button" class="tp-bg" id="tpBgLight" onclick="setThemeBg('light')">белый</button>
-  <button type="button" class="tp-bg" id="tpBgDark" onclick="setThemeBg('dark')">графит</button>
-  <span class="tp-lbl">Цвет</span>
-  <button type="button" class="tp-dot" data-c="blue" style="background:#2563eb" title="голубой" onclick="setAccent('blue')"></button>
-  <button type="button" class="tp-dot" data-c="orange" style="background:#f97316" title="оранжевый" onclick="setAccent('orange')"></button>
-  <button type="button" class="tp-dot" data-c="teal" style="background:#14b8a6" title="бирюзовый" onclick="setAccent('teal')"></button>
-  <button type="button" class="tp-dot" data-c="violet" style="background:#8b5cf6" title="фиолетовый" onclick="setAccent('violet')"></button>
-  <button type="button" class="tp-dot" data-c="pink" style="background:#ec4899" title="розовый" onclick="setAccent('pink')"></button>
-</div>
 
 <div class="tabs">
   <button id="tabTasks" class="on" onclick="showTab('tasks')">Задачи</button>
@@ -573,11 +502,9 @@ function applyAuth() {
     bar.classList.remove('hidden');
     document.getElementById('whoNow').textContent = currentUser.name;
     document.getElementById('btnAdmin').classList.toggle('hidden', !currentUser.admin);
-    document.getElementById('themePanel').classList.remove('hidden');
   } else {
     overlay.classList.remove('hidden');
     bar.classList.add('hidden');
-    document.getElementById('themePanel').classList.add('hidden');
     document.getElementById('inLogin').focus();
   }
 }
@@ -1529,43 +1456,6 @@ function sumWords() {
     '<div class="calc-result"><p>' + sumInWords(s) + ', в том числе НДС 22% — ' + sumInWords(nds) + '</p></div>';
 }
 
-
-// ===== палитра приложения =====
-const ACCENTS = {
-  blue:   { a:'#2563eb', d:'#1d4ed8', s:'#dbeafe', g:'rgba(37,99,235,0.4)' },
-  orange: { a:'#f97316', d:'#ea580c', s:'#ffedd5', g:'rgba(249,115,22,0.4)' },
-  teal:   { a:'#14b8a6', d:'#0d9488', s:'#ccfbf1', g:'rgba(20,184,166,0.4)' },
-  violet: { a:'#8b5cf6', d:'#7c3aed', s:'#ede9fe', g:'rgba(139,92,246,0.4)' },
-  pink:   { a:'#ec4899', d:'#db2777', s:'#fce7f3', g:'rgba(236,72,153,0.4)' }
-};
-function setThemeBg(b) {
-  document.body.classList.toggle('theme-graphite', b === 'dark');
-  localStorage.setItem('strazh_bg', b);
-  syncThemePanel();
-}
-function setAccent(c) {
-  const a = ACCENTS[c]; if (!a) return;
-  const st = document.body.style;
-  st.setProperty('--accent', a.a);
-  st.setProperty('--accent-dark', a.d);
-  st.setProperty('--accent-soft', a.s);
-  st.setProperty('--accent-glow', a.g);
-  localStorage.setItem('strazh_accent', c);
-  syncThemePanel();
-}
-function syncThemePanel() {
-  const bg = document.body.classList.contains('theme-graphite') ? 'dark' : 'light';
-  const acc = localStorage.getItem('strazh_accent') || 'blue';
-  const bL = document.getElementById('tpBgLight'), bD = document.getElementById('tpBgDark');
-  if (bL && bD) { bL.classList.toggle('on', bg === 'light'); bD.classList.toggle('on', bg === 'dark'); }
-  document.querySelectorAll('.tp-dot').forEach(d => d.classList.toggle('on', d.dataset.c === acc));
-}
-function initTheme() {
-  setAccent(localStorage.getItem('strazh_accent') || 'blue');
-  document.body.classList.toggle('theme-graphite', (localStorage.getItem('strazh_bg') || 'light') === 'dark');
-  syncThemePanel();
-}
-initTheme();
 
 // старт
 buildWhoSelect();
