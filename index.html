@@ -153,6 +153,12 @@
   .sch-filter { margin-top: 12px; }
   .sch-filter select { margin-top: 0; }
   .sch-hint { font-size: 11px; color: #94a3b8; text-align: center; margin-top: 8px; }
+  .sch-view { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+  .sch-view button { padding: 6px 12px; border: 1px solid #cbd5e1; background: #fff; color: #475569; font-size: 11px; font-weight: 600; border-radius: 999px; cursor: pointer; }
+  .sch-view button.on { background: #1e293b; border-color: #1e293b; color: #fff; }
+  body.red-mode .sch-view button.on { background: #b91c1c; border-color: #b91c1c; }
+  .sch-row.has-rkm .snum, .sch-row.has-rkm .sdate { color: #1e293b; font-weight: 600; }
+  .sch-row .srkm { color: #1e293b; font-weight: 700; }
   /* ===== печатный блок (выгрузка графика в PDF) ===== */
   #printArea { display: none; }
   @media print {
@@ -170,6 +176,8 @@
     #printArea .sch-row .snum { font-weight: 500; color: #6b7280; }
     #printArea .sch-row .sdate { color: #6b7280; white-space: nowrap; }
     #printArea .sch-row.past .snum, #printArea .sch-row.past .sdate { color: #b91c1c; }
+    #printArea .sch-row.has-rkm .snum, #printArea .sch-row.has-rkm .sdate { color: #1e293b; font-weight: 600; }
+    #printArea .sch-row .srkm { color: #1e293b; font-weight: 700; }
     #printArea .sch-empty { font-size: 12px; color: #9ca3af; padding: 4px 2px; }
     #printArea .pr-note { margin-top: 24px; font-size: 10px; color: #9ca3af; }
   }
@@ -339,7 +347,7 @@
       <h3>График поставок
         <span style="display:flex; gap:6px;">
           <button class="btn clear" id="schedSearchBtn" onclick="toggleSchedSearch()">🔍 Поиск</button>
-          <button class="btn clear" onclick="exportSchedPdf()">⤓ Сохранить как PDF</button>
+          <button class="btn clear" onclick="downloadSchedFile()">⤓ Скачать файл</button>
           <button class="btn clear" onclick="printSched()">🖨 Распечатать</button>
         </span>
       </h3>
@@ -348,9 +356,14 @@
       </div>
       <div class="sch-filter">
         <select id="schedMonthFilter" onchange="renderSched()"><option value="all">Месяц: все</option></select>
+        <div class="sch-view">
+          <button id="svAll" class="on" onclick="setSchedView('all')">Все месяца</button>
+          <button id="svRkm" onclick="setSchedView('rkm')">С РКМ</button>
+          <button id="svEmpty" onclick="setSchedView('nonempty')">Без пустых месяцев</button>
+        </div>
       </div>
       <div id="schedList"><p class="note">Поставок пока нет — сделайте расчёт на первой вкладке</p></div>
-      <p class="sch-hint">В окне печати выберите «Сохранить как PDF», чтобы получить файл на диск.</p>
+      <p class="sch-hint">«Скачать файл» сохраняет график на устройство как HTML-файл. Чтобы получить PDF: откройте скачанный файл и нажмите Ctrl+P → «Сохранить как PDF», либо воспользуйтесь кнопкой «Распечатать».</p>
     </div>
   </div>
 
@@ -1067,6 +1080,14 @@ function clearSupplyHistory() {
 // ===== график поставок: поиск + фильтр по месяцам =====
 let schedSearchOpen = false;
 let schedMonthFilter = 'all';
+let schedView = 'all';
+function setSchedView(v) {
+  schedView = v;
+  document.getElementById('svAll').classList.toggle('on', v === 'all');
+  document.getElementById('svRkm').classList.toggle('on', v === 'rkm');
+  document.getElementById('svEmpty').classList.toggle('on', v === 'nonempty');
+  renderSched();
+}
 function toggleSchedSearch() {
   schedSearchOpen = !schedSearchOpen;
   const wrap = document.getElementById('schedSearchWrap');
@@ -1102,6 +1123,7 @@ function schedSearchQuery() {
 function schedEntries() {
   const q = schedSearchQuery();
   let entries = loadSupply().filter(e => e.delivery);
+  if (schedView === 'rkm') entries = entries.filter(e => !e.noRkm && e.rkm);
   if (q) entries = entries.filter(e => ((e.num || '') + ' ' + (e.contr || '')).toLowerCase().indexOf(q) !== -1);
   if (schedMonthFilter !== 'all') entries = entries.filter(e => e.delivery.slice(0, 7) === schedMonthFilter);
   return entries;
@@ -1112,9 +1134,13 @@ function schedMonthHtml(mk, arr, todayStr) {
   const rows = arr
     .slice()
     .sort((a,b) => a.delivery.localeCompare(b.delivery))
-    .map(e => '<div class="sch-row' + (e.delivery < todayStr ? ' past' : '') + '">' +
-      '<span class="snum">' + esc(e.num) + (e.contr ? ' · ' + esc(e.contr) : '') + '</span>' +
-      '<span class="sdate">' + fmtDate(e.delivery) + '</span></div>')
+    .map(e => {
+      const hasRkm = !e.noRkm && e.rkm;
+      return '<div class="sch-row' + (hasRkm ? ' has-rkm' : '') + (e.delivery < todayStr ? ' past' : '') + '">' +
+        '<span class="snum">' + esc(e.num) + (e.contr ? ' · ' + esc(e.contr) : '') +
+        (hasRkm ? ' <span class="srkm">РКМ ' + fmtDate(e.rkm) + '</span>' : '') + '</span>' +
+        '<span class="sdate">' + fmtDate(e.delivery) + '</span></div>';
+    })
     .join('');
   return '<div class="sch-month">' +
     '<div class="sch-month-title">' + MONTHS[m] + ' ' + y + '</div>' +
@@ -1149,10 +1175,10 @@ function renderSched() {
 // ===== выгрузка/печать графика =====
 function buildPrintHtml() {
   const q = schedSearchQuery();
-  let entries = loadSupply().filter(e => e.delivery);
-  if (q) entries = entries.filter(e => ((e.num || '') + ' ' + (e.contr || '')).toLowerCase().indexOf(q) !== -1);
+  let entries = schedEntries();
   if (!entries.length) return null;
-  const filterLabel = schedMonthFilter === 'all' ? 'все месяцы' : schedMonthLabel(schedMonthFilter);
+  const filterLabel = (schedMonthFilter === 'all' ? 'все месяцы' : schedMonthLabel(schedMonthFilter)) +
+    (schedView === 'rkm' ? ' · только с РКМ' : (schedView === 'nonempty' ? ' · без пустых месяцев' : ''));
   let byMonth = {};
   entries.forEach(e => {
     const mk = e.delivery.slice(0, 7);
@@ -1165,7 +1191,7 @@ function buildPrintHtml() {
     if (!byMonth[schedMonthFilter]) byMonth[schedMonthFilter] = [];
   } else {
     keys = Object.keys(byMonth).sort();
-    if (keys.length) {
+    if (keys.length && schedView !== 'nonempty') {
       const start = parseISO(keys[0] + '-01');
       const end = parseISO(keys[keys.length - 1] + '-01');
       const all = [];
@@ -1200,14 +1226,40 @@ function buildPrintHtml() {
     monthsHtml +
     '<div class="pr-note">Тестовый режим. Данные получены из локального хранилища устройства на момент выгрузки.</div>';
 }
-function exportSchedPdf() {
+const SCHED_PRINT_CSS = 'body{font-family:-apple-system,"Segoe UI",Roboto,sans-serif;color:#1e293b;margin:24px;max-width:800px;}' +
+  '.pr-title{font-size:20px;font-weight:700;color:#1e293b;margin-bottom:4px;}' +
+  '.pr-sub{font-size:12px;color:#64748b;margin-bottom:6px;}' +
+  '.pr-criteria{font-size:12px;color:#475569;background:#f3f4f6;border-radius:6px;padding:6px 10px;margin-bottom:18px;}' +
+  '.sch-month{margin-bottom:14px;page-break-inside:avoid;}' +
+  '.sch-month-title{font-size:15px;font-weight:700;color:#b91c1c;text-transform:capitalize;}' +
+  '.sch-month-line{width:100%;height:1px;background:#b91c1c;margin:5px 0 8px;}' +
+  '.sch-row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:5px 2px;border-bottom:1px solid #e5e7eb;font-size:13px;}' +
+  '.sch-row:last-child{border-bottom:none;}' +
+  '.sch-row .snum{font-weight:500;color:#6b7280;}' +
+  '.sch-row .sdate{color:#6b7280;white-space:nowrap;}' +
+  '.sch-row.past .snum,.sch-row.past .sdate{color:#b91c1c;}' +
+  '.sch-row.has-rkm .snum,.sch-row.has-rkm .sdate{color:#1e293b;font-weight:600;}' +
+  '.sch-row .srkm{color:#1e293b;font-weight:700;}' +
+  '.sch-empty{font-size:12px;color:#9ca3af;padding:4px 2px;}' +
+  '.pr-note{margin-top:24px;font-size:10px;color:#9ca3af;}';
+
+function downloadSchedFile() {
   const html = buildPrintHtml();
-  if (!html) { alert('Нечего выгружать: график поставок пуст или поиск не дал совпадений'); return; }
-  document.getElementById('printArea').innerHTML = html;
-  window.print();
+  if (!html) { alert('Нечего скачивать: график поставок пуст, поиск не дал совпадений или включён вид «С РКМ» без договоров с РКМ'); return; }
+  const doc = '<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>График поставки</title><style>' + SCHED_PRINT_CSS + '</style></head><body>' + html + '</body></html>';
+  const blob = new Blob(['\ufeff' + doc], { type: 'text/html;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'график_поставки_' + isoOfDate(new Date()) + '.html';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 0);
 }
 function printSched() {
-  exportSchedPdf();
+  const html = buildPrintHtml();
+  if (!html) { alert('Нечего печатать: график поставок пуст, поиск не дал совпадений или включён вид «С РКМ» без договоров с РКМ'); return; }
+  document.getElementById('printArea').innerHTML = html;
+  window.print();
 }
 
 function fmt(x) { return x.toLocaleString('ru-RU', {maximumFractionDigits: 2}) + ' руб.'; }
