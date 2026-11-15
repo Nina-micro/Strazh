@@ -142,9 +142,9 @@
   .sch-month { margin-bottom: 10px; }
   .sch-month-title { font-size: 15px; font-weight: 700; color: #dc2626; text-transform: capitalize; }
   .sch-month-line { width: 100%; height: 1px; background: #dc2626; margin: 5px 0 8px; }
-  .sch-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 4px 2px; border-bottom: 1px solid #f1f5f9; font-size: 13.5px; }
+  .sch-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 4px 2px; border-bottom: 1px solid #f1f5f9; font-size: 13.5px; }
   .sch-row:last-child { border-bottom: none; }
-  .sch-row .snum { font-weight: 500; color: #94a3b8; }
+  .sch-row .snum { font-weight: 500; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
   .sch-row .sdate { color: #94a3b8; white-space: nowrap; }
   .sch-row.past .snum, .sch-row.past .sdate { color: #dc2626; opacity: 0.75; }
   .sch-empty { font-size: 12px; color: #94a3b8; padding: 4px 2px; }
@@ -157,8 +157,8 @@
   .sch-view-btn { background: #e2e8f0; border: none; border-radius: 8px; padding: 5px 10px; font-size: 11px; font-weight: 600; color: #475569; cursor: pointer; }
   .sch-view-btn.on { background: #1e293b; color: #fff; }
   .sch-chk { width: 16px; height: 16px; margin: 0; flex-shrink: 0; cursor: pointer; accent-color: #16a34a; }
-  .sch-left { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
-  .srkm { display: block; font-size: 10px; font-weight: 300; color: #dc2626; white-space: nowrap; text-align: right; }
+  .sch-left { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; }
+  .srkm { display: inline-block; font-size: 10px; font-weight: 300; color: #dc2626; white-space: nowrap; margin-right: 6px; vertical-align: middle; }
   .sch-row .snum.rkm-done { font-weight: 700; color: #1e293b; }
   .sch-row.done .snum, .sch-row.done .sdate, .sch-row.done .srkm { text-decoration: line-through; opacity: 0.5; }
   /* ===== печатный блок (выгрузка графика в PDF) ===== */
@@ -173,94 +173,92 @@
     #printArea .sch-month { margin-bottom: 14px; page-break-inside: avoid; }
     #printArea .sch-month-title { font-size: 15px; font-weight: 700; color: #b91c1c; text-transform: capitalize; }
     #printArea .sch-month-line { width: 100%; height: 1px; background: #b91c1c; margin: 5px 0 8px; }
-    #printArea .sch-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 5px 2px; border-bottom: 1px solid #e5e7eb; font-size: 13px; }
+    #printArea .sch-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 5px 2px; border-bottom: 1px solid #e5e7eb; font-size: 13px; }
     #printArea .sch-row:last-child { border-bottom: none; }
-    #printArea .sch-row .snum { font-weight: 500; color: #6b7280; }
+    #printArea .sch-row .snum { font-weight: 500; color: #6b7280; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
     #printArea .sch-row .sdate { color: #6b7280; white-space: nowrap; }
     #printArea .sch-row.past .snum, #printArea .sch-row.past .sdate { color: #b91c1c; }
     #printArea .sch-empty { font-size: 12px; color: #9ca3af; padding: 4px 2px; }
     #printArea .sch-views { display: none; }
     #printArea .sch-chk { width: 11px; height: 11px; margin: 0; }
-    #printArea .sch-left { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
-    #printArea .srkm { display: block; font-size: 9px; font-weight: 300; color: #b91c1c; white-space: nowrap; text-align: right; }
+    #printArea .sch-left { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; }
+    #printArea .srkm { display: inline-block; font-size: 9px; font-weight: 300; color: #b91c1c; white-space: nowrap; margin-right: 6px; vertical-align: middle; }
     #printArea .sch-row .snum.rkm-done { font-weight: 700; color: #1e293b; }
     #printArea .sch-row.done .snum, #printArea .sch-row.done .sdate, #printArea .sch-row.done .srkm { text-decoration: line-through; color: #9ca3af; }
     #printArea .pr-note { margin-top: 24px; font-size: 10px; color: #9ca3af; }
   }
 
-  /* ===== палитра оформления ===== */
-  body { --accent: #2563eb; --accent-dark: #1d4ed8; --accent-soft: #dbeafe; }
-  body.accent-blue   { --accent: #2563eb; --accent-dark: #1d4ed8; --accent-soft: #dbeafe; }
-  body.accent-orange { --accent: #ea580c; --accent-dark: #c2410c; --accent-soft: #ffedd5; }
-  body.accent-teal   { --accent: #0d9488; --accent-dark: #0f766e; --accent-soft: #ccfbf1; }
-  body.accent-violet { --accent: #7c3aed; --accent-dark: #6d28d9; --accent-soft: #ede9fe; }
-  body.accent-pink   { --accent: #db2777; --accent-dark: #be185d; --accent-soft: #fce7f3; }
-  .tabs button.on { background: var(--accent); }
-  #tabPrice { box-shadow: inset 0 0 0 2px var(--accent); }
-  #tabPrice.on { box-shadow: none; }
-  .btn { background: var(--accent); }
-  .btn:active { background: var(--accent-dark); }
-  .fab { background: var(--accent); box-shadow: 0 4px 14px rgba(0,0,0,0.25); }
-  .fab:active { background: var(--accent-dark); }
-  .who { color: var(--accent); }
-  .load-fill { background: var(--accent); }
-  .num.c-blue { color: var(--accent); }
-  .badge.ok { background: var(--accent); }
-  .cal-day.today { box-shadow: inset 0 0 0 2px var(--accent); }
-  .cal-day.sel { background: var(--accent-soft); }
-  .theme-panel { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; background: #fff; border-radius: 10px; padding: 8px 12px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); font-size: 12px; color: #475569; }
-  .theme-panel .tp-lbl { font-weight: 600; }
-  .tp-btn { background: #e2e8f0; border: none; border-radius: 8px; padding: 5px 10px; font-size: 12px; font-weight: 600; color: #475569; cursor: pointer; }
-  .tp-btn.on { background: #1e293b; color: #fff; }
-  .swatch { width: 22px; height: 22px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; padding: 0; flex-shrink: 0; }
-  .swatch.on { border-color: #1e293b; box-shadow: inset 0 0 0 2px #fff; }
-  /* выравнивание строки графика в одну строчку (экран и печать) */
-  .sch-row, #printArea .sch-row { align-items: center; }
-  .sch-left, #printArea .sch-left { align-items: center; flex-wrap: nowrap; }
-  .sch-row .snum, #printArea .sch-row .snum { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
-  .srkm, #printArea .srkm { display: inline; }
-  /* ===== графитовая тема ===== */
-  body.bg-dark { background: #22262b; color: #e5e7eb; color-scheme: dark; }
-  body.bg-dark .card { background: #2b3138; box-shadow: 0 1px 4px rgba(0,0,0,0.4); }
-  body.bg-dark .theme-panel { background: #2b3138; color: #cbd5e1; }
-  body.bg-dark .tp-btn { background: #3b444d; color: #cbd5e1; }
-  body.bg-dark .tp-btn.on { background: #e5e7eb; color: #1f2428; }
-  body.bg-dark .swatch.on { border-color: #e5e7eb; box-shadow: inset 0 0 0 2px #2b3138; }
-  body.bg-dark input, body.bg-dark select { background: #333b44; color: #e5e7eb; border-color: #4b5563; }
-  body.bg-dark .tabs, body.bg-dark .sub-tabs { background: #333b44; }
-  body.bg-dark .tabs button, body.bg-dark .sub-tabs button { color: #cbd5e1; }
-  body.bg-dark .sub-tabs button.on { background: #e5e7eb; color: #1f2428; }
-  body.bg-dark .sch-view-btn { background: #3b444d; color: #cbd5e1; }
-  body.bg-dark .sch-view-btn.on { background: #e5e7eb; color: #1f2428; }
-  body.bg-dark .status-menu { background: #2b3138; border-color: #4b5563; }
-  body.bg-dark .status-menu .opt { color: #e5e7eb; }
-  body.bg-dark .status-menu .opt:active { background: #3b444d; }
-  body.bg-dark .modal, body.bg-dark .login-box, body.bg-dark .user-bar { background: #2b3138; }
-  body.bg-dark #loginOverlay { background: #22262b; }
-  body.bg-dark .user-bar .who-now { color: #e5e7eb; }
-  body.bg-dark .user-bar button { background: #3b444d; color: #cbd5e1; }
-  body.bg-dark .cal-nav button { background: #3b444d; color: #cbd5e1; }
-  body.bg-dark .cal-day { background: #333b44; }
-  body.bg-dark .cal-delivery-note, body.bg-dark .edit-banner { background: #3b3020; }
-  body.bg-dark .group { border-color: #4b5563; }
-  body.bg-dark .group-body { border-top-color: #4b5563; }
-  body.bg-dark .hr { border-top-color: #4b5563; }
-  body.bg-dark .calc-result { background: #333b44; border-color: #4b5563; }
-  body.bg-dark .task { border-bottom-color: #3b444d; }
-  body.bg-dark .sch-row { border-bottom-color: #333b44; }
-  body.bg-dark .num.c-black { color: #e5e7eb; }
-  body.bg-dark .num.c-gray { color: #64748b; }
-  body.bg-dark .sch-row .snum.rkm-done { color: #e5e7eb; }
-  body.bg-dark .ss-queue { color: #cbd5e1; }
-  body.bg-dark .ss-ge, body.bg-dark .ss-mv { color: #facc15; }
-  body.bg-dark .g-queue { background: #64748b; }
-  body.bg-dark .sb-queue, body.bg-dark .lg-queue::before { background: #cbd5e1; }
-  body.bg-dark .subtitle, body.bg-dark .note, body.bg-dark .mini-note, body.bg-dark .counter .lbl,
-  body.bg-dark .status-legend, body.bg-dark .small-lbl, body.bg-dark .card h4, body.bg-dark .load-title,
-  body.bg-dark .task .meta, body.bg-dark .stdate, body.bg-dark .sch-row .sdate, body.bg-dark .sch-empty,
-  body.bg-dark .sch-hint, body.bg-dark .user-list-row .u-login, body.bg-dark .login-box .sub,
-  body.bg-dark .cal-week div, body.bg-dark .cal-nav .mon, body.bg-dark #res p, body.bg-dark #swRes p,
-  body.bg-dark #dcRes p { color: #cbd5e1; }
+/* ===== палитра приложения ===== */
+body { --accent:#2563eb; --accent-dark:#1d4ed8; --accent-soft:#dbeafe; --accent-glow:rgba(37,99,235,0.4); }
+body.theme-graphite { --page-bg:#2b2f36; --card-bg:#3a3f47; --text:#e5e7eb; --muted:#9ca3af; --line:#4b5563; --input-bg:#3f4450; color-scheme: dark; }
+body.theme-graphite { background: var(--page-bg); color: var(--text); }
+body.theme-graphite h1 { color:#fff; }
+body.theme-graphite .subtitle, body.theme-graphite .note, body.theme-graphite .mini-note { color: var(--muted); }
+body.theme-graphite .card, body.theme-graphite .modal, body.theme-graphite .login-box, body.theme-graphite .user-bar, body.theme-graphite .theme-panel { background: var(--card-bg); }
+body.theme-graphite #loginOverlay { background:#23262c; }
+body.theme-graphite label { color: var(--text); }
+body.theme-graphite input, body.theme-graphite select { background: var(--input-bg); color: var(--text); border-color:#5b616c; }
+body.theme-graphite .tabs, body.theme-graphite .sub-tabs { background:#22252b; }
+body.theme-graphite .tabs button, body.theme-graphite .sub-tabs button { color:#cbd5e1; }
+body.theme-graphite .task { border-bottom-color: var(--line); }
+body.theme-graphite .task .name { color: var(--text); }
+body.theme-graphite .status-menu { background: var(--card-bg); }
+body.theme-graphite .status-menu .opt { color: var(--text); }
+body.theme-graphite .status-menu .opt:active { background:#4b5563; }
+body.theme-graphite .calc-result { background:#323742; border-color: var(--line); }
+body.theme-graphite .cal-day { background: var(--input-bg); }
+body.theme-graphite .cal-nav button { background: var(--input-bg); color:#cbd5e1; }
+body.theme-graphite .cal-delivery-note { background: var(--card-bg); border-color:#5b616c; color: var(--text); }
+body.theme-graphite .cal-delivery-note .cdn-title { color:#fbbf24; }
+body.theme-graphite .group { border-color: var(--line); }
+body.theme-graphite .group-body { border-top-color: var(--line); }
+body.theme-graphite .sch-row { border-bottom-color:#3f4450; }
+body.theme-graphite .sch-view-btn { background: var(--input-bg); color:#cbd5e1; }
+body.theme-graphite .sch-view-btn.on { background: var(--accent); color:#fff; }
+body.theme-graphite .btn.clear, body.theme-graphite .btn.ghost { background: var(--input-bg); color:#cbd5e1; }
+body.theme-graphite .user-bar button { background: var(--input-bg); color:#cbd5e1; }
+body.theme-graphite hr.hr { border-top-color: var(--line); }
+body.theme-graphite .login-err { color:#fca5a5; }
+body.theme-graphite .hot-title { color:#f87171; }
+body.theme-graphite .edit-banner { background:#3a342a; border-color:#f59e0b; color:#fbbf24; }
+body.theme-graphite .edit-banner button { color:#fbbf24; }
+body.theme-graphite .sch-month-title { color:#f87171; }
+body.theme-graphite .sch-month-line { background:#f87171; }
+/* акцентный цвет */
+.tabs button.on { background: var(--accent); }
+.btn { background: var(--accent); }
+.btn:active { background: var(--accent-dark); }
+.fab { background: var(--accent); box-shadow: 0 4px 14px var(--accent-glow); }
+.fab:active { background: var(--accent-dark); }
+.who { color: var(--accent); }
+.load-fill { background: var(--accent); }
+.cal-day.today { box-shadow: inset 0 0 0 2px var(--accent); }
+.cal-day.sel { background: var(--accent-soft); }
+/* красный режим вкладки «Договорная работа» — поверх акцента */
+body.red-mode .tabs button.on { background:#dc2626; }
+body.red-mode .fab { background:#dc2626; box-shadow:0 4px 14px rgba(220,38,38,0.4); }
+body.red-mode .btn { background:#dc2626; }
+body.red-mode .btn.clear, body.red-mode .btn.ghost { background:#fee2e2; color:#b91c1c; }
+/* панель палитры */
+.theme-panel { display:flex; align-items:center; gap:8px; flex-wrap:wrap; border-radius:10px; padding:8px 12px; margin-bottom:12px; box-shadow:0 1px 4px rgba(0,0,0,0.08); font-size:12px; background:#fff; }
+.tp-lbl { color:#64748b; font-weight:600; }
+.tp-bg { border:1px solid #cbd5e1; background:none; border-radius:8px; padding:4px 10px; font-size:12px; font-weight:600; color:#475569; cursor:pointer; }
+.tp-bg.on { background:#1e293b; color:#fff; border-color:#1e293b; }
+.tp-dot { width:20px; height:20px; border-radius:50%; border:2px solid transparent; cursor:pointer; padding:0; }
+.tp-dot.on { border-color:#1e293b; }
+body.theme-graphite .tp-lbl { color:#9ca3af; }
+body.theme-graphite .tp-bg { color:#cbd5e1; border-color:#5b616c; }
+body.theme-graphite .tp-bg.on { background: var(--accent); color:#fff; border-color: var(--accent); }
+body.theme-graphite .tp-dot.on { border-color:#e5e7eb; }
+/* вкладка ЦЕНЫ: свечение янтарно-золотым */
+#tabPrices { border:2px solid #f59e0b; color:#b45309; font-weight:700; animation: pricesGlow 2.2s ease-in-out infinite; }
+@keyframes pricesGlow {
+  0%,100% { box-shadow: 0 0 5px rgba(245,158,11,0.55); }
+  50%     { box-shadow: 0 0 16px rgba(245,158,11,0.95); }
+}
+#tabPrices.on { background: var(--accent); color:#fff; border-color: transparent; animation: none; box-shadow:none; }
+body.theme-graphite #tabPrices { color:#fbbf24; }
+body.red-mode #tabPrices { border-color:#dc2626; color:#b91c1c; animation:none; box-shadow:none; }
 </style>
 </head>
 <body>
@@ -286,27 +284,27 @@
   </span>
 </div>
 
-<div id="themePanel" class="theme-panel hidden">
-  <span class="tp-lbl">Фон:</span>
-  <button type="button" class="tp-btn" id="bgLight" onclick="setBg('light')">белый</button>
-  <button type="button" class="tp-btn" id="bgDark" onclick="setBg('dark')">графит</button>
-  <span class="tp-lbl">Цвет:</span>
-  <button type="button" class="swatch" id="swBlue"   style="background:#2563eb" title="голубой"    onclick="setAccent('blue')"></button>
-  <button type="button" class="swatch" id="swOrange" style="background:#ea580c" title="оранжевый"  onclick="setAccent('orange')"></button>
-  <button type="button" class="swatch" id="swTeal"   style="background:#0d9488" title="бирюзовый"  onclick="setAccent('teal')"></button>
-  <button type="button" class="swatch" id="swViolet" style="background:#7c3aed" title="фиолетовый" onclick="setAccent('violet')"></button>
-  <button type="button" class="swatch" id="swPink"   style="background:#db2777" title="розовый"    onclick="setAccent('pink')"></button>
-</div>
-
 <h1>СТРАЖ</h1>
 <p class="subtitle">Отдел ПЭО · задачи и дедлайны</p>
+
+<div id="themePanel" class="theme-panel hidden">
+  <span class="tp-lbl">Фон</span>
+  <button type="button" class="tp-bg" id="tpBgLight" onclick="setThemeBg('light')">белый</button>
+  <button type="button" class="tp-bg" id="tpBgDark" onclick="setThemeBg('dark')">графит</button>
+  <span class="tp-lbl">Цвет</span>
+  <button type="button" class="tp-dot" data-c="blue" style="background:#2563eb" title="голубой" onclick="setAccent('blue')"></button>
+  <button type="button" class="tp-dot" data-c="orange" style="background:#f97316" title="оранжевый" onclick="setAccent('orange')"></button>
+  <button type="button" class="tp-dot" data-c="teal" style="background:#14b8a6" title="бирюзовый" onclick="setAccent('teal')"></button>
+  <button type="button" class="tp-dot" data-c="violet" style="background:#8b5cf6" title="фиолетовый" onclick="setAccent('violet')"></button>
+  <button type="button" class="tp-dot" data-c="pink" style="background:#ec4899" title="розовый" onclick="setAccent('pink')"></button>
+</div>
 
 <div class="tabs">
   <button id="tabTasks" class="on" onclick="showTab('tasks')">Задачи</button>
   <button id="tabCal" onclick="showTab('cal')">Календарь экономиста</button>
   <button id="tabCalc" onclick="showTab('calc')">Калькулятор</button>
-  <button id="tabDoc" onclick="showTab('doc')">Договорная работа</button>
-<button id="tabPrice" onclick="showTab('price')">Ценообразование</button>
+  <button id="tabPrices" onclick="showTab('prices')">ЦЕНЫ</button>
+<button id="tabDoc" onclick="showTab('doc')">Договорная работа</button>
 </div>
 
 <div id="secTasks">
@@ -464,11 +462,10 @@
   <p class="note">ТЕСТОВЫЙ РЕЖИМ. Расчёты хранятся только на этом устройстве. Реестр договоров — в разработке.</p>
 </div>
 
-<div id="secPrice" class="hidden">
+<div id="secPrices" class="hidden">
   <div class="card">
-    <h3>Ценообразование</h3>
-    <p class="note" style="text-align:left; margin-bottom:6px">Раздел в разработке. Планируемое содержание: расчёт цены, контроль цен и плановая стоимость.</p>
-    <p class="note" style="text-align:left">Что положить сюда первым — напишите, соберу в этой вкладке.</p>
+    <h3>Цены — раздел в разработке</h3>
+    <p class="note" style="text-align:left">Здесь появится работа с ценами: расчёт, контроль и сравнение. Пока расчёт цены и НДС доступен во вкладке «Калькулятор».</p>
   </div>
 </div>
 
@@ -575,25 +572,10 @@ function applyAuth() {
   } else {
     overlay.classList.remove('hidden');
     bar.classList.add('hidden');
-    document.getElementById('inLogin').focus();
     document.getElementById('themePanel').classList.add('hidden');
+    document.getElementById('inLogin').focus();
   }
 }
-// ===== палитра оформления =====
-function applyTheme() {
-  const bg = localStorage.getItem('strazh_bg') || 'light';
-  const ac = localStorage.getItem('strazh_accent') || 'blue';
-  document.body.classList.toggle('bg-dark', bg === 'dark');
-  document.body.classList.remove('accent-blue','accent-orange','accent-teal','accent-violet','accent-pink');
-  document.body.classList.add('accent-' + ac);
-  document.getElementById('bgLight').classList.toggle('on', bg !== 'dark');
-  document.getElementById('bgDark').classList.toggle('on', bg === 'dark');
-  const ids = { blue:'swBlue', orange:'swOrange', teal:'swTeal', violet:'swViolet', pink:'swPink' };
-  Object.keys(ids).forEach(c => document.getElementById(ids[c]).classList.toggle('on', ac === c));
-}
-function setBg(b) { localStorage.setItem('strazh_bg', b); applyTheme(); }
-function setAccent(c) { localStorage.setItem('strazh_accent', c); applyTheme(); }
-
 function openAdminModal() {
   document.getElementById('adminOverlay').classList.remove('hidden');
   document.getElementById('aName').value = '';
@@ -651,12 +633,12 @@ function showTab(name) {
   document.getElementById('secCal').classList.toggle('hidden', name !== 'cal');
   document.getElementById('secCalc').classList.toggle('hidden', name !== 'calc');
   document.getElementById('secDoc').classList.toggle('hidden', name !== 'doc');
-  document.getElementById('secPrice').classList.toggle('hidden', name !== 'price');
+  document.getElementById('secPrices').classList.toggle('hidden', name !== 'prices');
   document.getElementById('tabTasks').classList.toggle('on', name === 'tasks');
   document.getElementById('tabCal').classList.toggle('on', name === 'cal');
   document.getElementById('tabCalc').classList.toggle('on', name === 'calc');
   document.getElementById('tabDoc').classList.toggle('on', name === 'doc');
-  document.getElementById('tabPrice').classList.toggle('on', name === 'price');
+  document.getElementById('tabPrices').classList.toggle('on', name === 'prices');
   if (name === 'cal') { renderCal(); renderCalDay(); }
   if (name === 'doc') { showDocSub(docSub); }
   document.body.classList.toggle('red-mode', name === 'doc');
@@ -671,7 +653,7 @@ function showDocSub(name) {
   if (name === 'calc') renderSupplyHistory();
   if (name === 'sched') { rebuildSchedFilter(); renderSched(); }
 }
-function fabClick() { if (currentTab === 'doc' || currentTab === 'price') return; openTaskModal(); }
+function fabClick() { if (currentTab === 'doc' || currentTab === 'prices') return; openTaskModal(); }
 
 function allNames() {
   const names = TEAM.slice();
@@ -1542,8 +1524,45 @@ function sumWords() {
     '<div class="calc-result"><p>' + sumInWords(s) + ', в том числе НДС 22% — ' + sumInWords(nds) + '</p></div>';
 }
 
+
+// ===== палитра приложения =====
+const ACCENTS = {
+  blue:   { a:'#2563eb', d:'#1d4ed8', s:'#dbeafe', g:'rgba(37,99,235,0.4)' },
+  orange: { a:'#f97316', d:'#ea580c', s:'#ffedd5', g:'rgba(249,115,22,0.4)' },
+  teal:   { a:'#14b8a6', d:'#0d9488', s:'#ccfbf1', g:'rgba(20,184,166,0.4)' },
+  violet: { a:'#8b5cf6', d:'#7c3aed', s:'#ede9fe', g:'rgba(139,92,246,0.4)' },
+  pink:   { a:'#ec4899', d:'#db2777', s:'#fce7f3', g:'rgba(236,72,153,0.4)' }
+};
+function setThemeBg(b) {
+  document.body.classList.toggle('theme-graphite', b === 'dark');
+  localStorage.setItem('strazh_bg', b);
+  syncThemePanel();
+}
+function setAccent(c) {
+  const a = ACCENTS[c]; if (!a) return;
+  const st = document.body.style;
+  st.setProperty('--accent', a.a);
+  st.setProperty('--accent-dark', a.d);
+  st.setProperty('--accent-soft', a.s);
+  st.setProperty('--accent-glow', a.g);
+  localStorage.setItem('strazh_accent', c);
+  syncThemePanel();
+}
+function syncThemePanel() {
+  const bg = document.body.classList.contains('theme-graphite') ? 'dark' : 'light';
+  const acc = localStorage.getItem('strazh_accent') || 'blue';
+  const bL = document.getElementById('tpBgLight'), bD = document.getElementById('tpBgDark');
+  if (bL && bD) { bL.classList.toggle('on', bg === 'light'); bD.classList.toggle('on', bg === 'dark'); }
+  document.querySelectorAll('.tp-dot').forEach(d => d.classList.toggle('on', d.dataset.c === acc));
+}
+function initTheme() {
+  setAccent(localStorage.getItem('strazh_accent') || 'blue');
+  document.body.classList.toggle('theme-graphite', (localStorage.getItem('strazh_bg') || 'light') === 'dark');
+  syncThemePanel();
+}
+initTheme();
+
 // старт
-applyTheme();
 buildWhoSelect();
 render();
 applyAuth();
