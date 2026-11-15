@@ -153,48 +153,34 @@
   .sch-filter { margin-top: 12px; }
   .sch-filter select { margin-top: 0; }
   .sch-hint { font-size: 11px; color: #94a3b8; text-align: center; margin-top: 8px; }
+  .sch-views { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+  .sch-views .vbtn { padding: 6px 12px; font-size: 12px; font-weight: 600; border: 1px solid #cbd5e1; border-radius: 999px; background: #fff; color: #475569; cursor: pointer; }
+  .sch-views .vbtn.on { background: #1e293b; border-color: #1e293b; color: #fff; }
+  body.red-mode .sch-views .vbtn.on { background: #b91c1c; border-color: #b91c1c; }
+  .sch-row.rkm .snum, .sch-row .rkm-tag { color: #0f172a; font-weight: 700; }
+  .sch-row .rkm-tag { font-size: 11px; }
   /* ===== печатный блок (выгрузка графика в PDF) ===== */
   #printArea { display: none; }
+  #printArea.pdf-exporting { display: block; position: fixed; left: -10000px; top: 0; width: 210mm; background: #fff; }
+  #printArea .pr-title { font-size: 20px; font-weight: 700; color: #1e293b; margin-bottom: 4px; }
+  #printArea .pr-sub { font-size: 12px; color: #64748b; margin-bottom: 6px; }
+  #printArea .pr-criteria { font-size: 12px; color: #475569; background: #f3f4f6; border-radius: 6px; padding: 6px 10px; margin-bottom: 18px; }
+  #printArea .sch-month { margin-bottom: 14px; page-break-inside: avoid; }
+  #printArea .sch-month-title { font-size: 15px; font-weight: 700; color: #b91c1c; text-transform: capitalize; }
+  #printArea .sch-month-line { width: 100%; height: 1px; background: #b91c1c; margin: 5px 0 8px; }
+  #printArea .sch-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 5px 2px; border-bottom: 1px solid #e5e7eb; font-size: 13px; }
+  #printArea .sch-row:last-child { border-bottom: none; }
+  #printArea .sch-row .snum { font-weight: 500; color: #6b7280; }
+  #printArea .sch-row .sdate { color: #6b7280; white-space: nowrap; }
+  #printArea .sch-row.past .snum, #printArea .sch-row.past .sdate { color: #b91c1c; }
+  #printArea .sch-row.rkm .snum, #printArea .sch-row.rkm .rkm-tag { color: #111827; font-weight: 700; }
+  #printArea .sch-empty { font-size: 12px; color: #9ca3af; padding: 4px 2px; }
+  #printArea .pr-note { margin-top: 24px; font-size: 10px; color: #9ca3af; }
   @media print {
     body { background: #fff; padding: 0; max-width: none; }
     body > *:not(#printArea) { display: none !important; }
-    #printArea { display: block !important; }
-    #printArea .pr-title { font-size: 20px; font-weight: 700; color: #1e293b; margin-bottom: 4px; }
-    #printArea .pr-sub { font-size: 12px; color: #64748b; margin-bottom: 6px; }
-    #printArea .pr-criteria { font-size: 12px; color: #475569; background: #f3f4f6; border-radius: 6px; padding: 6px 10px; margin-bottom: 18px; }
-    #printArea .sch-month { margin-bottom: 14px; page-break-inside: avoid; }
-    #printArea .sch-month-title { font-size: 15px; font-weight: 700; color: #b91c1c; text-transform: capitalize; }
-    #printArea .sch-month-line { width: 100%; height: 1px; background: #b91c1c; margin: 5px 0 8px; }
-    #printArea .sch-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 5px 2px; border-bottom: 1px solid #e5e7eb; font-size: 13px; }
-    #printArea .sch-row:last-child { border-bottom: none; }
-    #printArea .sch-row .snum { font-weight: 500; color: #6b7280; }
-    #printArea .sch-row .sdate { color: #6b7280; white-space: nowrap; }
-    #printArea .sch-row.past .snum, #printArea .sch-row.past .sdate { color: #b91c1c; }
-    #printArea .sch-empty { font-size: 12px; color: #9ca3af; padding: 4px 2px; }
-    #printArea .pr-note { margin-top: 24px; font-size: 10px; color: #9ca3af; }
+    #printArea { display: block !important; position: static; }
   }
-  /* рендер-дубль печатных стилей: нужен html2pdf (он видит только экранные стили) */
-  #printArea.pdf-render {
-    display: block !important; position: absolute; left: -10000px; top: 0;
-    background: #fff; color: #1e293b; width: 194mm; padding: 8mm;
-    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
-  }
-  body > *:not(#printArea) { display: none !important; }
-  #printArea.pdf-render .pr-title { font-size: 20px; font-weight: 700; color: #1e293b; margin-bottom: 4px; }
-  #printArea.pdf-render .pr-sub { font-size: 12px; color: #64748b; margin-bottom: 6px; }
-  #printArea.pdf-render .pr-criteria { font-size: 12px; color: #475569; background: #f3f4f6; border-radius: 6px; padding: 6px 10px; margin-bottom: 18px; }
-  #printArea.pdf-render .sch-month { margin-bottom: 14px; page-break-inside: avoid; }
-  #printArea.pdf-render .sch-month-title { font-size: 15px; font-weight: 700; color: #b91c1c; text-transform: capitalize; }
-  #printArea.pdf-render .sch-month-line { width: 100%; height: 1px; background: #b91c1c; margin: 5px 0 8px; }
-  #printArea.pdf-render .sch-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 5px 2px; border-bottom: 1px solid #e5e7eb; font-size: 13px; }
-  #printArea.pdf-render .sch-row:last-child { border-bottom: none; }
-  #printArea.pdf-render .sch-row .snum { font-weight: 500; color: #6b7280; }
-  #printArea.pdf-render .sch-row .sdate { color: #6b7280; white-space: nowrap; }
-  #printArea.pdf-render .sch-row.past .snum, #printArea .sch-row.past .sdate { color: #b91c1c; }
-  #printArea.pdf-render .sch-empty { font-size: 12px; color: #9ca3af; padding: 4px 2px; }
-  #printArea.pdf-render .pr-note { margin-top: 24px; font-size: 10px; color: #9ca3af; }
-  #printArea.pdf-render .sch-month { break-inside: avoid; }
-  #printArea.pdf-render .pr-title, #printArea.pdf-render .pr-sub, #printArea.pdf-render .pr-criteria { break-inside: avoid; }
 </style>
 </head>
 <body>
@@ -361,7 +347,7 @@
       <h3>График поставок
         <span style="display:flex; gap:6px;">
           <button class="btn clear" id="schedSearchBtn" onclick="toggleSchedSearch()">🔍 Поиск</button>
-          <button class="btn clear" onclick="exportSchedPdf()">⤓ Сохранить как PDF</button>
+          <button class="btn clear" id="schedPdfBtn" onclick="exportSchedPdf()">⤓ Скачать PDF</button>
           <button class="btn clear" onclick="printSched()">🖨 Распечатать</button>
         </span>
       </h3>
@@ -371,8 +357,13 @@
       <div class="sch-filter">
         <select id="schedMonthFilter" onchange="renderSched()"><option value="all">Месяц: все</option></select>
       </div>
+      <div class="sch-views" id="schedViews">
+        <button class="vbtn on" data-mode="all" onclick="setSchedView('all')">Все месяца</button>
+        <button class="vbtn" data-mode="rkm" onclick="setSchedView('rkm')">С РКМ</button>
+        <button class="vbtn" data-mode="noskip" onclick="setSchedView('noskip')">Без пустых месяцев</button>
+      </div>
       <div id="schedList"><p class="note">Поставок пока нет — сделайте расчёт на первой вкладке</p></div>
-      <p class="sch-hint">Кнопка «Сохранить как PDF» скачивает готовый .pdf-файл сразу на диск (нужен интернет при первом открытии страницы). Если библиотека не загрузилась — откроется окно печати, там выберите «Сохранить как PDF».</p>
+      <p class="sch-hint">«⤓ Скачать PDF» сохраняет файл сразу на диск. «🖨 Распечатать» — печать или сохранение через окно печати.</p>
     </div>
   </div>
 
@@ -417,8 +408,7 @@
   </div>
 </div>
 
-<!-- библиотека для сохранения графика в настоящий PDF-файл (нужен интернет при открытии страницы) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script>
 // ===== администратор: смени эти две строки на свои =====
 const ADMIN_LOGIN = 'admin';
@@ -1091,6 +1081,17 @@ function clearSupplyHistory() {
 // ===== график поставок: поиск + фильтр по месяцам =====
 let schedSearchOpen = false;
 let schedMonthFilter = 'all';
+let schedViewMode = localStorage.getItem('strazh_schedview') || 'all';
+function setSchedView(mode) {
+  schedViewMode = mode;
+  localStorage.setItem('strazh_schedview', mode);
+  syncSchedViewButtons();
+  renderSched();
+}
+function syncSchedViewButtons() {
+  const wrap = document.getElementById('schedViews');
+  if (wrap) wrap.querySelectorAll('.vbtn').forEach(b => b.classList.toggle('on', b.getAttribute('data-mode') === schedViewMode));
+}
 function toggleSchedSearch() {
   schedSearchOpen = !schedSearchOpen;
   const wrap = document.getElementById('schedSearchWrap');
@@ -1128,6 +1129,7 @@ function schedEntries() {
   let entries = loadSupply().filter(e => e.delivery);
   if (q) entries = entries.filter(e => ((e.num || '') + ' ' + (e.contr || '')).toLowerCase().indexOf(q) !== -1);
   if (schedMonthFilter !== 'all') entries = entries.filter(e => e.delivery.slice(0, 7) === schedMonthFilter);
+  if (schedViewMode === 'rkm') entries = entries.filter(e => !e.noRkm && !!e.rkm);
   return entries;
 }
 function schedMonthHtml(mk, arr, todayStr) {
@@ -1136,9 +1138,13 @@ function schedMonthHtml(mk, arr, todayStr) {
   const rows = arr
     .slice()
     .sort((a,b) => a.delivery.localeCompare(b.delivery))
-    .map(e => '<div class="sch-row' + (e.delivery < todayStr ? ' past' : '') + '">' +
-      '<span class="snum">' + esc(e.num) + (e.contr ? ' · ' + esc(e.contr) : '') + '</span>' +
-      '<span class="sdate">' + fmtDate(e.delivery) + '</span></div>')
+    .map(e => {
+      const hasRkm = !e.noRkm && !!e.rkm;
+      return '<div class="sch-row' + (e.delivery < todayStr ? ' past' : '') + (hasRkm ? ' rkm' : '') + '">' +
+        '<span class="snum">' + esc(e.num) + (e.contr ? ' · ' + esc(e.contr) : '') +
+        (hasRkm ? ' <span class="rkm-tag">РКМ ' + fmtDate(e.rkm) + '</span>' : '') + '</span>' +
+        '<span class="sdate">' + fmtDate(e.delivery) + '</span></div>';
+    })
     .join('');
   return '<div class="sch-month">' +
     '<div class="sch-month-title">' + MONTHS[m] + ' ' + y + '</div>' +
@@ -1150,9 +1156,12 @@ function renderSched() {
   const list = document.getElementById('schedList');
   if (!list) return;
   rebuildSchedFilter();
+  syncSchedViewButtons();
   const entries = schedEntries();
   if (!entries.length) {
-    list.innerHTML = schedMonthFilter !== 'all'
+    list.innerHTML = schedViewMode === 'rkm'
+      ? '<p class="note">Договоров с рассчитанным РКМ нет</p>'
+      : schedMonthFilter !== 'all'
       ? '<p class="note">В этом месяце поставок нет' + (schedSearchQuery() ? ' по вашему поиску' : '') + '</p>'
       : (schedSearchQuery()
           ? '<p class="note">По запросу договоров нет</p>'
@@ -1175,8 +1184,11 @@ function buildPrintHtml() {
   const q = schedSearchQuery();
   let entries = loadSupply().filter(e => e.delivery);
   if (q) entries = entries.filter(e => ((e.num || '') + ' ' + (e.contr || '')).toLowerCase().indexOf(q) !== -1);
+  if (schedViewMode === 'rkm') entries = entries.filter(e => !e.noRkm && !!e.rkm);
   if (!entries.length) return null;
-  const filterLabel = schedMonthFilter === 'all' ? 'все месяцы' : schedMonthLabel(schedMonthFilter);
+  const viewLabels = { all: 'все месяца', rkm: 'с РКМ', noskip: 'без пустых месяцев' };
+  const filterLabel = (schedMonthFilter === 'all' ? 'все месяцы' : schedMonthLabel(schedMonthFilter)) +
+    ' · вид: ' + (viewLabels[schedViewMode] || 'все месяца');
   let byMonth = {};
   entries.forEach(e => {
     const mk = e.delivery.slice(0, 7);
@@ -1189,7 +1201,8 @@ function buildPrintHtml() {
     if (!byMonth[schedMonthFilter]) byMonth[schedMonthFilter] = [];
   } else {
     keys = Object.keys(byMonth).sort();
-    if (keys.length) {
+    if (schedViewMode !== 'all') { keys = keys.filter(mk => byMonth[mk] && byMonth[mk].length); }
+    if (schedViewMode === 'all' && keys.length) {
       const start = parseISO(keys[0] + '-01');
       const end = parseISO(keys[keys.length - 1] + '-01');
       const all = [];
@@ -1224,45 +1237,42 @@ function buildPrintHtml() {
     monthsHtml +
     '<div class="pr-note">Тестовый режим. Данные получены из локального хранилища устройства на момент выгрузки.</div>';
 }
-function fillPrintArea() {
+function printSched() {
   const html = buildPrintHtml();
-  if (!html) return null;
+  if (!html) { alert('Нечего печатать: график поставок пуст или поиск не дал совпадений'); return; }
   document.getElementById('printArea').innerHTML = html;
-  return document.getElementById('printArea');
+  window.print();
 }
 function exportSchedPdf() {
-  const el = fillPrintArea();
-  if (!el) { alert('Нечего выгружать: график поставок пуст или поиск не дал совпадений'); return; }
-  if (typeof html2pdf === 'undefined') {
-    // библиотека не загрузилась (нет интернета) — открываем печать как запасной путь
-    alert('Библиотека PDF не загрузилась (нужен интернет при открытии страницы). Открываю печать — в окне выберите «Сохранить как PDF».');
-    window.print();
-    return;
+  const html = buildPrintHtml();
+  if (!html) { alert('Нечего выгружать: график поставок пуст или поиск не дал совпадений'); return; }
+  const holder = document.getElementById('printArea');
+  const btn = document.getElementById('schedPdfBtn');
+  const btnText = btn ? btn.textContent : '';
+  if (btn) btn.textContent = '⏳ Формирую…';
+  const done = () => {
+    holder.classList.remove('pdf-exporting');
+    if (btn) btn.textContent = btnText;
+  };
+  if (window.html2pdf) {
+    holder.innerHTML = html;
+    holder.classList.add('pdf-exporting');
+    const d = new Date();
+    const p = n => (n < 10 ? '0' : '') + n;
+    const fname = 'график_поставки_' + p(d.getDate()) + '.' + p(d.getMonth() + 1) + '.' + d.getFullYear() + '.pdf';
+    html2pdf().set({
+      margin: [8, 8, 10, 8],
+      filename: fname,
+      image: { type: 'jpeg', quality: 0.96 },
+      html2canvas: { scale: 2, useCORS: true, windowWidth: 820 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak: { mode: ['css', 'legacy'], avoid: ['.sch-month', '.sch-row', '.pr-title', '.pr-sub', '.pr-criteria'] }
+    }).from(holder).save().then(done).catch(() => { done(); printSched(); });
+  } else {
+    done();
+    alert('Библиотека формирования PDF не загрузилась (при открытии страницы нужен интернет). Открываю окно печати — в нём выберите «Сохранить как PDF».');
+    printSched();
   }
-  const btn = event && event.currentTarget ? event.currentTarget : null;
-  const oldTxt = btn ? btn.textContent : '';
-  if (btn) { btn.disabled = true; btn.textContent = '⏳ Формирую…'; }
-  const d = new Date();
-  const stamp = (d.getDate() < 10 ? '0' : '') + d.getDate() + '.' + (d.getMonth() + 1 < 10 ? '0' : '') + (d.getMonth() + 1) + '.' + d.getFullYear();
-  el.classList.add('pdf-render');
-  html2pdf().set({
-    margin: [8, 8, 10, 8],
-    filename: 'график_поставки_' + stamp + '.pdf',
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-    pagebreak: { mode: ['css', 'legacy'] }
-  }).from(el).save()
-    .catch(function(e) { console.error(e); alert('Не удалось сформировать PDF: ' + (e && e.message ? e.message : 'ошибка')); })
-    .then(function() {
-      el.classList.remove('pdf-render');
-      if (btn) { btn.disabled = false; btn.textContent = oldTxt; }
-    });
-}
-function printSched() {
-  const el = fillPrintArea();
-  if (!el) { alert('Нечего выгружать: график поставок пуст или поиск не дал совпадений'); return; }
-  window.print();
 }
 
 function fmt(x) { return x.toLocaleString('ru-RU', {maximumFractionDigits: 2}) + ' руб.'; }
