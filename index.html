@@ -3,303 +3,154 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>СТРАЖ — панель ПЭО</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<title>СТРАЖ — отдел ПЭО</title>
 <style>
-  :root {
-    --bg: #f6f7fb;
-    --card: #ffffff;
-    --ink: #171923;
-    --muted: #6b7280;
-    --line: #e5e7eb;
-    --soft: #f3f4f6;
-    --accent: #4f46e5;
-    --accent-dark: #4338ca;
-    --danger: #dc2626;
-    --warn: #d97706;
-    --ok: #059669;
-    --info: #0284c7;
-  }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--ink); padding: 16px; max-width: 720px; margin: 0 auto; }
+  body { font-family: -apple-system, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: #e2e8f0; padding: 14px; max-width: 640px; margin: 0 auto; min-height: 100vh; }
 
-  /* ===== шапка ===== */
-  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 4px 10px; }
-  .brand { display: flex; align-items: center; gap: 10px; }
-  .brand .logo { width: 40px; height: 40px; border-radius: 12px; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; letter-spacing: 0.5px; }
-  .brand h1 { font-size: 20px; font-weight: 700; letter-spacing: 0.3px; }
-  .brand .sub { font-size: 12px; color: var(--muted); margin-top: 1px; }
-  .userbar { display: flex; align-items: center; gap: 8px; }
-  .user-chip { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; font-size: 12.5px; font-weight: 600; color: var(--ink); white-space: nowrap; }
-  .icon-btn { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 7px 12px; font-size: 12.5px; font-weight: 600; color: var(--muted); cursor: pointer; }
-  .icon-btn.dark { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .hero { background: linear-gradient(135deg, #312e81 0%, #1e1b4b 60%, #0f172a 100%); border-radius: 18px; padding: 22px 18px 18px; margin-bottom: 14px; border: 1px solid rgba(129,140,248,0.25); }
+  .hero h1 { font-size: 28px; letter-spacing: 3px; color: #fff; }
+  .hero .subtitle { color: #a5b4fc; font-size: 13px; margin-top: 4px; }
+  .hero .clock { margin-top: 10px; font-size: 12px; color: #c7d2fe; opacity: 0.8; }
 
-  /* ===== вкладки ===== */
-  .tabs { display: flex; gap: 4px; border-bottom: 2px solid var(--line); margin: 6px 0 18px; overflow-x: auto; }
-  .tabs button { background: none; border: none; padding: 11px 14px; font-size: 13.5px; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; white-space: nowrap; }
-  .tabs button.on { color: var(--accent); border-bottom-color: var(--accent); }
+  .tabs { display: flex; gap: 6px; background: rgba(30,41,59,0.8); border: 1px solid rgba(148,163,184,0.15); border-radius: 14px; padding: 5px; margin-bottom: 14px; position: sticky; top: 8px; z-index: 30; backdrop-filter: blur(8px); }
+  .tabs button { flex: 1; padding: 10px 2px; border: none; background: none; color: #94a3b8; font-size: 11px; font-weight: 700; border-radius: 10px; cursor: pointer; line-height: 1.3; }
+  .tabs button .ico { display: block; font-size: 16px; margin-bottom: 2px; }
+  .tabs button.on { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; box-shadow: 0 4px 14px rgba(99,102,241,0.35); }
 
-  /* ===== карточки ===== */
-  .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 18px; margin-bottom: 14px; }
-  .card-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
-  .card-title { font-size: 16px; font-weight: 700; }
-  .card-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .card { background: #1e293b; border: 1px solid rgba(148,163,184,0.14); border-radius: 16px; padding: 16px; margin-bottom: 14px; box-shadow: 0 6px 20px rgba(0,0,0,0.35); }
+  .card h3 { font-size: 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; gap: 8px; color: #f1f5f9; }
+  .card h4 { font-size: 13px; margin: 12px 0 8px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; }
 
-  /* ===== статистика ===== */
-  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
-  .stat { background: var(--soft); border-radius: 12px; padding: 12px 10px; text-align: center; border-left: 3px solid var(--line); }
-  .stat .n { font-size: 24px; font-weight: 800; line-height: 1.1; }
-  .stat .t { font-size: 11px; color: var(--muted); margin-top: 3px; }
-  .stat.st-acc { border-left-color: var(--accent); } .stat.st-acc .n { color: var(--accent); }
-  .stat.st-warn { border-left-color: var(--warn); } .stat.st-warn .n { color: var(--warn); }
-  .stat.st-danger { border-left-color: var(--danger); } .stat.st-danger .n { color: var(--danger); }
-  .stat.st-ok { border-left-color: var(--ok); } .stat.st-ok .n { color: var(--ok); }
-  .stat.st-mut { border-left-color: #94a3b8; } .stat.st-mut .n { color: #64748b; }
-  .stat.st-ink { border-left-color: var(--ink); } .stat.st-ink .n { color: var(--ink); }
+  .counters { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; text-align: center; }
+  .counter { background: rgba(148,163,184,0.07); border-radius: 10px; padding: 8px 2px; }
+  .counter .num { font-size: 20px; font-weight: 800; }
+  .counter .lbl { font-size: 9px; color: #94a3b8; margin-top: 2px; }
+  .num.c-black { color: #f1f5f9; } .num.c-blue { color: #818cf8; } .num.c-orange { color: #fbbf24; }
+  .num.c-red { color: #f87171; } .num.c-green { color: #4ade80; } .num.c-gray { color: #94a3b8; }
 
-  .status-bar { display: flex; height: 8px; border-radius: 4px; overflow: hidden; background: var(--soft); margin: 12px 0 6px; }
+  .status-bar { display: flex; height: 8px; border-radius: 4px; overflow: hidden; margin: 14px 0 4px; background: rgba(148,163,184,0.15); }
   .status-bar div { height: 100%; }
-  .sb-queue { background: #94a3b8; } .sb-work { background: var(--accent); } .sb-pause { background: var(--info); }
-  .sb-ge { background: #eab308; } .sb-mv { background: #eab308; } .sb-rework { background: #ea580c; } .sb-done { background: var(--ok); }
-  .legend { display: flex; flex-wrap: wrap; gap: 10px; font-size: 10.5px; color: var(--muted); margin-bottom: 12px; }
-  .legend span::before { content: ''; display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 4px; vertical-align: middle; }
-  .lg-queue::before { background: #94a3b8; } .lg-work::before { background: var(--accent); } .lg-pause::before { background: var(--info); }
-  .lg-ge::before { background: #eab308; } .lg-rework::before { background: #ea580c; } .lg-done::before { background: var(--ok); }
+  .sb-queue { background: #94a3b8; } .sb-work { background: #818cf8; } .sb-pause { background: #22d3ee; }
+  .sb-ge { background: #fbbf24; } .sb-mv { background: #fbbf24; } .sb-rework { background: #fb923c; } .sb-done { background: #4ade80; }
+  .status-legend { display: flex; flex-wrap: wrap; gap: 8px; font-size: 10px; color: #94a3b8; margin-bottom: 12px; }
+  .status-legend span::before { content: ''; display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 3px; vertical-align: middle; }
+  .lg-queue::before { background: #94a3b8; } .lg-work::before { background: #818cf8; } .lg-pause::before { background: #22d3ee; }
+  .lg-ge::before { background: #fbbf24; } .lg-rework::before { background: #fb923c; } .lg-done::before { background: #4ade80; }
 
-  .load-title { font-size: 12.5px; font-weight: 700; color: var(--muted); margin: 10px 0 6px; text-transform: uppercase; letter-spacing: 0.4px; }
-  .load-row { margin: 7px 0; }
-  .load-row .lr-top { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--muted); }
-  .load-track { height: 7px; border-radius: 4px; background: var(--soft); margin-top: 3px; overflow: hidden; }
-  .load-fill { height: 100%; border-radius: 4px; background: var(--accent); }
-  .load-fill.max { background: var(--danger); }
+  .load-title { font-size: 12px; font-weight: 700; color: #94a3b8; margin: 10px 0 4px; }
+  .load-row { margin: 6px 0; }
+  .load-row .lr-top { display: flex; justify-content: space-between; font-size: 12px; color: #cbd5e1; }
+  .load-track { height: 8px; border-radius: 4px; background: rgba(148,163,184,0.15); margin-top: 3px; overflow: hidden; }
+  .load-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #818cf8, #a78bfa); }
+  .load-fill.max { background: linear-gradient(90deg, #f87171, #fb923c); }
 
-  /* ===== формы ===== */
-  label.fld { display: block; font-size: 13.5px; margin-bottom: 10px; }
-  .fld-cap { display: block; font-size: 11.5px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 4px; }
-  input, select { width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; font-size: 14.5px; background: #fff; color: var(--ink); }
-  input:focus, select:focus { outline: 2px solid rgba(79,70,229,0.25); border-color: var(--accent); }
-  .frow { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  label { display: block; font-size: 13px; margin-bottom: 10px; color: #cbd5e1; }
+  input, select { width: 100%; padding: 9px; margin-top: 4px; border: 1px solid rgba(148,163,184,0.3); border-radius: 10px; font-size: 15px; background: #0f172a; color: #f1f5f9; }
+  input:focus, select:focus { outline: none; border-color: #818cf8; }
+  ::placeholder { color: #64748b; }
 
-  /* ===== кнопки ===== */
-  .btn { display: inline-block; padding: 11px 16px; background: var(--accent); color: #fff; border: none; border-radius: 999px; font-size: 14px; font-weight: 600; cursor: pointer; }
-  .btn:active { background: var(--accent-dark); }
-  .btn.wide { width: 100%; }
-  .btn.ghost { background: var(--card); color: var(--ink); border: 1px solid var(--line); }
-  .btn.small { font-size: 11.5px; padding: 5px 11px; }
-  .btn.danger { background: var(--danger); }
+  .filters { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  .small-lbl { display: block; font-size: 11px; font-weight: 700; color: #94a3b8; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.04em; }
 
-  /* ===== горячее ===== */
-  .hot-title { color: var(--danger); }
+  .btn { display: inline-block; width: 100%; padding: 12px; margin-top: 10px; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; }
+  .btn:active { opacity: 0.85; }
+  .btn.clear { background: rgba(148,163,184,0.15); color: #cbd5e1; width: auto; padding: 8px 14px; margin-top: 0; font-size: 12px; border-radius: 10px; }
+  .btn.ghost { background: rgba(148,163,184,0.15); color: #cbd5e1; }
+  .btn.danger { background: rgba(248,113,113,0.12); color: #f87171; width: 100%; font-size: 13px; padding: 9px; border: 1px solid rgba(248,113,113,0.4); }
 
-  /* ===== задачи ===== */
-  .task { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; padding: 12px 2px 12px 14px; border-bottom: 1px solid var(--line); font-size: 14px; border-left: 4px solid transparent; }
-  .task:last-child { border-bottom: none; }
+  .hot-title { color: #f87171; }
+  .task { display: flex; justify-content: space-between; align-items: flex-start; padding: 10px; margin: 8px 0; border-bottom: none; border-radius: 12px; font-size: 14px; gap: 8px; background: rgba(148,163,184,0.07); border-left: 4px solid #64748b; }
+  .task:last-child { margin-bottom: 0; }
   .task .info { flex: 1; min-width: 0; }
-  .task .name { font-weight: 650; }
-  .task.is-done .name { text-decoration: line-through; color: var(--muted); }
-  .task.is-done { opacity: 0.6; }
-  .task .meta { color: var(--muted); font-size: 12px; margin-top: 4px; display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
-  .who { color: var(--info); font-weight: 600; cursor: pointer; user-select: none; }
-  .who.no-who { color: var(--muted); font-style: italic; }
-  .stdate { font-size: 10px; color: #9ca3af; }
-  .status-pill { display: inline-block; padding: 3px 10px; font-size: 11px; font-weight: 650; border-radius: 999px; border: 1px solid; cursor: pointer; user-select: none; }
-  .ss-queue { color: #64748b; border-color: rgba(148,163,184,0.6); background: rgba(148,163,184,0.12); }
-  .ss-work { color: var(--accent); border-color: rgba(79,70,229,0.45); background: rgba(79,70,229,0.08); }
-  .ss-pause { color: var(--info); border-color: rgba(2,132,199,0.55); background: rgba(2,132,199,0.12); }
-  .ss-ge { color: #a16207; border-color: rgba(234,179,8,0.6); background: rgba(253,224,71,0.3); }
-  .ss-mv { color: #a16207; border-color: rgba(234,179,8,0.6); background: rgba(253,224,71,0.3); }
-  .ss-rework { color: #ea580c; border-color: rgba(234,88,12,0.5); background: rgba(234,88,12,0.08); }
-  .ss-done { color: var(--ok); border-color: rgba(5,150,105,0.5); background: rgba(5,150,105,0.08); }
+  .task .name { font-weight: 600; color: #f1f5f9; }
+  .task.is-done .name { text-decoration: line-through; color: #64748b; }
+  .task.is-done { opacity: 0.55; }
+  .task .meta { color: #94a3b8; font-size: 12px; margin-top: 4px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .who { color: #a5b4fc; font-weight: 700; }
+  .stdate { font-size: 8px; color: #64748b; }
 
-  .status-menu { position: fixed; z-index: 50; background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.14); padding: 6px; min-width: 230px; }
-  .status-menu .opt { padding: 9px 12px; border-radius: 10px; font-size: 13px; font-weight: 600; color: var(--ink); cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-  .status-menu .opt:active { background: var(--soft); }
+  .status-pill { display: inline-block; padding: 2px 10px; font-size: 11px; font-weight: 700; border-radius: 999px; border: 1px solid; cursor: pointer; user-select: none; }
+  .ss-queue { color: #94a3b8; border-color: rgba(148,163,184,0.6); background: rgba(148,163,184,0.12); }
+  .ss-work { color: #a5b4fc; border-color: rgba(129,140,248,0.5); background: rgba(129,140,248,0.12); }
+  .ss-pause { color: #67e8f9; border-color: rgba(34,211,238,0.6); background: rgba(34,211,238,0.12); }
+  .ss-ge, .ss-mv { color: #fde047; border-color: rgba(251,191,36,0.6); background: rgba(251,191,36,0.12); }
+  .ss-rework { color: #fdba74; border-color: rgba(251,146,60,0.6); background: rgba(251,146,60,0.12); }
+  .ss-done { color: #86efac; border-color: rgba(74,222,128,0.5); background: rgba(74,222,128,0.1); }
+  .status-menu { position: fixed; z-index: 50; background: #1e293b; border: 1px solid rgba(148,163,184,0.3); border-radius: 14px; box-shadow: 0 12px 32px rgba(0,0,0,0.5); padding: 6px; min-width: 230px; }
+  .status-menu .opt { padding: 10px 12px; border-radius: 10px; font-size: 13px; font-weight: 600; color: #f1f5f9; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .status-menu .opt:active { background: rgba(148,163,184,0.12); }
   .sdot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 7px; vertical-align: middle; }
-  .badge { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 11px; font-weight: 650; color: #fff; background: #94a3b8; cursor: pointer; user-select: none; }
-  .badge.over { background: var(--danger); } .badge.soon { background: var(--warn); } .badge.ok { background: var(--accent); }
 
-  .group { border: 1px solid var(--line); border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
-  .group-head { padding: 9px 12px; font-size: 12.5px; font-weight: 700; color: #fff; display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
-  .group-head small { font-weight: 600; opacity: 0.9; }
-  .g-queue { background: #94a3b8; } .g-work { background: var(--accent); } .g-pause { background: var(--info); }
-  .g-ge { background: #eab308; } .g-mv { background: #eab308; } .g-rework { background: #ea580c; } .g-done { background: var(--ok); }
-  .g-who { background: var(--ink); cursor: pointer; user-select: none; }
-  .group-body { border-top: 1px solid var(--line); }
-  .del { background: none; border: none; color: var(--danger); font-size: 18px; cursor: pointer; }
-  .hr { border: none; border-top: 1px solid var(--line); margin: 10px 0; }
+  .badge { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 11px; font-weight: 700; color: #fff; background: #475569; cursor: pointer; user-select: none; }
+  .badge.over { background: #dc2626; } .badge.soon { background: #d97706; } .badge.ok { background: #4f46e5; }
 
-  #res p, #swRes p, #dcRes p { font-size: 14px; margin: 4px 0; }
-  .note { font-size: 12px; color: var(--muted); text-align: center; margin-top: 6px; }
-  .mini-note { font-size: 11px; color: #9ca3af; margin: 4px 0 0; }
+  .del { background: none; border: none; color: #f87171; font-size: 18px; cursor: pointer; }
 
-  /* ===== FAB, модали, оверлеи ===== */
-  .hidden { display: none !important; }
-  .fab { position: fixed; right: 20px; bottom: 20px; width: 56px; height: 56px; border-radius: 18px; background: var(--accent); color: #fff; border: none; font-size: 28px; cursor: pointer; z-index: 40; box-shadow: 0 8px 22px rgba(79,70,229,0.35); display: flex; align-items: center; justify-content: center; }
-  .fab:active { background: var(--accent-dark); }
-  .overlay { position: fixed; inset: 0; background: rgba(23,25,35,0.5); z-index: 60; display: flex; align-items: flex-end; justify-content: center; padding: 16px; }
+  .note { font-size: 12px; color: #64748b; text-align: center; margin-top: 6px; }
+  #res p, #swRes p { font-size: 14px; margin: 5px 0; color: #cbd5e1; }
+  .hr { border: none; border-top: 1px solid rgba(148,163,184,0.18); margin: 10px 0; }
+  .big-line { font-size: 17px; color: #f1f5f9; }
+
+  .fab { position: fixed; right: 20px; bottom: 20px; width: 58px; height: 58px; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #a855f7); color: #fff; border: none; font-size: 30px; line-height: 1; cursor: pointer; z-index: 40; box-shadow: 0 6px 20px rgba(99,102,241,0.5); display: flex; align-items: center; justify-content: center; }
+
+  .overlay { position: fixed; inset: 0; background: rgba(2,6,23,0.7); z-index: 60; display: flex; align-items: flex-end; justify-content: center; padding: 16px; }
   .overlay.hidden { display: none !important; }
-  .modal { background: var(--card); border-radius: 18px; padding: 20px; width: 100%; max-width: 480px; box-shadow: 0 -6px 34px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; }
-  .modal h3 { font-size: 16px; margin-bottom: 14px; display: block; }
+  .modal { background: #1e293b; border: 1px solid rgba(148,163,184,0.2); border-radius: 18px; padding: 18px; width: 100%; max-width: 480px; box-shadow: 0 -8px 40px rgba(0,0,0,0.6); max-height: 90vh; overflow-y: auto; }
+  .modal h3 { font-size: 17px; margin-bottom: 12px; color: #f1f5f9; }
   .modal-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-  .modal-actions .btn { flex: 1; margin-top: 8px; }
+  .modal-actions .btn { margin-top: 10px; flex: 1; }
 
-  /* ===== календарь ===== */
   .cal-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-  .cal-nav .mon { font-size: 16px; font-weight: 700; text-transform: capitalize; }
-  .cal-nav button { background: var(--soft); border: 1px solid var(--line); border-radius: 999px; padding: 6px 15px; font-size: 15px; cursor: pointer; color: var(--ink); font-weight: 700; }
+  .cal-nav .mon { font-size: 16px; font-weight: 800; text-transform: capitalize; color: #f1f5f9; }
+  .cal-nav button { background: rgba(148,163,184,0.15); border: none; border-radius: 10px; padding: 6px 16px; font-size: 16px; cursor: pointer; color: #cbd5e1; font-weight: 700; }
   .cal-week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 4px; }
-  .cal-week div { text-align: center; font-size: 10.5px; color: var(--muted); font-weight: 700; text-transform: uppercase; }
+  .cal-week div { text-align: center; font-size: 11px; color: #64748b; font-weight: 700; }
   .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-  .cal-day { min-height: 52px; background: var(--soft); border-radius: 10px; padding: 4px 5px; cursor: pointer; overflow: hidden; }
-  .cal-day.other { opacity: 0.35; }
-  .cal-day.today { box-shadow: inset 0 0 0 2px var(--accent); }
-  .cal-day.sel { background: rgba(79,70,229,0.12); }
-  .cal-day.dlv { box-shadow: inset 0 0 0 2.5px var(--warn); background: #fffbeb; }
-  .cal-day.dlv.sel { box-shadow: inset 0 0 0 2.5px var(--warn); background: #fef3c7; }
-  .cal-day.today.dlv { box-shadow: inset 0 0 0 2.5px var(--warn); }
-  .cal-day .d { font-size: 12px; font-weight: 650; }
-  .cal-chip { font-size: 9px; line-height: 1.3; padding: 1px 4px; border-radius: 5px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 650; }
-  .cal-chip.c-work { background: rgba(79,70,229,0.14); color: var(--accent-dark); }
-  .cal-chip.c-soon { background: rgba(217,119,6,0.18); color: #92400e; }
-  .cal-chip.c-over { background: rgba(220,38,38,0.16); color: #b91c1c; }
-  .cal-chip.c-done { background: rgba(5,150,105,0.14); color: #047857; }
-  .cal-delivery-note { margin-top: 10px; background: #fffbeb; border: 1px solid rgba(217,119,6,0.4); border-radius: 12px; padding: 10px 12px; font-size: 13px; }
-  .cal-delivery-note .cdn-title { font-weight: 700; color: #92400e; margin-bottom: 6px; }
-  .cal-delivery-note .cdn-row { padding: 3px 0; color: var(--ink); }
+  .cal-day { min-height: 54px; background: rgba(148,163,184,0.07); border-radius: 10px; padding: 4px; cursor: pointer; overflow: hidden; }
+  .cal-day.other { opacity: 0.3; }
+  .cal-day.today { box-shadow: inset 0 0 0 2px #818cf8; }
+  .cal-day.sel { background: rgba(129,140,248,0.25); }
+  .cal-day .d { font-size: 12px; font-weight: 700; color: #e2e8f0; }
+  .cal-chip { font-size: 9px; line-height: 1.3; padding: 1px 4px; border-radius: 5px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 700; }
+  .cal-chip.c-work { background: rgba(129,140,248,0.25); color: #c7d2fe; }
+  .cal-chip.c-soon { background: rgba(251,191,36,0.3); color: #fde047; }
+  .cal-chip.c-over { background: rgba(248,113,113,0.3); color: #fecaca; }
+  .cal-chip.c-done { background: rgba(74,222,128,0.25); color: #bbf7d0; }
+  .hidden { display: none; }
 
-  /* ===== итоги расчётов ===== */
-  .calc-result { background: var(--soft); border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-top: 12px; }
-  .calc-result .big { font-size: 16.5px; }
-
-  /* ===== вход ===== */
-  #loginOverlay { position: fixed; inset: 0; background: var(--bg); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 16px; }
-  #loginOverlay.hidden { display: none !important; }
-  .login-box { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 28px 24px; width: 100%; max-width: 380px; }
-  .login-box h2 { font-size: 22px; text-align: center; margin-bottom: 4px; }
-  .login-box .sub { text-align: center; font-size: 12px; color: var(--muted); margin-bottom: 18px; }
-  .login-err { color: var(--danger); font-size: 13px; text-align: center; min-height: 18px; margin-top: 10px; }
-
-  /* ===== пользователи ===== */
-  .user-list-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); padding: 9px 4px; font-size: 14px; gap: 8px; }
-  .user-list-row:last-child { border-bottom: none; }
-  .user-list-row .u-login { color: var(--muted); font-size: 12px; }
-
-  .chk-row { display: flex; align-items: center; gap: 8px; font-size: 14px; margin: 8px 0; }
-  .chk-row input { width: 20px; height: 20px; margin: 0; flex-shrink: 0; }
-  .edit-banner { background: #fffbeb; border: 1px solid rgba(217,119,6,0.4); border-radius: 12px; padding: 8px 12px; font-size: 13px; color: #92400e; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-  .edit-banner button { background: none; border: none; color: #92400e; font-size: 12px; font-weight: 600; cursor: pointer; text-decoration: underline; padding: 0; }
-
-  /* ===== красный режим договорной работы ===== */
-  body.red-mode .tabs button.on { color: #b91c1c; border-bottom-color: #b91c1c; }
-  body.red-mode .btn { background: #b91c1c; }
-  body.red-mode .btn.ghost { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
-  body.red-mode .fab { background: #b91c1c; box-shadow: 0 8px 22px rgba(185,28,28,0.35); }
-  body.red-mode .brand .logo { background: #b91c1c; }
-
-  /* ===== под-вкладки ===== */
-  .sub-tabs { display: flex; gap: 4px; border-bottom: 2px solid var(--line); margin: 0 0 16px; }
-  .sub-tabs button { background: none; border: none; padding: 10px 12px; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; }
-  .sub-tabs button.on { color: var(--ink); border-bottom-color: var(--ink); }
-  body.red-mode .sub-tabs button.on { color: #b91c1c; border-bottom-color: #b91c1c; }
-
-  /* ===== график поставок ===== */
-  .sch-month { margin-bottom: 10px; }
-  .sch-month-title { font-size: 15px; font-weight: 800; color: #b91c1c; text-transform: capitalize; }
-  .sch-month-line { width: 100%; height: 1px; background: #b91c1c; margin: 5px 0 8px; }
-  .sch-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 4px 2px; border-bottom: 1px solid var(--soft); font-size: 13.5px; }
-  .sch-row:last-child { border-bottom: none; }
-  .sch-row .snum { font-weight: 500; color: #9ca3af; }
-  .sch-row .sdate { color: #9ca3af; white-space: nowrap; }
-  .sch-row.rkm .snum, .sch-row.rkm .sdate { color: var(--ink); font-weight: 700; }
-  .sch-row.past .snum, .sch-row.past .sdate { color: #b91c1c; opacity: 0.8; }
-  .sch-empty { font-size: 12px; color: #9ca3af; padding: 4px 2px; }
-  .sch-search { margin-bottom: 10px; }
-  .sch-search input { margin-top: 0; }
-  .sch-filters { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
-  .sch-filters select { margin-top: 0; }
-  .sch-hint { font-size: 11px; color: #9ca3af; text-align: center; margin-top: 10px; }
-
-  /* ===== печать ===== */
-  #printArea { display: none; }
-  @media print {
-    body { background: #fff; padding: 0; max-width: none; }
-    body > *:not(#printArea) { display: none !important; }
-    #printArea { display: block !important; }
-    #printArea .pr-title { font-size: 20px; font-weight: 700; color: #171923; margin-bottom: 4px; }
-    #printArea .pr-sub { font-size: 12px; color: #6b7280; margin-bottom: 6px; }
-    #printArea .pr-criteria { font-size: 12px; color: #374151; background: #f3f4f6; border-radius: 6px; padding: 6px 10px; margin-bottom: 18px; }
-    #printArea .sch-month { margin-bottom: 14px; page-break-inside: avoid; }
-    #printArea .sch-month-title { font-size: 15px; font-weight: 700; color: #b91c1c; text-transform: capitalize; }
-    #printArea .sch-month-line { width: 100%; height: 1px; background: #b91c1c; margin: 5px 0 8px; }
-    #printArea .sch-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 5px 2px; border-bottom: 1px solid #e5e7eb; font-size: 13px; }
-    #printArea .sch-row:last-child { border-bottom: none; }
-    #printArea .sch-row .snum { font-weight: 500; color: #6b7280; }
-    #printArea .sch-row .sdate { color: #6b7280; white-space: nowrap; }
-    #printArea .sch-row.rkm .snum, #printArea .sch-row.rkm .sdate { color: #171923; font-weight: 700; }
-    #printArea .sch-row.past .snum, #printArea .sch-row.past .sdate { color: #b91c1c; }
-    #printArea .sch-empty { font-size: 12px; color: #9ca3af; padding: 4px 2px; }
-    #printArea .pr-note { margin-top: 24px; font-size: 10px; color: #9ca3af; }
-  }
-  #pdfCapture { position: fixed; left: -10000px; top: 0; width: 720px; background: #fff; padding: 24px; z-index: -1; }
+  .wip { text-align: center; padding: 46px 16px; }
+  .wip .ico { font-size: 44px; }
+  .wip h3 { justify-content: center; margin-top: 10px; }
 </style>
 </head>
 <body>
 
-<!-- ЭКРАН ВХОДА -->
-<div id="loginOverlay">
-  <form class="login-box" onsubmit="tryLogin(event)">
-    <h2>СТРАЖ</h2>
-    <div class="sub">Панель отдела ПЭО · вход по личному доступу</div>
-    <label class="fld"><span class="fld-cap">Логин</span><input type="text" id="inLogin" autocomplete="username"></label>
-    <label class="fld"><span class="fld-cap">Пароль</span><input type="password" id="inPass" autocomplete="current-password"></label>
-    <button class="btn wide" type="submit">Войти</button>
-    <div class="login-err" id="loginErr"></div>
-    <p class="note">Доступы выдаёт руководитель отдела.</p>
-  </form>
-</div>
-
-<!-- ШАПКА -->
-<div class="topbar">
-  <div class="brand">
-    <div class="logo">С</div>
-    <div>
-      <h1>СТРАЖ</h1>
-      <div class="sub">Панель ПЭО · задачи · договоры · расчёты</div>
-    </div>
-  </div>
-  <div class="userbar" id="userBar" style="display:none;">
-    <span class="user-chip" id="whoNow"></span>
-    <button class="icon-btn dark" id="btnAdmin" onclick="openAdminModal()" style="display:none;">Сотрудники</button>
-    <button class="icon-btn" onclick="doLogout()">Выйти</button>
-  </div>
+<div class="hero">
+  <h1>СТРАЖ</h1>
+  <div class="subtitle">Отдел ПЭО · задачи и дедлайны</div>
+  <div class="clock" id="clock"></div>
 </div>
 
 <div class="tabs">
-  <button id="tabTasks" class="on" onclick="showTab('tasks')">Задачи</button>
-  <button id="tabCal" onclick="showTab('cal')">Календарь</button>
-  <button id="tabCalc" onclick="showTab('calc')">Калькулятор</button>
-  <button id="tabDoc" onclick="showTab('doc')">Договорная работа</button>
+  <button id="tabTasks" class="on" onclick="showTab('tasks')"><span class="ico">📋</span>Задачи</button>
+  <button id="tabCal" onclick="showTab('cal')"><span class="ico">🗓️</span>Календарь</button>
+  <button id="tabCalc" onclick="showTab('calc')"><span class="ico">🧮</span>Калькулятор</button>
+  <button id="tabDoc" onclick="showTab('doc')"><span class="ico">📄</span>Договоры</button>
 </div>
 
 <div id="secTasks">
   <div class="card">
-    <div class="card-head">
-      <div>
-        <div class="card-title">Сводка</div>
-        <div class="card-sub">текущее состояние задач отдела</div>
-      </div>
-    </div>
-    <div class="stats">
-      <div class="stat st-ink"><div class="n" id="cAll">0</div><div class="t">всего</div></div>
-      <div class="stat st-mut"><div class="n" id="cQueue">0</div><div class="t">в очереди</div></div>
-      <div class="stat st-acc"><div class="n" id="cWork">0</div><div class="t">в работе</div></div>
-      <div class="stat st-warn"><div class="n" id="cSoon">0</div><div class="t">скоро дедлайн</div></div>
-      <div class="stat st-danger"><div class="n" id="cOver">0</div><div class="t">просрочено</div></div>
-      <div class="stat st-ok"><div class="n" id="cDone">0</div><div class="t">закрыто</div></div>
+    <div class="counters">
+      <div class="counter"><div class="num" id="cAll">0</div><div class="lbl">всего</div></div>
+      <div class="counter"><div class="num" id="cQueue">0</div><div class="lbl">в очереди</div></div>
+      <div class="counter"><div class="num" id="cWork">0</div><div class="lbl">в работе</div></div>
+      <div class="counter"><div class="num" id="cSoon">0</div><div class="lbl">скоро дедлайн</div></div>
+      <div class="counter"><div class="num" id="cOver">0</div><div class="lbl">просрочено</div></div>
+      <div class="counter"><div class="num" id="cDone">0</div><div class="lbl">закрыто</div></div>
     </div>
     <div class="status-bar" id="statusBar"></div>
-    <div class="legend">
+    <div class="status-legend">
       <span class="lg-queue">в очереди</span><span class="lg-work">в работе</span><span class="lg-pause">пауза</span>
       <span class="lg-ge">согласование (ГЭ/МВ)</span><span class="lg-rework">доработка</span><span class="lg-done">выполнено</span>
     </div>
@@ -308,39 +159,34 @@
   </div>
 
   <div class="card hidden" id="hotCard">
-    <div class="card-head">
-      <div class="card-title hot-title">🔥 Горит сейчас</div>
-    </div>
+    <h3 class="hot-title">🔥 Горит сейчас</h3>
     <div id="hotList"></div>
   </div>
 
   <div class="card">
-    <div class="card-head">
-      <div class="card-title">Задачи</div>
-      <button class="btn ghost small" onclick="clearFilters()">сбросить</button>
-    </div>
-    <div class="frow">
-      <div><label class="fld" style="margin:0"><span class="fld-cap">Исполнитель</span><select id="fWho" onchange="render()"></select></label></div>
-      <div><label class="fld" style="margin:0"><span class="fld-cap">Категория</span>
+    <h3>Задачи <button class="btn clear" onclick="clearFilters()">сбросить</button></h3>
+    <div class="filters">
+      <div><span class="small-lbl">Исполнитель</span><select id="fWho" onchange="render()"></select></div>
+      <div><span class="small-lbl">Категория</span>
         <select id="fCat" onchange="render()">
           <option value="all">все</option><option value="work">в работе</option>
           <option value="soon">скоро дедлайн</option><option value="over">просрочено</option><option value="done">закрыто</option>
         </select>
-      </label></div>
+      </div>
     </div>
-    <div class="frow">
-      <div><label class="fld" style="margin:0"><span class="fld-cap">Вид</span>
+    <div class="filters">
+      <div><span class="small-lbl">Вид</span>
         <select id="vView" onchange="render()">
           <option value="list">плоский список</option><option value="status">по статусам</option><option value="who">по исполнителям</option>
         </select>
-      </label></div>
-      <div><label class="fld" style="margin:0"><span class="fld-cap">Сортировка</span>
+      </div>
+      <div><span class="small-lbl">Сортировка</span>
         <select id="vSort" onchange="render()"><option value="new">новые сверху</option><option value="deadline">по дедлайну</option></select>
-      </label></div>
+      </div>
     </div>
     <div id="taskList"><p class="note">Задач пока нет</p></div>
   </div>
-  <p class="note">ВНИМАНИЕ. ТЕСТОВЫЙ РЕЖИМ. Задачи хранятся только на этом устройстве — переноси в Kaiten. Имя исполнителя в строке задачи — нажми, чтобы поменять.</p>
+  <p class="note">ВНИМАНИЕ. ТЕСТОВЫЙ РЕЖИМ. Задачи хранятся только на этом устройстве — переноси в Kaiten.</p>
 </div>
 
 <div id="secCal" class="hidden">
@@ -352,145 +198,49 @@
     <div class="cal-grid" id="calGrid"></div>
   </div>
   <div class="card">
-    <div class="card-head"><div class="card-title" id="calDayTitle">Выберите день</div></div>
+    <h3 id="calDayTitle">Выберите день</h3>
     <div id="calDayList"><p class="note">Нажмите на день в календаре</p></div>
   </div>
-  <p class="note">Жёлтая рамка — день поставки из расчётов. В календаре задачи стоят на день дедлайна. Просроченные — красным.</p>
+  <p class="note">В календаре задачи стоят на день дедлайна.</p>
 </div>
 
 <div id="secCalc" class="hidden">
   <div class="card">
-    <div class="card-head">
-      <div>
-        <div class="card-title">Калькулятор затрат</div>
-        <div class="card-sub">расчёт цены по статьям затрат</div>
-      </div>
-    </div>
-    <div class="card-title" style="font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:0.4px; margin:6px 0 10px;">Материалы</div>
-    <div class="frow">
-      <div><label class="fld" style="margin:0"><span class="fld-cap">Ф4 — материалы, руб.</span><input type="number" id="f4" step="0.01"></label></div>
-      <div><label class="fld" style="margin:0"><span class="fld-cap">Ф6 — ПКИ, руб.</span><input type="number" id="f6" step="0.01"></label></div>
-    </div>
-    <label class="fld"><span class="fld-cap">Ф7 — услуги сторонних организаций, руб.</span><input type="number" id="f7" step="0.01"></label>
-    <div class="card-title" style="font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:0.4px; margin:10px 0 10px;">Заработная плата</div>
-    <div class="frow">
-      <div><label class="fld" style="margin:0"><span class="fld-cap">Средняя ЗП, руб./мес.</span><input type="number" id="avg" step="0.01"></label></div>
-      <div><label class="fld" style="margin:0"><span class="fld-cap">Трудоёмкость</span><input type="number" id="labor" step="0.1"></label></div>
-    </div>
-    <div class="frow">
-      <div><label class="fld" style="margin:0"><span class="fld-cap">Единица трудоёмкости</span>
-        <select id="unit"><option value="mm">чел./мес.</option><option value="h">часы</option></select>
-      </label></div>
-      <div><label class="fld" style="margin:0"><span class="fld-cap">Часов в чел./мес.</span><input type="number" id="hpm" value="164" step="0.1"></label></div>
-    </div>
-    <div class="frow">
-      <div><label class="fld" style="margin:0"><span class="fld-cap">ДЗП (Ф10), % от основной ЗП</span><input type="number" id="dzp" step="0.1"></label></div>
-      <div><label class="fld" style="margin:0"><span class="fld-cap">СТРАХ, % от ЗП всего</span><input type="number" id="strah" step="0.1"></label></div>
-    </div>
-    <div class="card-title" style="font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:0.4px; margin:10px 0 10px;">Накладные расходы</div>
-    <div class="frow">
-      <div><label class="fld" style="margin:0"><span class="fld-cap">ОПР (Ф11), % от ЗП всего</span><input type="number" id="opr" step="0.1"></label></div>
-      <div><label class="fld" style="margin:0"><span class="fld-cap">ОХР/АУР (Ф12), % от ЗП всего</span><input type="number" id="ohr" step="0.1"></label></div>
-    </div>
-    <button class="btn wide" onclick="calc()">Рассчитать</button>
+    <h3>Калькулятор затрат (ПЭО)</h3>
+    <h4>Материалы</h4>
+    <label>Ф4 — материалы, руб. <input type="number" id="f4" step="0.01"></label>
+    <label>Ф6 — ПКИ, руб. <input type="number" id="f6" step="0.01"></label>
+    <label>Ф7 — услуги сторонних организаций, руб. <input type="number" id="f7" step="0.01"></label>
+    <h4>Заработная плата</h4>
+    <label>Средняя ЗП (норматив), руб./мес. <input type="number" id="avg" step="0.01"></label>
+    <label>Трудоёмкость <input type="number" id="labor" step="0.1">
+      <select id="unit"><option value="mm">чел./мес.</option><option value="h">часы</option></select>
+    </label>
+    <label>Часов в чел./мес. <input type="number" id="hpm" value="164" step="0.1"></label>
+    <label>ДЗП (Ф10), % от основной ЗП <input type="number" id="dzp" step="0.1"></label>
+    <label>СТРАХ, % от ЗП всего <input type="number" id="strah" step="0.1"></label>
+    <h4>Накладные расходы</h4>
+    <label>ОПР (Ф11), % от ЗП всего <input type="number" id="opr" step="0.1"></label>
+    <label>ОХР/АУР (Ф12), % от ЗП всего <input type="number" id="ohr" step="0.1"></label>
+    <button class="btn" onclick="calc()">Рассчитать</button>
     <div id="res"></div>
   </div>
-
   <div class="card">
-    <div class="card-head">
-      <div>
-        <div class="card-title">Сумма прописью</div>
-        <div class="card-sub">стоимость договора и выделение НДС</div>
-      </div>
-    </div>
-    <label class="fld"><span class="fld-cap">Стоимость договора с НДС, руб.</span><input type="number" id="swSum" step="0.01"></label>
-    <button class="btn wide" onclick="sumWords()">Записать прописью</button>
+    <h3>Сумма прописью</h3>
+    <p class="note" style="text-align:left; margin-bottom:8px">Введите стоимость договора уже с НДС — блок рассчитает, сколько в ней НДС 22% «в том числе», и запишет обе цифры прописью.</p>
+    <label>Стоимость договора с НДС, руб. <input type="number" id="swSum" step="0.01"></label>
+    <button class="btn" onclick="sumWords()">Записать прописью</button>
     <div id="swRes"></div>
   </div>
 </div>
 
 <div id="secDoc" class="hidden">
-  <div class="sub-tabs">
-    <button id="subDocCalc" class="on" onclick="showDocSub('calc')">Расчёт срока поставки и РКМ</button>
-    <button id="subDocSched" onclick="showDocSub('sched')">График поставок</button>
+  <div class="card wip">
+    <div class="ico">🚧</div>
+    <h3>Договорная работа</h3>
+    <p class="note">В РАЗРАБОТКЕ</p>
   </div>
-
-  <div id="docSubCalc">
-    <div class="card">
-      <div class="card-head">
-        <div>
-          <div class="card-title">Расчёт срока поставки и РКМ</div>
-          <div class="card-sub">даты считаются от поздней из двух дат</div>
-        </div>
-      </div>
-      <div class="edit-banner hidden" id="editSupplyBanner">
-        <span>Идёт правка расчёта — после сохранения даты пересчитаются</span>
-        <button onclick="cancelEditSupply()">Отмена правки</button>
-      </div>
-      <div class="frow">
-        <div><label class="fld" style="margin:0"><span class="fld-cap">Номер договора</span><input type="text" id="dcNum" placeholder="0142ХХП, 0317ХХУС…"></label></div>
-        <div><label class="fld" style="margin:0"><span class="fld-cap">Контрагент</span><input type="text" id="dcContr" placeholder="можно не заполнять"></label></div>
-      </div>
-      <div class="frow">
-        <div><label class="fld" style="margin:0"><span class="fld-cap">Аванс — дата оплаты</span><input type="date" id="dcPrepay"></label></div>
-        <div><label class="fld" style="margin:0"><span class="fld-cap">Давальческое — дата получения</span><input type="date" id="dcToll"></label></div>
-      </div>
-      <p class="mini-note" style="margin-bottom:8px">Нет давальческого — оставьте поле пустым.</p>
-      <label class="fld"><span class="fld-cap">Срок поставки, мес. с момента оплаты аванса</span><input type="number" id="dcMonths" step="1" min="1"></label>
-      <div class="chk-row">
-        <input type="checkbox" id="dcNoRkm">
-        <span>РКМ не требуется</span>
-      </div>
-      <p class="mini-note" style="margin-bottom:8px">Если галочка стоит — дата РКМ не считается и задача РКМ не создаётся.</p>
-      <button class="btn wide" id="calcSupplyBtn" onclick="calcSupply()">Рассчитать</button>
-      <div id="dcRes"></div>
-    </div>
-    <div class="card">
-      <div class="card-head">
-        <div class="card-title">История расчётов</div>
-        <button class="btn ghost small" onclick="clearSupplyHistory()">очистить</button>
-      </div>
-      <div id="dcHistory"><p class="note">Расчётов пока нет</p></div>
-    </div>
-  </div>
-
-  <div id="docSubSched" class="hidden">
-    <div class="card">
-      <div class="card-head">
-        <div class="card-title">График поставок</div>
-        <span style="display:flex; gap:6px;">
-          <button class="btn ghost small" id="schedSearchBtn" onclick="toggleSchedSearch()">🔍 Поиск</button>
-          <button class="btn ghost small" onclick="exportSchedPdf()">⤓ Сохранить в PDF</button>
-          <button class="btn ghost small" onclick="printSched()">🖨 Распечатать</button>
-        </span>
-      </div>
-      <div class="sch-search hidden" id="schedSearchWrap">
-        <input type="text" id="schedSearchInput" placeholder="Номер договора или контрагент" oninput="renderSched()">
-      </div>
-      <div class="sch-filters">
-        <div><label class="fld" style="margin:0"><span class="fld-cap">Месяц</span>
-          <select id="schedMonthFilter" onchange="renderSched()"><option value="all">все</option></select>
-        </label></div>
-        <div><label class="fld" style="margin:0"><span class="fld-cap">Вид</span>
-          <select id="schedViewSel" onchange="onSchedViewChange()">
-            <option value="noempty">Без пустых месяцев</option>
-            <option value="all">Все месяцы</option>
-            <option value="rkm">Поставка с РКМ</option>
-          </select>
-        </label></div>
-      </div>
-      <div id="schedList"><p class="note">Поставок пока нет — сделайте расчёт на первой вкладке</p></div>
-      <p class="sch-hint">Чёрным выделены договоры с РКМ. «Сохранить в PDF» — файл в загрузках, «Распечатать» — бумага или PDF в окне печати.</p>
-    </div>
-  </div>
-
-  <p class="note">ТЕСТОВЫЙ РЕЖИМ. Расчёты хранятся только на этом устройстве. Реестр договоров — в разработке.</p>
 </div>
-
-<!-- печатный блок -->
-<div id="printArea"></div>
-<!-- скрытая область для скриншота в PDF -->
-<div id="pdfCapture"></div>
 
 <div id="statusMenu" class="status-menu hidden"></div>
 
@@ -499,10 +249,10 @@
 <div id="taskOverlay" class="overlay hidden" onclick="if(event.target === this) closeTaskModal()">
   <div class="modal">
     <h3>Новая задача</h3>
-    <label class="fld"><span class="fld-cap">Название</span><input type="text" id="tName" placeholder="РКМ - изделие - ХХХП; ДС - ХХХП; НР - месяц.год"></label>
-    <label class="fld"><span class="fld-cap">Исполнитель</span><select id="tWho" onchange="toggleCustomWho()"></select></label>
-    <label class="fld hidden" id="tWhoCustomWrap"><span class="fld-cap">Свой вариант</span><input type="text" id="tWhoCustom" placeholder="имя"></label>
-    <label class="fld"><span class="fld-cap">Дедлайн</span><input type="date" id="tDate"></label>
+    <label>Название <input type="text" id="tName" placeholder="Например: РКМ - изделие - ХХХП; ДС - ХХХП; НР - месяц.год"></label>
+    <label>Исполнитель <select id="tWho" onchange="toggleCustomWho()"></select></label>
+    <label id="tWhoCustomWrap" class="hidden">Свой вариант <input type="text" id="tWhoCustom" placeholder="имя"></label>
+    <label>Дедлайн <input type="date" id="tDate"></label>
     <div class="modal-actions">
       <button class="btn" onclick="addTask()">Добавить</button>
       <button class="btn ghost" onclick="closeTaskModal()">Отмена</button>
@@ -510,143 +260,25 @@
   </div>
 </div>
 
-<div id="adminOverlay" class="overlay hidden" onclick="if(event.target === this) closeAdminModal()">
-  <div class="modal">
-    <h3>Сотрудники и доступы</h3>
-    <div id="userList"></div>
-    <div class="hr"></div>
-    <div class="card-title" style="font-size:14px; margin-bottom:10px;">Выдать доступ</div>
-    <label class="fld"><span class="fld-cap">Имя сотрудника</span><input type="text" id="aName" placeholder="Например: Нина"></label>
-    <label class="fld"><span class="fld-cap">Логин</span><input type="text" id="aLogin" placeholder="Например: nina"></label>
-    <label class="fld"><span class="fld-cap">Пароль</span><input type="text" id="aPass" placeholder="Придумайте пароль"></label>
-    <div class="modal-actions">
-      <button class="btn" onclick="addUser()">Выдать доступ</button>
-      <button class="btn ghost" onclick="closeAdminModal()">Закрыть</button>
-    </div>
-    <p class="mini-note">Выдайте логин и пароль сотруднику лично. Изменить пароль можно, удалив доступ и выдав его заново.</p>
-  </div>
-</div>
-
 <script>
-// ===== администратор: смени эти две строки на свои =====
-const ADMIN_LOGIN = 'admin';
-const ADMIN_PASS = 'strazh2026';
-
 const TEAM = ['Нина', 'Аня', 'Маша', 'Вика', 'Алина'];
-const MONTHS = ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
 let currentTab = 'tasks';
-let docSub = 'calc';
 
 function esc(v) {
   return String(v === null || v === undefined ? '' : v)
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-// ===== вход =====
-function hashStr(s) {
-  let h = 5381;
-  for (let i = 0; i < s.length; i++) { h = ((h << 5) + h + s.charCodeAt(i)) >>> 0; }
-  return h.toString(36);
-}
-function loadUsers() {
-  try { return JSON.parse(localStorage.getItem('strazh_users')) || []; } catch(e) { return []; }
-}
-function saveUsers(u) { localStorage.setItem('strazh_users', JSON.stringify(u)); }
-function getAuth() { try { return JSON.parse(localStorage.getItem('strazh_auth')); } catch(e) { return null; } }
-function setAuth(a) { if (a) localStorage.setItem('strazh_auth', JSON.stringify(a)); else localStorage.removeItem('strazh_auth'); }
-let currentUser = getAuth();
-
-function tryLogin(e) {
-  e.preventDefault();
-  const login = document.getElementById('inLogin').value.trim();
-  const pass = document.getElementById('inPass').value;
-  const err = document.getElementById('loginErr');
-  if (!login || !pass) { err.textContent = 'Введите логин и пароль'; return; }
-  if (login.toLowerCase() === ADMIN_LOGIN.toLowerCase() && pass === ADMIN_PASS) {
-    currentUser = { name: 'Администратор', admin: true };
-  } else {
-    const u = loadUsers().find(x => x.login.toLowerCase() === login.toLowerCase() && x.pass === hashStr(pass));
-    if (!u) { err.textContent = 'Неверный логин или пароль'; return; }
-    currentUser = { name: u.name, admin: false };
-  }
-  setAuth(currentUser);
-  err.textContent = '';
-  document.getElementById('inPass').value = '';
-  applyAuth();
-  showTab(localStorage.getItem('strazh_tab') || 'tasks');
-}
-function doLogout() {
-  closeStatusMenu();
-  currentUser = null; setAuth(null);
-  applyAuth();
-}
-function applyAuth() {
-  const overlay = document.getElementById('loginOverlay');
-  const bar = document.getElementById('userBar');
-  if (currentUser) {
-    overlay.classList.add('hidden');
-    bar.style.display = 'flex';
-    document.getElementById('whoNow').textContent = currentUser.name;
-    document.getElementById('btnAdmin').style.display = currentUser.admin ? 'inline-block' : 'none';
-  } else {
-    overlay.classList.remove('hidden');
-    bar.style.display = 'none';
-    document.getElementById('inLogin').focus();
-  }
-}
-function openAdminModal() {
-  document.getElementById('adminOverlay').classList.remove('hidden');
-  document.getElementById('aName').value = '';
-  document.getElementById('aLogin').value = '';
-  document.getElementById('aPass').value = '';
-  renderUsersAdmin();
-}
-function closeAdminModal() { document.getElementById('adminOverlay').classList.add('hidden'); }
-function renderUsersAdmin() {
-  const users = loadUsers();
-  const list = document.getElementById('userList');
-  if (!users.length) { list.innerHTML = '<p class="note" style="text-align:left">Пока никого — выдайте первый доступ ниже</p>'; return; }
-  list.innerHTML = users.map(u =>
-    '<div class="user-list-row"><div><b>' + esc(u.name) + '</b> <span class="u-login">· логин: ' + esc(u.login) + '</span></div>' +
-    '<button class="del" title="Отозвать доступ" onclick="delUser(\'' + u.id + '\')">✕</button></div>'
-  ).join('');
-}
-function addUser() {
-  const name = document.getElementById('aName').value.trim();
-  const login = document.getElementById('aLogin').value.trim();
-  const pass = document.getElementById('aPass').value;
-  if (!name || !login || !pass) { alert('Заполните имя, логин и пароль'); return; }
-  if (login.toLowerCase() === ADMIN_LOGIN.toLowerCase()) { alert('Этот логин занят администратором'); return; }
-  const users = loadUsers();
-  if (users.some(u => u.login.toLowerCase() === login.toLowerCase())) { alert('Такой логин уже выдан — придумайте другой'); return; }
-  users.push({ id: 'u' + Date.now().toString(36) + Math.random().toString(36).slice(2,7), name: name, login: login, pass: hashStr(pass) });
-  saveUsers(users);
-  document.getElementById('aName').value = '';
-  document.getElementById('aLogin').value = '';
-  document.getElementById('aPass').value = '';
-  renderUsersAdmin();
-  buildWhoSelect();
-}
-function delUser(id) {
-  if (!confirm('Отозвать доступ этому сотруднику? Его задачи останутся.')) return;
-  saveUsers(loadUsers().filter(u => u.id !== id));
-  renderUsersAdmin();
-  buildWhoSelect();
-}
-
-// ===== статусы =====
 const STATUS_LIST = ['в очереди', 'в работе', 'на паузе', 'на согласовании у ГЭ', 'на согласовании у МВ', 'на доработке', 'выполнено'];
-const STATUS_CLS = { 'в очереди':'ss-queue','в работе':'ss-work','на паузе':'ss-pause','на согласовании у ГЭ':'ss-ge','на согласовании у МВ':'ss-mv','на доработке':'ss-rework','выполнено':'ss-done' };
-const STATUS_HEAD = { 'в очереди':'g-queue','в работе':'g-work','на паузе':'g-pause','на согласовании у ГЭ':'g-ge','на согласовании у МВ':'g-mv','на доработке':'g-rework','выполнено':'g-done' };
+const STATUS_CLS = { 'в очереди':'ss-queue','в работе':'ss-work','на паузе':'ss-pause','на согласовании у ГЭ':'ss-ge','на согласовании у МВ':'ss-ge','на доработке':'ss-rework','выполнено':'ss-done' };
 const STATUS_SEG = { 'в очереди':'sb-queue','в работе':'sb-work','на паузе':'sb-pause','на согласовании у ГЭ':'sb-ge','на согласовании у МВ':'sb-mv','на доработке':'sb-rework','выполнено':'sb-done' };
-const STATUS_STRIP = { 'в очереди':'#94a3b8','в работе':'#4f46e5','на паузе':'#0284c7','на согласовании у ГЭ':'#eab308','на согласовании у МВ':'#eab308','на доработке':'#ea580c','выполнено':'#059669' };
+const STATUS_STRIP = { 'в очереди':'#94a3b8','в работе':'#818cf8','на паузе':'#22d3ee','на согласовании у ГЭ':'#fbbf24','на согласовании у МВ':'#fbbf24','на доработке':'#fb923c','выполнено':'#4ade80' };
 
 const whoOpen = {};
 
 function showTab(name) {
   closeStatusMenu();
   currentTab = name;
-  localStorage.setItem('strazh_tab', name);
   document.getElementById('secTasks').classList.toggle('hidden', name !== 'tasks');
   document.getElementById('secCal').classList.toggle('hidden', name !== 'cal');
   document.getElementById('secCalc').classList.toggle('hidden', name !== 'calc');
@@ -656,40 +288,23 @@ function showTab(name) {
   document.getElementById('tabCalc').classList.toggle('on', name === 'calc');
   document.getElementById('tabDoc').classList.toggle('on', name === 'doc');
   if (name === 'cal') { renderCal(); renderCalDay(); }
-  if (name === 'doc') { showDocSub(docSub); }
-  document.body.classList.toggle('red-mode', name === 'doc');
 }
-function showDocSub(name) {
-  docSub = name;
-  localStorage.setItem('strazh_docsub', name);
-  document.getElementById('docSubCalc').classList.toggle('hidden', name !== 'calc');
-  document.getElementById('docSubSched').classList.toggle('hidden', name !== 'sched');
-  document.getElementById('subDocCalc').classList.toggle('on', name === 'calc');
-  document.getElementById('subDocSched').classList.toggle('on', name === 'sched');
-  if (name === 'calc') renderSupplyHistory();
-  if (name === 'sched') { restoreSchedView(); rebuildSchedFilter(); renderSched(); }
+function fabClick() {
+  if (currentTab === 'doc') { alert('Раздел «Договорная работа» в разработке'); return; }
+  openTaskModal();
 }
-function fabClick() { if (currentTab === 'doc') return; openTaskModal(); }
 
-function allNames() {
-  const names = TEAM.slice();
-  loadUsers().forEach(u => { if (!names.includes(u.name)) names.push(u.name); });
-  return names;
-}
 function buildWhoSelect() {
-  const names = allNames();
   const sel = document.getElementById('tWho');
   let html = '<option value="">— не выбран —</option>';
-  names.forEach(t => { html += '<option value="' + esc(t) + '">' + esc(t) + '</option>'; });
+  TEAM.forEach(t => { html += '<option value="' + esc(t) + '">' + esc(t) + '</option>'; });
   html += '<option value="__other">Другое…</option>';
   sel.innerHTML = html;
-  if (currentUser && names.includes(currentUser.name)) sel.value = currentUser.name;
   const fSel = document.getElementById('fWho');
   let fHtml = '<option value="all">все</option>';
-  names.forEach(t => { fHtml += '<option value="' + esc(t) + '">' + esc(t) + '</option>'; });
+  TEAM.forEach(t => { fHtml += '<option value="' + esc(t) + '">' + esc(t) + '</option>'; });
   fHtml += '<option value="__none">без исполнителя</option>';
   fSel.innerHTML = fHtml;
-  fSel.value = 'all';
 }
 function toggleCustomWho() {
   const isOther = document.getElementById('tWho').value === '__other';
@@ -699,7 +314,7 @@ function openTaskModal() { closeStatusMenu(); document.getElementById('taskOverl
 function closeTaskModal() {
   document.getElementById('taskOverlay').classList.add('hidden');
   document.getElementById('tName').value = '';
-  buildWhoSelect();
+  document.getElementById('tWho').value = '';
   document.getElementById('tWhoCustom').value = '';
   document.getElementById('tWhoCustomWrap').classList.add('hidden');
   document.getElementById('tDate').value = '';
@@ -760,7 +375,7 @@ function sortByChoice(arr) {
     return la - lb;
   });
 }
-function taskRow(t) {
+function taskRow(t, idx) {
   const cat = taskCat(t);
   const left = daysLeft(t.date);
   let badgeCat = '';
@@ -770,25 +385,25 @@ function taskRow(t) {
   const badgeCls = cat === 'over' ? 'over' : (cat === 'soon' ? 'soon' : (cat === 'done' ? '' : 'ok'));
   const status = t.status || 'в работе';
   const stCls = STATUS_CLS[status] || 'ss-work';
-  const strip = STATUS_STRIP[status] || '#94a3b8';
-  const safeId = String(t.id || '').replace(/'/g, "\\'");
+  const strip = STATUS_STRIP[status] || '#64748b';
   return '<div class="task' + (cat === 'done' ? ' is-done' : '') + '" style="border-left-color:' + strip + '">' +
     '<div class="info"><div class="name">' + (cat === 'done' ? '✅ ' : '') + esc(t.name) + '</div>' +
     '<div class="meta">' +
-    '<span class="who' + (t.who ? '' : ' no-who') + '" title="Нажми, чтобы сменить исполнителя" onclick="openWhoMenu(event, \'' + safeId + '\')">' + (t.who ? esc(t.who) : '— без исполнителя —') + '</span>' +
+    (t.who ? '<span class="who">' + esc(t.who) + '</span>' : '') +
     '<span>' + (t.date ? fmtDate(t.date) : '') + '</span>' +
     (badgeCat ? '<span class="badge ' + badgeCls + '">' + badgeCat + '</span>' : '') +
-    '<span class="status-pill ' + stCls + '" onclick="openStatusMenu(event, \'' + safeId + '\')">' + esc(status) + '</span>' +
+    '<span class="status-pill ' + stCls + '" onclick="openStatusMenu(event, \'' + t.id + '\')">' + esc(status) + '</span>' +
     (t.statusDate ? '<span class="stdate">' + fmtDT(t.statusDate) + '</span>' : '') +
     '</div></div>' +
     '<div>' +
-    '<button class="del" title="Удалить" onclick="delTaskById(\'' + safeId + '\')">✕</button>' +
+    (cat !== 'done' ? '<button class="del" title="Закрыть" onclick="closeTask(' + idx + ')">✓</button>' : '') +
+    '<button class="del" title="Удалить" onclick="delTask(' + idx + ')">✕</button>' +
     '</div></div>';
 }
 
-let menuTaskId = null, menuWhoTaskId = null;
+let menuTaskId = null;
 function openStatusMenu(ev, id) {
-  ev.stopPropagation(); menuTaskId = id; menuWhoTaskId = null;
+  ev.stopPropagation(); menuTaskId = id;
   const menu = document.getElementById('statusMenu');
   const r = ev.currentTarget.getBoundingClientRect();
   menu.style.top = Math.min(r.bottom + 6, window.innerHeight - 320) + 'px';
@@ -796,59 +411,22 @@ function openStatusMenu(ev, id) {
   renderStatusMenu();
   menu.classList.remove('hidden');
 }
-function openWhoMenu(ev, id) {
-  ev.stopPropagation(); menuTaskId = null; menuWhoTaskId = id;
-  const menu = document.getElementById('statusMenu');
-  const r = ev.currentTarget.getBoundingClientRect();
-  menu.style.top = Math.min(r.bottom + 6, window.innerHeight - 360) + 'px';
-  menu.style.left = Math.max(8, Math.min(r.left, window.innerWidth - 246)) + 'px';
-  renderWhoMenu();
-  menu.classList.remove('hidden');
-}
 function closeStatusMenu() {
   const menu = document.getElementById('statusMenu');
   if (menu) menu.classList.add('hidden');
-  menuTaskId = null; menuWhoTaskId = null;
+  menuTaskId = null;
 }
 function renderStatusMenu() {
   const menu = document.getElementById('statusMenu');
-  if (menuTaskId) {
-    const tasks = loadTasks();
-    const t = tasks.find(x => x.id === menuTaskId);
-    const status = t ? (t.status || 'в работе') : 'в работе';
-    menu.innerHTML = STATUS_LIST.map(s => {
-      const color = STATUS_STRIP[s] || '#94a3b8';
-      return '<div class="opt" onclick="pickStatus(\'' + s + '\')"><span><span class="sdot" style="background:' + color + '"></span>' + esc(s) + '</span>' + (s === status ? '<b>✓</b>' : '') + '</div>';
-    }).join('');
-  }
-}
-function renderWhoMenu() {
-  const menu = document.getElementById('statusMenu');
-  if (!menuWhoTaskId) return;
   const tasks = loadTasks();
-  const t = tasks.find(x => x.id === menuWhoTaskId);
-  const cur = t ? (t.who || '') : '';
-  const names = allNames();
-  let html = '';
-  names.forEach(n => {
-    const safeName = n.replace(/'/g, "\\'");
-    html += '<div class="opt" onclick="pickWho(\'' + safeName + '\')"><span><span class="sdot" style="background:#4f46e5"></span>' + esc(n) + '</span>' + (cur === n ? '<b>✓</b>' : '') + '</div>';
-  });
-  html += '<div class="opt" onclick="pickWho(\'\')"><span><span class="sdot" style="background:#94a3b8"></span>— без исполнителя —</span>' + (cur === '' ? '<b>✓</b>' : '') + '</div>';
-  menu.innerHTML = html;
+  const t = tasks.find(x => x.id === menuTaskId);
+  const status = t ? (t.status || 'в работе') : 'в работе';
+  menu.innerHTML = STATUS_LIST.map(s => {
+    const color = STATUS_STRIP[s] || '#64748b';
+    return '<div class="opt" onclick="pickStatus(\'' + s + '\')"><span><span class="sdot" style="background:' + color + '"></span>' + esc(s) + '</span>' + (s === status ? '<b>✓</b>' : '') + '</div>';
+  }).join('');
 }
 function pickStatus(s) { const id = menuTaskId; closeStatusMenu(); if (id) setStatusById(id, s); }
-function pickWho(n) {
-  const id = menuWhoTaskId;
-  closeStatusMenu();
-  if (!id) return;
-  const tasks = loadTasks();
-  const t = tasks.find(x => x.id === id);
-  if (!t) return;
-  t.who = n;
-  saveTasks(tasks);
-  render();
-}
 document.addEventListener('click', function(e) {
   const menu = document.getElementById('statusMenu');
   if (!menu.classList.contains('hidden') && !menu.contains(e.target)) closeStatusMenu();
@@ -867,13 +445,13 @@ function renderStats(tasks) {
     else if (c === 'soon') { all++; soon++; }
     else { all++; if (st === 'в очереди') queue++; else work++; }
   });
-  const setCounter = (id, val) => { document.getElementById(id).textContent = val; };
-  setCounter('cAll', all + done);
-  setCounter('cQueue', queue);
-  setCounter('cWork', work);
-  setCounter('cSoon', soon);
-  setCounter('cOver', over);
-  setCounter('cDone', done);
+  const setCounter = (id, val, cls) => { const el = document.getElementById(id); el.textContent = val; el.className = 'num ' + cls; };
+  setCounter('cAll', all + done, 'c-black');
+  setCounter('cQueue', queue, 'c-gray');
+  setCounter('cWork', work, 'c-blue');
+  setCounter('cSoon', soon, 'c-orange');
+  setCounter('cOver', over, 'c-red');
+  setCounter('cDone', done, 'c-green');
   const total = tasks.length;
   const bar = document.getElementById('statusBar');
   if (!total) bar.innerHTML = '';
@@ -881,7 +459,7 @@ function renderStats(tasks) {
     const n = byStatus[s] || 0;
     return n ? '<div class="' + STATUS_SEG[s] + '" style="width:' + (n/total*100) + '%"></div>' : '';
   }).join('');
-  const load = allNames().map(name => ({ name: name, n: tasks.filter(t => t.who === name && taskCat(t) !== 'done').length }));
+  const load = TEAM.map(name => ({ name: name, n: tasks.filter(t => t.who === name && taskCat(t) !== 'done').length }));
   const max = Math.max.apply(null, [1].concat(load.map(x => x.n)));
   document.getElementById('loadBlock').innerHTML = load.map(x =>
     '<div class="load-row"><div class="lr-top"><span>' + esc(x.name) + '</span><b>' + x.n + '</b></div>' +
@@ -891,7 +469,7 @@ function renderStats(tasks) {
     .sort((a,b) => (daysLeft(a.date)||0) - (daysLeft(b.date)||0));
   const hotCard = document.getElementById('hotCard');
   if (!hot.length) hotCard.classList.add('hidden');
-  else { hotCard.classList.remove('hidden'); document.getElementById('hotList').innerHTML = hot.map(t => taskRow(t)).join(''); }
+  else { hotCard.classList.remove('hidden'); document.getElementById('hotList').innerHTML = hot.map(t => taskRow(t, tasks.indexOf(t))).join(''); }
 }
 function render() {
   const tasks = loadTasks();
@@ -906,11 +484,13 @@ function render() {
   }
   if (view === 'status') {
     let html = '';
+    const HEAD = { 'в очереди':'#475569','в работе':'#4f46e5','на паузе':'#0e7490','на согласовании у ГЭ':'#b45309','на согласовании у МВ':'#b45309','на доработке':'#c2410c','выполнено':'#15803d' };
     STATUS_LIST.forEach(s => {
       const group = shown.filter(t => (t.status || 'в работе') === s);
       if (!group.length) return;
-      html += '<div class="group"><div class="group-head ' + STATUS_HEAD[s] + '"><span>' + esc(s) + '</span><small>' + group.length + '</small></div>' +
-        '<div class="group-body">' + group.map(t => taskRow(t)).join('') + '</div></div>';
+      html += '<div class="card" style="padding:0; overflow:hidden; margin-bottom:10px">' +
+        '<div style="padding:9px 12px; font-size:13px; font-weight:700; color:#fff; background:' + (HEAD[s] || '#475569') + '">' + esc(s) + ' · ' + group.length + '</div>' +
+        '<div style="padding:2px 8px 8px">' + group.map(t => taskRow(t, tasks.indexOf(t))).join('') + '</div></div>';
     });
     list.innerHTML = html;
   } else if (view === 'who') {
@@ -920,14 +500,15 @@ function render() {
       const group = shown.filter(t => (t.who || '— без исполнителя —') === name);
       const isOpen = whoOpen[name] !== false;
       const safeName = name.replace(/'/g, "\\'");
-      return '<div class="group"><div class="group-head g-who" onclick="toggleWho(\'' + safeName + '\')">' +
-        '<span>' + (isOpen ? '▾ ' : '▸ ') + esc(name) + '</span><small>' + group.length + '</small></div>' +
-        (isOpen ? '<div class="group-body">' + group.map(t => taskRow(t)).join('') + '</div>' : '') + '</div>';
+      return '<div class="card" style="padding:0; overflow:hidden; margin-bottom:10px">' +
+        '<div style="padding:9px 12px; font-size:13px; font-weight:700; color:#fff; background:#334155; cursor:pointer" onclick="toggleWho(\'' + safeName + '\')">' +
+        (isOpen ? '▾ ' : '▸ ') + esc(name) + ' · ' + group.length + '</div>' +
+        (isOpen ? '<div style="padding:2px 8px 8px">' + group.map(t => taskRow(t, tasks.indexOf(t))).join('') + '</div>' : '') + '</div>';
     }).join('');
   } else {
     const active = shown.filter(t => taskCat(t) !== 'done');
     const doneT = shown.filter(t => taskCat(t) === 'done');
-    list.innerHTML = active.map(t => taskRow(t)).join('') + doneT.map(t => taskRow(t)).join('');
+    list.innerHTML = active.map(t => taskRow(t, tasks.indexOf(t))).join('') + doneT.map(t => taskRow(t, tasks.indexOf(t))).join('');
   }
 }
 function toggleWho(name) { whoOpen[name] = (whoOpen[name] === false) ? true : false; render(); }
@@ -937,10 +518,6 @@ function setStatusById(id, val) {
   if (!t) return;
   t.status = val; t.statusDate = new Date().toISOString(); t.done = (val === 'выполнено');
   saveTasks(tasks); render();
-}
-function delTaskById(id) {
-  saveTasks(loadTasks().filter(t => t.id !== id));
-  render();
 }
 function addTask() {
   const name = document.getElementById('tName').value.trim();
@@ -954,8 +531,17 @@ function addTask() {
   tasks.unshift({ id: 't' + Date.now().toString(36) + Math.random().toString(36).slice(2,7), name: name, who: who, date: document.getElementById('tDate').value, status: 'в очереди', statusDate: new Date().toISOString(), createdAt: new Date().toISOString(), done: false });
   saveTasks(tasks); closeTaskModal(); render();
 }
+function closeTask(i) {
+  const tasks = loadTasks();
+  tasks[i].status = 'выполнено'; tasks[i].statusDate = new Date().toISOString(); tasks[i].done = true;
+  saveTasks(tasks); render();
+}
+function delTask(i) { const tasks = loadTasks(); tasks.splice(i, 1); saveTasks(tasks); render(); }
+buildWhoSelect();
+render();
 
 // ===== календарь =====
+const MONTHS = ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
 let calYear, calMonth, calSel = null;
 (function initCal() { const n = new Date(); calYear = n.getFullYear(); calMonth = n.getMonth(); })();
 function calKey(y, m, d) { const p = n => (n < 10 ? '0' : '') + n; return y + '-' + p(m+1) + '-' + p(d); }
@@ -966,7 +552,6 @@ function calMove(dir) {
   renderCal();
 }
 function calTasksOn(key) { return loadTasks().filter(t => t.date === key); }
-function deliveriesOn(key) { return loadSupply().filter(e => e.delivery === key); }
 function renderCal() {
   document.getElementById('calTitle').textContent = MONTHS[calMonth] + ' ' + calYear;
   const grid = document.getElementById('calGrid');
@@ -986,8 +571,7 @@ function renderCal() {
     let chips = '';
     dayTasks.slice(0, 2).forEach(t => { chips += '<div class="cal-chip c-' + taskCat(t) + '">' + esc(t.name) + '</div>'; });
     if (dayTasks.length > 2) chips += '<div class="cal-chip c-work">+ ещё ' + (dayTasks.length - 2) + '</div>';
-    const hasDelivery = deliveriesOn(key).length > 0;
-    const cls = 'cal-day' + (inMonth ? '' : ' other') + (key === todayKey ? ' today' : '') + (key === calSel ? ' sel' : '') + (hasDelivery ? ' dlv' : '');
+    const cls = 'cal-day' + (inMonth ? '' : ' other') + (key === todayKey ? ' today' : '') + (key === calSel ? ' sel' : '');
     html += '<div class="' + cls + '" onclick="calPick(\'' + key + '\')"><div class="d">' + d.getDate() + '</div>' + chips + '</div>';
   }
   grid.innerHTML = html;
@@ -999,418 +583,21 @@ function renderCalDay() {
   if (!calSel) { title.textContent = 'Выберите день'; listEl.innerHTML = '<p class="note">Нажмите на день в календаре</p>'; return; }
   title.textContent = 'Дедлайны: ' + fmtDate(calSel);
   const dayTasks = calTasksOn(calSel);
-  const deliveries = deliveriesOn(calSel);
-  let html = '';
-  if (dayTasks.length) {
-    html += dayTasks.map(t => {
-      const cat = taskCat(t);
-      const status = t.status || 'в работе';
-      const bCls = cat === 'over' ? 'over' : (cat === 'soon' ? 'soon' : (cat === 'done' ? '' : 'ok'));
-      return '<div class="task"><div class="info"><div class="name">' + (cat === 'done' ? '✅ ' : '') + esc(t.name) + '</div>' +
-        '<div class="meta">' + (t.who ? '<span class="who">' + esc(t.who) + '</span>' : '') +
-        '<span class="badge ' + bCls + '">' + (cat === 'done' ? 'закрыто' : esc(status)) + '</span>' +
-        '</div></div></div>';
-    }).join('');
-  } else {
-    html += '<p class="note">На этот день задач нет</p>';
-  }
-  if (deliveries.length) {
-    html += '<div class="cal-delivery-note">' +
-      '<div class="cdn-title">' + (deliveries.length === 1 ? '📦 Поставка сегодня' : '📦 Поставки сегодня: ' + deliveries.length) + '</div>' +
-      deliveries.map(e => '<div class="cdn-row"><b>' + esc(e.num) + '</b>' + (e.contr ? ' · ' + esc(e.contr) : '') + ' · срок ' + e.months + ' мес. · отсчёт с ' + fmtDate(e.base) + '</div>').join('') +
-      '</div>';
-  }
-  listEl.innerHTML = html;
-}
-
-// ===== договорная работа: расчёт срока поставки и РКМ =====
-function parseISO(s) { const p = s.split('-'); return new Date(parseInt(p[0],10), parseInt(p[1],10)-1, parseInt(p[2],10)); }
-function isoOfDate(d) { const p = n => (n < 10 ? '0' : '') + n; return d.getFullYear() + '-' + p(d.getMonth()+1) + '-' + p(d.getDate()); }
-function addMonthsISO(iso, n) {
-  const d = parseISO(iso);
-  const day = d.getDate();
-  d.setDate(1);
-  d.setMonth(d.getMonth() + n);
-  const dim = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
-  d.setDate(Math.min(day, dim));
-  return isoOfDate(d);
-}
-function loadSupply() {
-  let arr = [];
-  try { arr = JSON.parse(localStorage.getItem('strazh_supply')) || []; } catch(e) { arr = []; }
-  arr.forEach(e => {
-    if (typeof e.noRkm !== 'boolean') e.noRkm = false;
-    if (typeof e.contr !== 'string') e.contr = '';
-  });
-  return arr;
-}
-function saveSupply(arr) { localStorage.setItem('strazh_supply', JSON.stringify(arr)); }
-
-let editingSupplyId = null;
-
-function setSupplyForm(e) {
-  document.getElementById('dcNum').value = e ? (e.num || '') : '';
-  document.getElementById('dcContr').value = e ? (e.contr || '') : '';
-  document.getElementById('dcPrepay').value = e ? (e.prepay || '') : '';
-  document.getElementById('dcToll').value = e ? (e.toll || '') : '';
-  document.getElementById('dcMonths').value = e ? (e.months || '') : '';
-  document.getElementById('dcNoRkm').checked = e ? !!e.noRkm : false;
-}
-function enterEditSupply(id) {
-  const e = loadSupply().find(x => x.id === id);
-  if (!e) return;
-  editingSupplyId = id;
-  setSupplyForm(e);
-  document.getElementById('editSupplyBanner').classList.remove('hidden');
-  document.getElementById('calcSupplyBtn').textContent = 'Сохранить изменения';
-  document.getElementById('dcRes').innerHTML = '';
-  document.getElementById('dcNum').focus();
-}
-function cancelEditSupply() {
-  editingSupplyId = null;
-  setSupplyForm(null);
-  document.getElementById('editSupplyBanner').classList.add('hidden');
-  document.getElementById('calcSupplyBtn').textContent = 'Рассчитать';
-  document.getElementById('dcRes').innerHTML = '';
-}
-
-function calcSupply() {
-  const num = document.getElementById('dcNum').value.trim();
-  if (!num) { alert('Укажите номер договора'); return; }
-  const contr = document.getElementById('dcContr').value.trim();
-  const prepay = document.getElementById('dcPrepay').value;
-  const toll = document.getElementById('dcToll').value;
-  const months = parseInt(document.getElementById('dcMonths').value, 10);
-  const noRkm = document.getElementById('dcNoRkm').checked;
-  if (!prepay) { alert('Укажите дату оплаты аванса'); return; }
-  if (!months || months <= 0) { alert('Укажите срок поставки в месяцах'); return; }
-  const base = (toll && toll > prepay) ? toll : prepay;
-  const delivery = addMonthsISO(base, months);
-  const rkm = noRkm ? '' : addMonthsISO(delivery, -3);
-  const arr = loadSupply();
-  let entry;
-  if (editingSupplyId) {
-    entry = arr.find(x => x.id === editingSupplyId);
-    if (!entry) { alert('Расчёт не найден — сохраняю как новый'); editingSupplyId = null; }
-  }
-  if (entry) {
-    entry.num = num; entry.contr = contr; entry.prepay = prepay; entry.toll = toll;
-    entry.months = months; entry.noRkm = noRkm;
-    entry.base = base; entry.delivery = delivery; entry.rkm = rkm;
-    entry.updatedAt = new Date().toISOString();
-  } else {
-    entry = {
-      id: 's' + Date.now().toString(36) + Math.random().toString(36).slice(2,7),
-      num: num, contr: contr, prepay: prepay, toll: toll, months: months, noRkm: noRkm,
-      base: base, delivery: delivery, rkm: rkm,
-      createdAt: new Date().toISOString()
-    };
-    arr.unshift(entry);
-    if (arr.length > 50) arr.length = 50;
-  }
-  saveSupply(arr);
-  const wasEdit = !!editingSupplyId;
-  cancelEditSupplyStateOnly();
-  document.getElementById('dcRes').innerHTML =
-    '<div class="calc-result">' +
-    '<p>Договор: <b>' + esc(num) + '</b>' + (contr ? ' · ' + esc(contr) : '') + '</p>' +
-    '<p>Аванс (оплата): ' + fmtDate(prepay) + '</p>' +
-    (toll ? '<p>Давальческое (получено): ' + fmtDate(toll) + '</p>' : '') +
-    '<p>Срок поставки: ' + months + ' мес.</p>' +
-    (noRkm ? '<p class="mini-note" style="text-align:left">РКМ не требуется</p>' : '') +
-    '<div class="hr"></div>' +
-    '<p>Отсчёт ведётся с: <b>' + fmtDate(base) + '</b>' + (toll ? ' <span class="note" style="margin:0">(позже из двух дат)</span>' : '') + '</p>' +
-    '<p class="big">Поставка: <b>' + fmtDate(delivery) + '</b> <span class="note" style="margin:0">(день подсвечен в календаре и виден в графике поставок)</span></p>' +
-    (noRkm
-      ? '<p class="big" style="color:#9ca3af">Формирование РКМ: не требуется</p>'
-      : '<p class="big">Формирование РКМ: <b>' + fmtDate(rkm) + '</b> <span class="note" style="margin:0">(за 3 мес. до поставки)</span></p>') +
-    (wasEdit ? '<p class="mini-note" style="text-align:left">Расчёт обновлён в истории</p>' : '') +
-    '</div>';
-  renderSupplyHistory();
-  if (currentTab === 'cal') { renderCal(); renderCalDay(); }
-  if (currentTab === 'doc' && docSub === 'sched') { rebuildSchedFilter(); renderSched(); }
-}
-function cancelEditSupplyStateOnly() {
-  editingSupplyId = null;
-  document.getElementById('editSupplyBanner').classList.add('hidden');
-  document.getElementById('calcSupplyBtn').textContent = 'Рассчитать';
-}
-function renderSupplyHistory() {
-  const arr = loadSupply();
-  const list = document.getElementById('dcHistory');
-  if (!list) return;
-  if (!arr.length) { list.innerHTML = '<p class="note">Расчётов пока нет</p>'; return; }
-  list.innerHTML = arr.map(e => {
-    const dl = daysLeft(e.delivery);
-    let badge = '';
-    if (dl !== null) badge = dl < 0 ? '<span class="badge over">поставка прошла</span>' : '<span class="badge ok">до поставки ' + dl + ' дн.</span>';
-    const safeId = String(e.id || '').replace(/'/g, "\\'");
-    return '<div class="task" style="border-left-color:#171923">' +
-      '<div class="info">' +
-      '<div class="name">' + esc(e.num) + (e.contr ? ' · ' + esc(e.contr) : '') + ' · ' + e.months + ' мес.' + (e.noRkm ? ' · без РКМ' : '') + '</div>' +
-      '<div class="meta">' +
-      '<span>аванс: ' + fmtDate(e.prepay) + '</span>' +
-      (e.toll ? '<span>давальческое: ' + fmtDate(e.toll) + '</span>' : '') +
-      '<span>отсчёт: ' + fmtDate(e.base) + '</span>' +
-      '</div>' +
-      '<div class="meta">' +
-      (e.rkm ? '<span class="who">РКМ: ' + fmtDate(e.rkm) + '</span>' : '') +
-      '<span><b>Поставка: ' + fmtDate(e.delivery) + '</b></span>' +
-      badge +
-      (e.updatedAt ? '<span class="stdate">изм. ' + fmtDT(e.updatedAt) + '</span>' : '') +
-      '</div></div>' +
-      '<div style="display:flex; flex-direction:column; gap:4px;">' +
-      '<button class="btn ghost small" onclick="enterEditSupply(\'' + safeId + '\')">✎ Изменить</button>' +
-      (e.rkm ? '<button class="btn ghost small" onclick="supplyToCalendar(\'' + safeId + '\')">В календарь</button>' : '') +
-      '<button class="del" title="Удалить" onclick="delSupply(\'' + safeId + '\')">✕</button>' +
-      '</div></div>';
+  if (!dayTasks.length) { listEl.innerHTML = '<p class="note">На этот день задач нет</p>'; return; }
+  listEl.innerHTML = dayTasks.map(t => {
+    const cat = taskCat(t);
+    const status = t.status || 'в работе';
+    const bCls = cat === 'over' ? 'over' : (cat === 'soon' ? 'soon' : (cat === 'done' ? '' : 'ok'));
+    return '<div class="task"><div class="info"><div class="name">' + (cat === 'done' ? '✅ ' : '') + esc(t.name) + '</div>' +
+      '<div class="meta">' + (t.who ? '<span class="who">' + esc(t.who) + '</span>' : '') +
+      '<span class="badge ' + bCls + '">' + (cat === 'done' ? 'закрыто' : esc(status)) + '</span>' +
+      '</div></div></div>';
   }).join('');
 }
-function supplyToCalendar(id) {
-  const e = loadSupply().find(x => x.id === id);
-  if (!e) return;
-  if (!e.rkm) { alert('У этого договора РКМ не требуется — задачи не создаются. Поставка видна в календаре и графике.'); return; }
-  const who = currentUser ? currentUser.name : '';
-  const tasks = loadTasks();
-  const now = new Date().toISOString();
-  const label = 'РКМ — ' + e.num + (e.contr ? ' (' + e.contr + ')' : '');
-  tasks.unshift({ id: 't' + Date.now().toString(36) + Math.random().toString(36).slice(2,7), name: label, who: who, date: e.rkm, status: 'в очереди', statusDate: now, createdAt: now, done: false });
-  saveTasks(tasks);
-  render();
-  alert('Добавлена задача «' + label + '» до ' + fmtDate(e.rkm) + '. День поставки ' + fmtDate(e.delivery) + ' подсвечен в календаре.');
-}
-function delSupply(id) {
-  saveSupply(loadSupply().filter(e => e.id !== id));
-  if (editingSupplyId === id) cancelEditSupply();
-  renderSupplyHistory();
-  if (currentTab === 'cal') { renderCal(); renderCalDay(); }
-  if (currentTab === 'doc' && docSub === 'sched') { rebuildSchedFilter(); renderSched(); }
-}
-function clearSupplyHistory() {
-  if (!confirm('Очистить всю историю расчётов? Подсветка поставок в календаре и график поставок обновятся, а задачи РКМ останутся.')) return;
-  saveSupply([]);
-  if (editingSupplyId) cancelEditSupply();
-  document.getElementById('dcRes').innerHTML = '';
-  renderSupplyHistory();
-  if (currentTab === 'cal') { renderCal(); renderCalDay(); }
-  if (currentTab === 'doc' && docSub === 'sched') { rebuildSchedFilter(); renderSched(); }
-}
+renderCal();
 
-// ===== график поставок: поиск, фильтр по месяцам, вид =====
-let schedSearchOpen = false;
-let schedMonthFilter = 'all';
-let schedView = 'noempty';
-function restoreSchedView() {
-  const saved = localStorage.getItem('strazh_schedview');
-  if (saved === 'all' || saved === 'rkm' || saved === 'noempty') schedView = saved;
-  const sel = document.getElementById('schedViewSel');
-  if (sel) sel.value = schedView;
-}
-function onSchedViewChange() {
-  schedView = document.getElementById('schedViewSel').value;
-  localStorage.setItem('strazh_schedview', schedView);
-  renderSched();
-}
-function toggleSchedSearch() {
-  schedSearchOpen = !schedSearchOpen;
-  const wrap = document.getElementById('schedSearchWrap');
-  wrap.classList.toggle('hidden', !schedSearchOpen);
-  const btn = document.getElementById('schedSearchBtn');
-  btn.textContent = schedSearchOpen ? '✕ Закрыть' : '🔍 Поиск';
-  if (schedSearchOpen) document.getElementById('schedSearchInput').focus();
-  else { document.getElementById('schedSearchInput').value = ''; renderSched(); }
-}
-function schedAllMonthKeys() {
-  const set = {};
-  loadSupply().forEach(e => { if (e.delivery) set[e.delivery.slice(0, 7)] = true; });
-  return Object.keys(set).sort();
-}
-function schedMonthLabel(mk) {
-  return MONTHS[parseInt(mk.slice(5,7),10) - 1] + ' ' + mk.slice(0,4);
-}
-function rebuildSchedFilter() {
-  const sel = document.getElementById('schedMonthFilter');
-  if (!sel) return;
-  const keys = schedAllMonthKeys();
-  let html = '<option value="all">все</option>';
-  keys.forEach(mk => {
-    html += '<option value="' + mk + '">' + schedMonthLabel(mk) + '</option>';
-  });
-  sel.innerHTML = html;
-  if (schedMonthFilter !== 'all' && keys.indexOf(schedMonthFilter) === -1) schedMonthFilter = 'all';
-  sel.value = schedMonthFilter;
-}
-function schedSearchQuery() {
-  return (schedSearchOpen ? (document.getElementById('schedSearchInput').value || '') : '').trim().toLowerCase();
-}
-function schedViewLabel() {
-  return schedView === 'all' ? 'Все месяцы' : (schedView === 'rkm' ? 'Поставка с РКМ' : 'Без пустых месяцев');
-}
-function applySchedView(entries) {
-  if (schedView === 'rkm') return entries.filter(e => e.rkm);
-  return entries;
-}
-function schedMonthKeysForView(entries) {
-  if (schedMonthFilter !== 'all') return [schedMonthFilter];
-  if (schedView === 'all') {
-    const all = loadSupply().filter(e => e.delivery);
-    if (!all.length) return [];
-    const sorted = all.map(e => e.delivery.slice(0,7)).sort();
-    const start = parseISO(sorted[0] + '-01');
-    const end = parseISO(sorted[sorted.length - 1] + '-01');
-    const out = [];
-    const cursor = new Date(start.getFullYear(), start.getMonth(), 1);
-    while (cursor <= end) {
-      const mk = cursor.getFullYear() + '-' + (cursor.getMonth() + 1 < 10 ? '0' : '') + (cursor.getMonth() + 1);
-      out.push(mk);
-      cursor.setMonth(cursor.getMonth() + 1);
-    }
-    return out;
-  }
-  const set = {};
-  entries.forEach(e => { set[e.delivery.slice(0, 7)] = true; });
-  return Object.keys(set).sort();
-}
-function schedMonthHtml(mk, arr, todayStr) {
-  const y = parseInt(mk.slice(0,4),10);
-  const m = parseInt(mk.slice(5,7),10) - 1;
-  const rows = arr
-    .slice()
-    .sort((a,b) => a.delivery.localeCompare(b.delivery))
-    .map(e => '<div class="sch-row' + (e.rkm ? ' rkm' : '') + (e.delivery < todayStr ? ' past' : '') + '"' +
-      (e.rkm ? ' title="РКМ: ' + fmtDate(e.rkm) + '"' : '') + '>' +
-      '<span class="snum">' + esc(e.num) + (e.contr ? ' · ' + esc(e.contr) : '') + '</span>' +
-      '<span class="sdate">' + fmtDate(e.delivery) + '</span></div>')
-    .join('');
-  return '<div class="sch-month">' +
-    '<div class="sch-month-title">' + MONTHS[m] + ' ' + y + '</div>' +
-    '<div class="sch-month-line"></div>' +
-    rows +
-    '</div>';
-}
-function renderSched() {
-  const list = document.getElementById('schedList');
-  if (!list) return;
-  rebuildSchedFilter();
-  const q = schedSearchQuery();
-  let entries = loadSupply().filter(e => e.delivery);
-  if (q) entries = entries.filter(e => ((e.num || '') + ' ' + (e.contr || '')).toLowerCase().indexOf(q) !== -1);
-  if (schedMonthFilter !== 'all') entries = entries.filter(e => e.delivery.slice(0, 7) === schedMonthFilter);
-  entries = applySchedView(entries);
-  if (!entries.length) {
-    list.innerHTML = q
-      ? '<p class="note">По запросу договоров нет</p>'
-      : '<p class="note">Поставок пока нет — сделайте расчёт на первой вкладке</p>';
-    return;
-  }
-  const byMonth = {};
-  entries.forEach(e => {
-    const mk = e.delivery.slice(0, 7);
-    if (!byMonth[mk]) byMonth[mk] = [];
-    byMonth[mk].push(e);
-  });
-  const todayStr = isoOfDate(new Date());
-  const keys = schedMonthKeysForView(loadSupply().filter(e => e.delivery));
-  list.innerHTML = keys.map(mk => {
-    if (!byMonth[mk] || !byMonth[mk].length) {
-      return '<div class="sch-month">' +
-        '<div class="sch-month-title">' + schedMonthLabel(mk) + '</div>' +
-        '<div class="sch-month-line"></div>' +
-        '<div class="sch-empty">нет поставок</div>' +
-        '</div>';
-    }
-    return schedMonthHtml(mk, byMonth[mk], todayStr);
-  }).join('');
-}
-
-// ===== сборка печатного HTML =====
-function buildPrintHtml() {
-  const q = schedSearchQuery();
-  let entries = loadSupply().filter(e => e.delivery);
-  if (q) entries = entries.filter(e => ((e.num || '') + ' ' + (e.contr || '')).toLowerCase().indexOf(q) !== -1);
-  if (schedMonthFilter !== 'all') entries = entries.filter(e => e.delivery.slice(0, 7) === schedMonthFilter);
-  entries = applySchedView(entries);
-  if (!entries.length) return null;
-  const byMonth = {};
-  entries.forEach(e => {
-    const mk = e.delivery.slice(0, 7);
-    if (!byMonth[mk]) byMonth[mk] = [];
-    byMonth[mk].push(e);
-  });
-  const keys = schedMonthKeysForView(loadSupply().filter(e => e.delivery));
-  const todayStr = isoOfDate(new Date());
-  const now = new Date();
-  const whoNow = currentUser ? currentUser.name : '';
-  const monthsHtml = keys.map(mk => {
-    if (!byMonth[mk] || !byMonth[mk].length) {
-      return '<div class="sch-month">' +
-        '<div class="sch-month-title">' + schedMonthLabel(mk) + '</div>' +
-        '<div class="sch-month-line"></div>' +
-        '<div class="sch-empty">нет поставок</div>' +
-        '</div>';
-    }
-    return schedMonthHtml(mk, byMonth[mk], todayStr);
-  }).join('');
-  return '<div class="pr-title">График поставки</div>' +
-    '<div class="pr-sub">СТРАЖ · отдел ПЭО · сформировано ' +
-      now.toLocaleDateString('ru-RU') + ' ' + now.toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'}) +
-      (whoNow ? ' · ' + whoNow : '') +
-    '</div>' +
-    '<div class="pr-criteria">Поиск: ' + (q ? '«' + esc(q) + '»' : '—') +
-      ' · Месяц: ' + esc(schedMonthFilter === 'all' ? 'все' : schedMonthLabel(schedMonthFilter)) +
-      ' · Вид: ' + esc(schedViewLabel()) + '</div>' +
-    monthsHtml +
-    '<div class="pr-note">Тестовый режим. Данные получены из локального хранилища устройства на момент выгрузки. Чёрным выделены договоры с РКМ.</div>';
-}
-function printSched() {
-  const html = buildPrintHtml();
-  if (!html) { alert('Нечего выгружать: график пуст или поиск не дал совпадений'); return; }
-  document.getElementById('printArea').innerHTML = html;
-  window.print();
-}
-async function exportSchedPdf() {
-  const html = buildPrintHtml();
-  if (!html) { alert('Нечего выгружать: график пуст или поиск не дал совпадений'); return; }
-  if (typeof html2canvas === 'undefined' || typeof window.jspdf === 'undefined') {
-    alert('Для скачивания PDF нужна загрузка библиотек из интернета (первое использование). Сейчас открою печать — выберите «Сохранить как PDF».');
-    window.print();
-    return;
-  }
-  const cap = document.getElementById('pdfCapture');
-  cap.innerHTML = html;
-  try {
-    const canvas = await html2canvas(cap, { scale: 2, backgroundColor: '#ffffff', useCORS: true });
-    const pdf = new window.jspdf.jsPDF('p', 'mm', 'a4');
-    const pw = 210, ph = 297, margin = 10;
-    const imgW = pw - margin * 2;
-    const pageHpx = Math.floor((ph - margin * 2) * canvas.width / imgW);
-    let sy = 0, page = 0;
-    while (sy < canvas.height) {
-      const sliceH = Math.min(pageHpx, canvas.height - sy);
-      const slice = document.createElement('canvas');
-      slice.width = canvas.width;
-      slice.height = sliceH;
-      const ctx = slice.getContext('2d');
-      ctx.drawImage(canvas, 0, sy, canvas.width, sliceH, 0, 0, canvas.width, sliceH);
-      if (page > 0) pdf.addPage();
-      const sliceImg = slice.toDataURL('image/jpeg', 0.92);
-      const drawH = sliceH * imgW / canvas.width;
-      pdf.addImage(sliceImg, 'JPEG', margin, margin, imgW, drawH);
-      sy += sliceH;
-      page++;
-    }
-    pdf.save('График поставки.pdf');
-  } catch(e) {
-    alert('Не удалось создать PDF на устройстве — открываю печать. В окне выберите «Сохранить как PDF».');
-    document.getElementById('printArea').innerHTML = html;
-    window.print();
-  } finally {
-    cap.innerHTML = '';
-  }
-}
-
+// ===== калькулятор =====
 function fmt(x) { return x.toLocaleString('ru-RU', {maximumFractionDigits: 2}) + ' руб.'; }
-
 const W_UNITS_M = ['', 'один', 'два', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять'];
 const W_UNITS_F = ['', 'одна', 'две', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять'];
 const W_TEEN = ['десять', 'одиннадцать', 'двенадцать', 'тринадцать', 'четырнадцать', 'пятнадцать', 'шестнадцать', 'семнадцать', 'восемнадцать', 'девятнадцать'];
@@ -1479,7 +666,7 @@ function calc() {
   const nds = price * 0.22;
   const priceWithNds = price + nds;
   document.getElementById('res').innerHTML =
-    '<div class="hr"></div>' +
+    '<hr class="hr">' +
     '<p>Материалы всего: <b>' + fmt(materials) + '</b></p>' +
     '<p>Ф9 — основная ЗП: ' + fmt(f9) + '</p>' +
     '<p>Ф10 — ДЗП: ' + fmt(f10) + '</p>' +
@@ -1487,14 +674,14 @@ function calc() {
     '<p>СТРАХ: ' + fmt(strah) + '</p>' +
     '<p>Ф11 — ОПР: ' + fmt(f11) + '</p>' +
     '<p>Ф12 — ОХР/АУР: ' + fmt(f12) + '</p>' +
-    '<div class="hr"></div>' +
+    '<hr class="hr">' +
     '<p>СЕБ — себестоимость: <b>' + fmt(seb) + '</b></p>' +
     '<p>Прибыль: <b>' + fmt(profit) + '</b> <span class="note">(1% от материалов: ' + fmt(profitMaterials) + ' · 25% от собственных: ' + fmt(profitOwn) + ')</span></p>' +
-    '<div class="hr"></div>' +
-    '<p style="font-size:17px">ЦЕНА БЕЗ НДС: <b>' + fmt(price) + '</b></p>' +
+    '<hr class="hr">' +
+    '<p class="big-line">ЦЕНА БЕЗ НДС: <b>' + fmt(price) + '</b></p>' +
     '<p>НДС 22%: <b>' + fmt(nds) + '</b></p>' +
-    '<div class="hr"></div>' +
-    '<p style="font-size:19px">ЦЕНА С НДС: <b>' + fmt(priceWithNds) + '</b></p>';
+    '<hr class="hr">' +
+    '<p class="big-line">ЦЕНА С НДС: <b>' + fmt(priceWithNds) + '</b></p>';
 }
 function sumWords() {
   const s = parseFloat(document.getElementById('swSum').value) || 0;
@@ -1502,19 +689,21 @@ function sumWords() {
   const nds = s * 22 / 122;
   const priceNoNds = s - nds;
   document.getElementById('swRes').innerHTML =
-    '<div class="hr"></div>' +
-    '<p>Цена без НДС: <b>' + fmt(priceNoNds) + '</b></p>' +
-    '<p>в том числе НДС 22%: <b>' + fmt(nds) + '</b></p>' +
-    '<div class="calc-result"><p>' + sumInWords(s) + ', в том числе НДС 22% — ' + sumInWords(nds) + '</p></div>';
+    '<hr class="hr">' +
+    '<p>Цена без НДС: <b>' + priceNoNds.toLocaleString('ru-RU', {minimumFractionDigits:2, maximumFractionDigits:2}) + '</b></p>' +
+    '<p>в том числе НДС 22%: <b>' + nds.toLocaleString('ru-RU', {minimumFractionDigits:2, maximumFractionDigits:2}) + '</b></p>' +
+    '<hr class="hr">' +
+    '<p style="font-size:13px; line-height:1.6">' + sumInWords(s) + ', в том числе НДС 22% — ' + sumInWords(nds) + '</p>';
 }
 
-// старт
-buildWhoSelect();
-render();
-applyAuth();
-showTab(localStorage.getItem('strazh_tab') || 'tasks');
-docSub = localStorage.getItem('strazh_docsub') || 'calc';
-restoreSchedView();
+// ===== часы в шапке =====
+function tick() {
+  const d = new Date();
+  const p = n => (n < 10 ? '0' : '') + n;
+  document.getElementById('clock').textContent =
+    p(d.getDate()) + '.' + p(d.getMonth()+1) + '.' + d.getFullYear() + ' · ' + p(d.getHours()) + ':' + p(d.getMinutes());
+}
+tick(); setInterval(tick, 30000);
 </script>
 </body>
 </html>
