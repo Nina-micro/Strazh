@@ -88,6 +88,7 @@
   .btn:active { opacity: 0.85; }
   .btn.clear { background: var(--card-soft); color: var(--text); width: auto; padding: 8px 14px; margin-top: 0; font-size: 12px; border-radius: 10px; }
   .btn.ghost { background: var(--card-soft); color: var(--text); }
+  .btn.danger { background: rgba(248,113,113,0.12); color: var(--bad); border: 1px solid rgba(248,113,113,0.4); width: 100%; font-size: 13px; padding: 9px; border-radius: 10px; margin-top: 8px; }
 
   .hot-title { color: var(--bad); }
   .task { display: flex; justify-content: space-between; align-items: flex-start; padding: 10px; margin: 8px 0; border-radius: 12px; font-size: 14px; gap: 8px; background: var(--card-soft); border-left: 4px solid #64748b; }
@@ -99,6 +100,7 @@
   .task .meta { color: var(--muted); font-size: 12px; margin-top: 4px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
   .who { color: var(--accent-solid); font-weight: 700; }
   .stdate { font-size: 8px; color: var(--faint); }
+  .clickable { cursor: pointer; }
 
   .status-pill { display: inline-block; padding: 2px 10px; font-size: 11px; font-weight: 700; border-radius: 999px; border: 1px solid; cursor: pointer; user-select: none; }
   .ss-queue { color: var(--muted); border-color: rgba(148,163,184,0.6); background: rgba(148,163,184,0.12); }
@@ -291,6 +293,21 @@
   </div>
 </div>
 
+<div id="editOverlay" class="overlay hidden" onclick="if(event.target === this) closeEditModal()">
+  <div class="modal">
+    <h3>Редактировать задачу</h3>
+    <label>Название <input type="text" id="eName"></label>
+    <label>Исполнитель <select id="eWho" onchange="toggleCustomWhoEdit()"></select></label>
+    <label id="eWhoCustomWrap" class="hidden">Свой вариант <input type="text" id="eWhoCustom" placeholder="имя"></label>
+    <label>Дедлайн <input type="date" id="eDate"></label>
+    <div class="modal-actions">
+      <button class="btn" onclick="saveEdit()">Сохранить</button>
+      <button class="btn ghost" onclick="closeEditModal()">Отмена</button>
+    </div>
+    <button class="btn danger" onclick="delTaskFromEdit()">Удалить задачу</button>
+  </div>
+</div>
+
 <script>
 const TEAM = ['Нина', 'Аня', 'Маша', 'Вика', 'Алина'];
 let currentTab = 'tasks';
@@ -431,23 +448,23 @@ function taskRow(t, idx) {
   const stCls = STATUS_CLS[status] || 'ss-work';
   const strip = STATUS_STRIP[status] || 'var(--h-queue)';
   return '<div class="task' + (cat === 'done' ? ' is-done' : '') + '" style="border-left-color:' + strip + '">' +
-    '<div class="info"><div class="name">' + (cat === 'done' ? '✅ ' : '') + esc(t.name) + '</div>' +
+    '<div class="info">' +
+    '<div class="name"><span class="clickable" onclick="openEditModal(\'' + t.id + '\')">' + (cat === 'done' ? '✅ ' : '') + esc(t.name) + '</span></div>' +
     '<div class="meta">' +
-    (t.who ? '<span class="who">' + esc(t.who) + '</span>' : '') +
+    (t.who
+      ? '<span class="who clickable" onclick="openWhoMenu(event, \'' + t.id + '\')">' + esc(t.who) + '</span>'
+      : '<span class="who clickable" style="color:var(--faint)" onclick="openWhoMenu(event, \'' + t.id + '\')">+ исполнитель</span>') +
     '<span>' + (t.date ? fmtDate(t.date) : '') + '</span>' +
     (badgeCat ? '<span class="badge ' + badgeCls + '">' + badgeCat + '</span>' : '') +
     '<span class="status-pill ' + stCls + '" onclick="openStatusMenu(event, \'' + t.id + '\')">' + esc(status) + '</span>' +
     (t.statusDate ? '<span class="stdate">' + fmtDT(t.statusDate) + '</span>' : '') +
     '</div></div>' +
-    '<div>' +
-    (cat !== 'done' ? '<button class="del" title="Закрыть" onclick="closeTask(' + idx + ')">✓</button>' : '') +
-    '<button class="del" title="Удалить" onclick="delTask(' + idx + ')">✕</button>' +
-    '</div></div>';
+    '<div><button class="del" title="Удалить" onclick="delTask(' + idx + ')">✕</button></div></div>';
 }
 
-let menuTaskId = null;
+let menuTaskId = null, menuWhoTaskId = null;
 function openStatusMenu(ev, id) {
-  ev.stopPropagation(); menuTaskId = id;
+  ev.stopPropagation(); menuWhoTaskId = null; menuTaskId = id;
   const menu = document.getElementById('statusMenu');
   const r = ev.currentTarget.getBoundingClientRect();
   menu.style.top = Math.min(r.bottom + 6, window.innerHeight - 320) + 'px';
@@ -455,10 +472,19 @@ function openStatusMenu(ev, id) {
   renderStatusMenu();
   menu.classList.remove('hidden');
 }
+function openWhoMenu(ev, id) {
+  ev.stopPropagation(); menuTaskId = null; menuWhoTaskId = id;
+  const menu = document.getElementById('statusMenu');
+  const r = ev.currentTarget.getBoundingClientRect();
+  menu.style.top = Math.min(r.bottom + 6, window.innerHeight - 320) + 'px';
+  menu.style.left = Math.max(8, Math.min(r.left, window.innerWidth - 246)) + 'px';
+  renderWhoMenu();
+  menu.classList.remove('hidden');
+}
 function closeStatusMenu() {
   const menu = document.getElementById('statusMenu');
   if (menu) menu.classList.add('hidden');
-  menuTaskId = null;
+  menuTaskId = null; menuWhoTaskId = null;
 }
 function renderStatusMenu() {
   const menu = document.getElementById('statusMenu');
@@ -470,7 +496,31 @@ function renderStatusMenu() {
     return '<div class="opt" onclick="pickStatus(\'' + s + '\')"><span><span class="sdot" style="background:' + color + '"></span>' + esc(s) + '</span>' + (s === status ? '<b>✓</b>' : '') + '</div>';
   }).join('');
 }
+function renderWhoMenu() {
+  const menu = document.getElementById('statusMenu');
+  const tasks = loadTasks();
+  const t = tasks.find(x => x.id === menuWhoTaskId);
+  const cur = t ? (t.who || '') : '';
+  const names = TEAM.slice();
+  tasks.forEach(x => { if (x.who && !names.includes(x.who)) names.push(x.who); });
+  let html = '<div class="opt" onclick="pickWho(\'\')"><span>— без исполнителя —</span>' + (cur ? '' : '<b>✓</b>') + '</div>';
+  names.forEach(n => {
+    const safe = n.replace(/'/g, "\\'");
+    html += '<div class="opt" onclick="pickWho(\'' + safe + '\')"><span>' + esc(n) + '</span>' + (cur === n ? '<b>✓</b>' : '') + '</div>';
+  });
+  menu.innerHTML = html;
+}
 function pickStatus(s) { const id = menuTaskId; closeStatusMenu(); if (id) setStatusById(id, s); }
+function pickWho(n) {
+  const id = menuWhoTaskId;
+  closeStatusMenu();
+  if (!id) return;
+  const tasks = loadTasks();
+  const t = tasks.find(x => x.id === id);
+  if (!t) return;
+  t.who = n;
+  saveTasks(tasks); render();
+}
 document.addEventListener('click', function(e) {
   const menu = document.getElementById('statusMenu');
   if (!menu.classList.contains('hidden') && !menu.contains(e.target)) closeStatusMenu();
@@ -574,14 +624,61 @@ function addTask() {
   tasks.unshift({ id: 't' + Date.now().toString(36) + Math.random().toString(36).slice(2,7), name: name, who: who, date: document.getElementById('tDate').value, status: 'в очереди', statusDate: new Date().toISOString(), createdAt: new Date().toISOString(), done: false });
   saveTasks(tasks); closeTaskModal(); render();
 }
-function closeTask(i) {
-  const tasks = loadTasks();
-  tasks[i].status = 'выполнено'; tasks[i].statusDate = new Date().toISOString(); tasks[i].done = true;
-  saveTasks(tasks); render();
-}
 function delTask(i) { const tasks = loadTasks(); tasks.splice(i, 1); saveTasks(tasks); render(); }
 buildWhoSelect();
 render();
+
+// ===== редактирование задачи =====
+let editingTaskId = null;
+function fillWhoSelect(selId, cur) {
+  let html = '<option value="">— без исполнителя —</option>';
+  TEAM.forEach(t => { html += '<option value="' + esc(t) + '">' + esc(t) + '</option>'; });
+  if (cur && !TEAM.includes(cur)) { html += '<option value="__other" selected>Другое…</option>'; }
+  else html += '<option value="__other">Другое…</option>';
+  const sel = document.getElementById(selId);
+  sel.innerHTML = html;
+  if (cur && !TEAM.includes(cur)) sel.value = '__other';
+  else if (cur) sel.value = cur; else sel.value = '';
+}
+function openEditModal(id) {
+  closeStatusMenu();
+  const t = loadTasks().find(x => x.id === id);
+  if (!t) return;
+  editingTaskId = id;
+  document.getElementById('eName').value = t.name || '';
+  fillWhoSelect('eWho', t.who || '');
+  document.getElementById('eWhoCustom').value = (t.who && !TEAM.includes(t.who)) ? t.who : '';
+  document.getElementById('eWhoCustomWrap').classList.toggle('hidden', !(t.who && !TEAM.includes(t.who)));
+  document.getElementById('eDate').value = t.date || '';
+  document.getElementById('editOverlay').classList.remove('hidden');
+  document.getElementById('eName').focus();
+}
+function closeEditModal() { document.getElementById('editOverlay').classList.add('hidden'); editingTaskId = null; }
+function toggleCustomWhoEdit() {
+  document.getElementById('eWhoCustomWrap').classList.toggle('hidden', document.getElementById('eWho').value !== '__other');
+}
+function saveEdit() {
+  if (!editingTaskId) return;
+  const tasks = loadTasks();
+  const t = tasks.find(x => x.id === editingTaskId);
+  if (!t) return;
+  const name = document.getElementById('eName').value.trim();
+  if (!name) { alert('Введите название задачи'); return; }
+  let who = document.getElementById('eWho').value;
+  if (who === '__other') {
+    who = document.getElementById('eWhoCustom').value.trim();
+    if (!who) { alert('Впишите исполнителя'); return; }
+  }
+  t.name = name; t.who = who; t.date = document.getElementById('eDate').value;
+  saveTasks(tasks); closeEditModal(); render();
+}
+function delTaskFromEdit() {
+  const id = editingTaskId;
+  closeEditModal();
+  const tasks = loadTasks();
+  const i = tasks.findIndex(x => x.id === id);
+  if (i !== -1) { tasks.splice(i, 1); saveTasks(tasks); render(); }
+}
 
 // ===== календарь =====
 const MONTHS = ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
