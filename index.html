@@ -154,6 +154,17 @@
   .wip { text-align: center; padding: 46px 16px; }
   .wip .ico { font-size: 44px; }
   .wip h3 { justify-content: center; margin-top: 10px; }
+
+  .calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 10px; }
+  .calc-grid h4 { grid-column: 1 / -1; margin: 4px 0 0; }
+  .ci { display: flex; flex-direction: column; }
+  .ci input, .ci select { margin-top: 0; padding: 8px; font-size: 15px; }
+  .ci.duo { flex-direction: row; gap: 6px; align-items: center; }
+  .ci.duo input { flex: 1; }
+  .ci.duo select { width: auto; flex: none; padding: 8px 6px; font-size: 13px; }
+  @media (max-width: 420px) {
+    .calc-grid { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
@@ -240,21 +251,22 @@
 <div id="secCalc" class="hidden">
   <div class="card">
     <h3>Калькулятор затрат (ПЭО)</h3>
-    <h4>Материалы</h4>
-    <label>Ф4 — материалы, руб. <input type="number" id="f4" step="0.01"></label>
-    <label>Ф6 — ПКИ, руб. <input type="number" id="f6" step="0.01"></label>
-    <label>Ф7 — услуги сторонних организаций, руб. <input type="number" id="f7" step="0.01"></label>
-    <h4>Заработная плата</h4>
-    <label>Средняя ЗП (норматив), руб./мес. <input type="number" id="avg" step="0.01"></label>
-    <label>Трудоёмкость <input type="number" id="labor" step="0.1">
-      <select id="unit"><option value="mm">чел./мес.</option><option value="h">часы</option></select>
-    </label>
-    <label>Часов в чел./мес. <input type="number" id="hpm" value="164" step="0.1"></label>
-    <label>ДЗП (Ф10), % от основной ЗП <input type="number" id="dzp" step="0.1"></label>
-    <label>СТРАХ, % от ЗП всего <input type="number" id="strah" step="0.1"></label>
-    <h4>Накладные расходы</h4>
-    <label>ОПР (Ф11), % от ЗП всего <input type="number" id="opr" step="0.1"></label>
-    <label>ОХР/АУР (Ф12), % от ЗП всего <input type="number" id="ohr" step="0.1"></label>
+    <div class="calc-grid">
+      <h4>Материалы</h4>
+      <div class="ci"><span class="small-lbl">Ф4 — материалы, руб.</span><input type="number" id="f4" step="0.01"></div>
+      <div class="ci"><span class="small-lbl">Ф6 — ПКИ, руб.</span><input type="number" id="f6" step="0.01"></div>
+      <div class="ci"><span class="small-lbl">Ф7 — услуги сторонних, руб.</span><input type="number" id="f7" step="0.01"></div>
+      <h4>Заработная плата</h4>
+      <div class="ci"><span class="small-lbl">Средняя ЗП, руб./мес.</span><input type="number" id="avg" step="0.01"></div>
+      <div class="ci"><span class="small-lbl">Часов в чел./мес.</span><input type="number" id="hpm" value="164" step="0.1"></div>
+      <div class="ci duo"><input type="number" id="labor" step="0.1" placeholder="Трудоёмкость">
+        <select id="unit"><option value="mm">чел./мес.</option><option value="h">часы</option></select></div>
+      <div class="ci"><span class="small-lbl">ДЗП (Ф10), % от осн. ЗП</span><input type="number" id="dzp" step="0.1"></div>
+      <div class="ci"><span class="small-lbl">СТРАХ, % от ЗП всего</span><input type="number" id="strah" step="0.1"></div>
+      <h4>Накладные расходы</h4>
+      <div class="ci"><span class="small-lbl">ОПР (Ф11), % от ЗП</span><input type="number" id="opr" step="0.1"></div>
+      <div class="ci"><span class="small-lbl">ОХР/АУР (Ф12), % от ЗП</span><input type="number" id="ohr" step="0.1"></div>
+    </div>
     <button class="btn" onclick="calc()">Рассчитать</button>
     <div id="res"></div>
   </div>
@@ -340,6 +352,7 @@ const whoOpen = {};
 function showTab(name) {
   closeStatusMenu();
   currentTab = name;
+  localStorage.setItem('strazh_tab', name);
   document.getElementById('secTasks').classList.toggle('hidden', name !== 'tasks');
   document.getElementById('secCal').classList.toggle('hidden', name !== 'cal');
   document.getElementById('secCalc').classList.toggle('hidden', name !== 'calc');
@@ -625,8 +638,6 @@ function addTask() {
   saveTasks(tasks); closeTaskModal(); render();
 }
 function delTask(i) { const tasks = loadTasks(); tasks.splice(i, 1); saveTasks(tasks); render(); }
-buildWhoSelect();
-render();
 
 // ===== редактирование задачи =====
 let editingTaskId = null;
@@ -680,6 +691,12 @@ function delTaskFromEdit() {
   if (i !== -1) { tasks.splice(i, 1); saveTasks(tasks); render(); }
 }
 
+buildWhoSelect();
+render();
+const savedTab = localStorage.getItem('strazh_tab');
+if (savedTab && ['tasks', 'cal', 'calc', 'doc'].includes(savedTab)) showTab(savedTab);
+renderCal();
+
 // ===== календарь =====
 const MONTHS = ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
 let calYear, calMonth, calSel = null;
@@ -693,7 +710,9 @@ function calMove(dir) {
 }
 function calTasksOn(key) { return loadTasks().filter(t => t.date === key); }
 function renderCal() {
-  document.getElementById('calTitle').textContent = MONTHS[calMonth] + ' ' + calYear;
+  const titleEl = document.getElementById('calTitle');
+  if (!titleEl) return;
+  titleEl.textContent = MONTHS[calMonth] + ' ' + calYear;
   const grid = document.getElementById('calGrid');
   const first = new Date(calYear, calMonth, 1);
   const shift = (first.getDay() + 6) % 7;
@@ -720,6 +739,7 @@ function calPick(key) { calSel = (calSel === key) ? null : key; renderCal(); ren
 function renderCalDay() {
   const title = document.getElementById('calDayTitle');
   const listEl = document.getElementById('calDayList');
+  if (!title || !listEl) return;
   if (!calSel) { title.textContent = 'Выберите день'; listEl.innerHTML = '<p class="note">Нажмите на день в календаре</p>'; return; }
   title.textContent = 'Дедлайны: ' + fmtDate(calSel);
   const dayTasks = calTasksOn(calSel);
@@ -734,7 +754,6 @@ function renderCalDay() {
       '</div></div></div>';
   }).join('');
 }
-renderCal();
 
 // ===== калькулятор =====
 function fmt(x) { return x.toLocaleString('ru-RU', {maximumFractionDigits: 2}) + ' руб.'; }
