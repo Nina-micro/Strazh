@@ -3,208 +3,244 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>СТРАЖ — отдел ПЭО</title>
+<title>СТРАЖ — панель ПЭО</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
+  :root {
+    --bg: #f6f7fb;
+    --card: #ffffff;
+    --ink: #171923;
+    --muted: #6b7280;
+    --line: #e5e7eb;
+    --soft: #f3f4f6;
+    --accent: #4f46e5;
+    --accent-dark: #4338ca;
+    --danger: #dc2626;
+    --warn: #d97706;
+    --ok: #059669;
+    --info: #0284c7;
+  }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, 'Segoe UI', Roboto, sans-serif; background: #f1f5f9; color: #1e293b; padding: 16px; max-width: 640px; margin: 0 auto; }
-  h1 { font-size: 26px; text-align: center; margin-top: 8px; }
-  .subtitle { text-align: center; color: #64748b; margin-bottom: 16px; }
-  .tabs { display: flex; background: #e2e8f0; border-radius: 10px; padding: 4px; margin-bottom: 16px; }
-  .tabs button { flex: 1; padding: 10px 2px; border: none; background: none; color: #475569; font-size: 12px; font-weight: 600; border-radius: 8px; cursor: pointer; }
-  .tabs button.on { background: #2563eb; color: #fff; }
-  .card { background: #fff; border-radius: 14px; padding: 16px; margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
-  .card h3 { font-size: 17px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-  .card h4 { font-size: 14px; margin: 12px 0 8px; color: #475569; }
-  .counters { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; text-align: center; }
-  .counter .num { font-size: 22px; font-weight: 700; }
-  .counter .lbl { font-size: 11px; color: #64748b; }
-  .num.c-black { color: #1e293b; } .num.c-blue { color: #2563eb; } .num.c-orange { color: #f59e0b; }
-  .num.c-red { color: #ef4444; } .num.c-green { color: #16a34a; } .num.c-gray { color: #94a3b8; }
-  .status-bar { display: flex; height: 10px; border-radius: 5px; overflow: hidden; margin: 14px 0 4px; background: #e2e8f0; }
+  body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--ink); padding: 16px; max-width: 720px; margin: 0 auto; }
+
+  /* ===== шапка ===== */
+  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 4px 10px; }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand .logo { width: 40px; height: 40px; border-radius: 12px; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; letter-spacing: 0.5px; }
+  .brand h1 { font-size: 20px; font-weight: 700; letter-spacing: 0.3px; }
+  .brand .sub { font-size: 12px; color: var(--muted); margin-top: 1px; }
+  .userbar { display: flex; align-items: center; gap: 8px; }
+  .user-chip { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; font-size: 12.5px; font-weight: 600; color: var(--ink); white-space: nowrap; }
+  .icon-btn { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 7px 12px; font-size: 12.5px; font-weight: 600; color: var(--muted); cursor: pointer; }
+  .icon-btn.dark { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+  /* ===== вкладки ===== */
+  .tabs { display: flex; gap: 4px; border-bottom: 2px solid var(--line); margin: 6px 0 18px; overflow-x: auto; }
+  .tabs button { background: none; border: none; padding: 11px 14px; font-size: 13.5px; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; white-space: nowrap; }
+  .tabs button.on { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* ===== карточки ===== */
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 18px; margin-bottom: 14px; }
+  .card-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+  .card-title { font-size: 16px; font-weight: 700; }
+  .card-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* ===== статистика ===== */
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
+  .stat { background: var(--soft); border-radius: 12px; padding: 12px 10px; text-align: center; border-left: 3px solid var(--line); }
+  .stat .n { font-size: 24px; font-weight: 800; line-height: 1.1; }
+  .stat .t { font-size: 11px; color: var(--muted); margin-top: 3px; }
+  .stat.st-acc { border-left-color: var(--accent); } .stat.st-acc .n { color: var(--accent); }
+  .stat.st-warn { border-left-color: var(--warn); } .stat.st-warn .n { color: var(--warn); }
+  .stat.st-danger { border-left-color: var(--danger); } .stat.st-danger .n { color: var(--danger); }
+  .stat.st-ok { border-left-color: var(--ok); } .stat.st-ok .n { color: var(--ok); }
+  .stat.st-mut { border-left-color: #94a3b8; } .stat.st-mut .n { color: #64748b; }
+  .stat.st-ink { border-left-color: var(--ink); } .stat.st-ink .n { color: var(--ink); }
+
+  .status-bar { display: flex; height: 8px; border-radius: 4px; overflow: hidden; background: var(--soft); margin: 12px 0 6px; }
   .status-bar div { height: 100%; }
-  .sb-queue { background: #94a3b8; } .sb-work { background: #2563eb; } .sb-pause { background: #06b6d4; }
-  .sb-ge { background: #eab308; } .sb-mv { background: #eab308; } .sb-rework { background: #ea580c; } .sb-done { background: #16a34a; }
-  .status-legend { display: flex; flex-wrap: wrap; gap: 8px; font-size: 10px; color: #64748b; margin-bottom: 12px; }
-  .status-legend span::before { content: ''; display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 3px; vertical-align: middle; }
-  .lg-queue::before { background: #94a3b8; } .lg-work::before { background: #2563eb; } .lg-pause::before { background: #06b6d4; }
-  .lg-ge::before { background: #eab308; } .lg-rework::before { background: #ea580c; } .lg-done::before { background: #16a34a; }
-  .load-title { font-size: 13px; font-weight: 700; color: #475569; margin: 10px 0 4px; }
-  .load-row { margin: 6px 0; }
-  .load-row .lr-top { display: flex; justify-content: space-between; font-size: 12px; color: #475569; }
-  .load-track { height: 8px; border-radius: 4px; background: #e2e8f0; margin-top: 3px; overflow: hidden; }
-  .load-fill { height: 100%; border-radius: 4px; background: #2563eb; }
-  .load-fill.max { background: #ef4444; }
-  label { display: block; font-size: 14px; margin-bottom: 8px; }
-  input, select { width: 100%; padding: 8px; margin-top: 4px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; background: #fff; }
-  .filters { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-  .small-lbl { display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 2px; }
-  .btn { display: inline-block; width: 100%; padding: 11px; margin-top: 10px; background: #2563eb; color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; }
-  .btn:active { background: #1d4ed8; }
-  .btn.clear { background: #e2e8f0; color: #475569; width: auto; padding: 8px 14px; margin-top: 0; font-size: 13px; }
-  .btn.ghost { background: #e2e8f0; color: #475569; }
-  .hot-title { color: #ef4444; }
-  .task { display: flex; justify-content: space-between; align-items: flex-start; padding: 10px 10px 10px 12px; border-bottom: 1px solid #e2e8f0; font-size: 14px; gap: 8px; border-left-width: 4px; border-left-style: solid; }
+  .sb-queue { background: #94a3b8; } .sb-work { background: var(--accent); } .sb-pause { background: var(--info); }
+  .sb-ge { background: #eab308; } .sb-mv { background: #eab308; } .sb-rework { background: #ea580c; } .sb-done { background: var(--ok); }
+  .legend { display: flex; flex-wrap: wrap; gap: 10px; font-size: 10.5px; color: var(--muted); margin-bottom: 12px; }
+  .legend span::before { content: ''; display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 4px; vertical-align: middle; }
+  .lg-queue::before { background: #94a3b8; } .lg-work::before { background: var(--accent); } .lg-pause::before { background: var(--info); }
+  .lg-ge::before { background: #eab308; } .lg-rework::before { background: #ea580c; } .lg-done::before { background: var(--ok); }
+
+  .load-title { font-size: 12.5px; font-weight: 700; color: var(--muted); margin: 10px 0 6px; text-transform: uppercase; letter-spacing: 0.4px; }
+  .load-row { margin: 7px 0; }
+  .load-row .lr-top { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--muted); }
+  .load-track { height: 7px; border-radius: 4px; background: var(--soft); margin-top: 3px; overflow: hidden; }
+  .load-fill { height: 100%; border-radius: 4px; background: var(--accent); }
+  .load-fill.max { background: var(--danger); }
+
+  /* ===== формы ===== */
+  label.fld { display: block; font-size: 13.5px; margin-bottom: 10px; }
+  .fld-cap { display: block; font-size: 11.5px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 4px; }
+  input, select { width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; font-size: 14.5px; background: #fff; color: var(--ink); }
+  input:focus, select:focus { outline: 2px solid rgba(79,70,229,0.25); border-color: var(--accent); }
+  .frow { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+
+  /* ===== кнопки ===== */
+  .btn { display: inline-block; padding: 11px 16px; background: var(--accent); color: #fff; border: none; border-radius: 999px; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .btn:active { background: var(--accent-dark); }
+  .btn.wide { width: 100%; }
+  .btn.ghost { background: var(--card); color: var(--ink); border: 1px solid var(--line); }
+  .btn.small { font-size: 11.5px; padding: 5px 11px; }
+  .btn.danger { background: var(--danger); }
+
+  /* ===== горячее ===== */
+  .hot-title { color: var(--danger); }
+
+  /* ===== задачи ===== */
+  .task { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; padding: 12px 2px 12px 14px; border-bottom: 1px solid var(--line); font-size: 14px; border-left: 4px solid transparent; }
   .task:last-child { border-bottom: none; }
   .task .info { flex: 1; min-width: 0; }
-  .task .name { font-weight: 600; }
-  .task.is-done .name { text-decoration: line-through; color: #94a3b8; }
-  .task.is-done { opacity: 0.65; }
-  .task .meta { color: #64748b; font-size: 12px; margin-top: 3px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-  .who { color: #2563eb; font-weight: 600; cursor: pointer; user-select: none; }
-  .who.no-who { color: #94a3b8; font-style: italic; }
-  .stdate { font-size: 8px; color: #94a3b8; }
-  .status-pill { display: inline-block; padding: 2px 10px; font-size: 11px; font-weight: 600; border-radius: 999px; border: 1px solid; cursor: pointer; user-select: none; }
+  .task .name { font-weight: 650; }
+  .task.is-done .name { text-decoration: line-through; color: var(--muted); }
+  .task.is-done { opacity: 0.6; }
+  .task .meta { color: var(--muted); font-size: 12px; margin-top: 4px; display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+  .who { color: var(--info); font-weight: 600; cursor: pointer; user-select: none; }
+  .who.no-who { color: var(--muted); font-style: italic; }
+  .stdate { font-size: 10px; color: #9ca3af; }
+  .status-pill { display: inline-block; padding: 3px 10px; font-size: 11px; font-weight: 650; border-radius: 999px; border: 1px solid; cursor: pointer; user-select: none; }
   .ss-queue { color: #64748b; border-color: rgba(148,163,184,0.6); background: rgba(148,163,184,0.12); }
-  .ss-work { color: #2563eb; border-color: rgba(37,99,235,0.5); background: rgba(37,99,235,0.08); }
-  .ss-pause { color: #0891b2; border-color: rgba(6,182,212,0.65); background: rgba(6,182,212,0.15); }
-  .ss-ge { color: #a16207; border-color: rgba(234,179,8,0.65); background: rgba(253,224,71,0.35); }
-  .ss-mv { color: #a16207; border-color: rgba(234,179,8,0.65); background: rgba(253,224,71,0.35); }
+  .ss-work { color: var(--accent); border-color: rgba(79,70,229,0.45); background: rgba(79,70,229,0.08); }
+  .ss-pause { color: var(--info); border-color: rgba(2,132,199,0.55); background: rgba(2,132,199,0.12); }
+  .ss-ge { color: #a16207; border-color: rgba(234,179,8,0.6); background: rgba(253,224,71,0.3); }
+  .ss-mv { color: #a16207; border-color: rgba(234,179,8,0.6); background: rgba(253,224,71,0.3); }
   .ss-rework { color: #ea580c; border-color: rgba(234,88,12,0.5); background: rgba(234,88,12,0.08); }
-  .ss-done { color: #16a34a; border-color: rgba(22,163,74,0.5); background: rgba(22,163,74,0.08); }
-  .status-menu { position: fixed; z-index: 50; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.18); padding: 6px; min-width: 230px; }
-  .status-menu .opt { padding: 9px 12px; border-radius: 8px; font-size: 13px; font-weight: 600; color: #1e293b; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-  .status-menu .opt:active { background: #f1f5f9; }
+  .ss-done { color: var(--ok); border-color: rgba(5,150,105,0.5); background: rgba(5,150,105,0.08); }
+
+  .status-menu { position: fixed; z-index: 50; background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.14); padding: 6px; min-width: 230px; }
+  .status-menu .opt { padding: 9px 12px; border-radius: 10px; font-size: 13px; font-weight: 600; color: var(--ink); cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .status-menu .opt:active { background: var(--soft); }
   .sdot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 7px; vertical-align: middle; }
-  .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; color: #fff; background: #64748b; cursor: pointer; user-select: none; }
-  .badge.over { background: #ef4444; } .badge.soon { background: #f59e0b; } .badge.ok { background: #2563eb; }
-  .group { border: 1px solid #e2e8f0; border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
-  .group-head { padding: 8px 12px; font-size: 13px; font-weight: 700; color: #fff; display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .badge { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 11px; font-weight: 650; color: #fff; background: #94a3b8; cursor: pointer; user-select: none; }
+  .badge.over { background: var(--danger); } .badge.soon { background: var(--warn); } .badge.ok { background: var(--accent); }
+
+  .group { border: 1px solid var(--line); border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
+  .group-head { padding: 9px 12px; font-size: 12.5px; font-weight: 700; color: #fff; display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
   .group-head small { font-weight: 600; opacity: 0.9; }
-  .g-queue { background: #94a3b8; } .g-work { background: #2563eb; } .g-pause { background: #06b6d4; }
-  .g-ge { background: #eab308; } .g-mv { background: #eab308; } .g-rework { background: #ea580c; } .g-done { background: #16a34a; }
-  .g-who { background: #475569; cursor: pointer; user-select: none; }
-  .group-body { border-top: 1px solid #e2e8f0; }
-  .del { background: none; border: none; color: #ef4444; font-size: 18px; cursor: pointer; }
-  .hr { border: none; border-top: 1px solid #e2e8f0; margin: 10px 0; }
+  .g-queue { background: #94a3b8; } .g-work { background: var(--accent); } .g-pause { background: var(--info); }
+  .g-ge { background: #eab308; } .g-mv { background: #eab308; } .g-rework { background: #ea580c; } .g-done { background: var(--ok); }
+  .g-who { background: var(--ink); cursor: pointer; user-select: none; }
+  .group-body { border-top: 1px solid var(--line); }
+  .del { background: none; border: none; color: var(--danger); font-size: 18px; cursor: pointer; }
+  .hr { border: none; border-top: 1px solid var(--line); margin: 10px 0; }
+
   #res p, #swRes p, #dcRes p { font-size: 14px; margin: 4px 0; }
-  .note { font-size: 12px; color: #94a3b8; text-align: center; margin-top: 4px; }
-  .fab { position: fixed; right: 20px; bottom: 20px; width: 58px; height: 58px; border-radius: 50%; background: #2563eb; color: #fff; border: none; font-size: 30px; line-height: 1; cursor: pointer; z-index: 40; box-shadow: 0 4px 14px rgba(37,99,235,0.4); display: flex; align-items: center; justify-content: center; }
-  .fab:active { background: #1d4ed8; }
-  .overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.45); z-index: 60; display: flex; align-items: flex-end; justify-content: center; padding: 16px; }
+  .note { font-size: 12px; color: var(--muted); text-align: center; margin-top: 6px; }
+  .mini-note { font-size: 11px; color: #9ca3af; margin: 4px 0 0; }
+
+  /* ===== FAB, модали, оверлеи ===== */
+  .fab { position: fixed; right: 20px; bottom: 20px; width: 56px; height: 56px; border-radius: 18px; background: var(--accent); color: #fff; border: none; font-size: 28px; cursor: pointer; z-index: 40; box-shadow: 0 8px 22px rgba(79,70,229,0.35); display: flex; align-items: center; justify-content: center; }
+  .fab:active { background: var(--accent-dark); }
+  .overlay { position: fixed; inset: 0; background: rgba(23,25,35,0.5); z-index: 60; display: flex; align-items: flex-end; justify-content: center; padding: 16px; }
   .overlay.hidden { display: none !important; }
-  .modal { background: #fff; border-radius: 16px; padding: 18px; width: 100%; max-width: 480px; box-shadow: 0 -4px 30px rgba(0,0,0,0.25); max-height: 90vh; overflow-y: auto; }
-  .modal h3 { font-size: 17px; margin-bottom: 12px; display: block; }
+  .modal { background: var(--card); border-radius: 18px; padding: 20px; width: 100%; max-width: 480px; box-shadow: 0 -6px 34px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; }
+  .modal h3 { font-size: 16px; margin-bottom: 14px; display: block; }
   .modal-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-  .modal-actions .btn { margin-top: 10px; flex: 1; }
-  .mini-note { font-size: 11px; color: #94a3b8; margin: 4px 0 0; }
+  .modal-actions .btn { flex: 1; margin-top: 8px; }
+
+  /* ===== календарь ===== */
   .cal-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
   .cal-nav .mon { font-size: 16px; font-weight: 700; text-transform: capitalize; }
-  .cal-nav button { background: #e2e8f0; border: none; border-radius: 8px; padding: 6px 14px; font-size: 15px; cursor: pointer; color: #475569; font-weight: 700; }
+  .cal-nav button { background: var(--soft); border: 1px solid var(--line); border-radius: 999px; padding: 6px 15px; font-size: 15px; cursor: pointer; color: var(--ink); font-weight: 700; }
   .cal-week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 4px; }
-  .cal-week div { text-align: center; font-size: 11px; color: #64748b; font-weight: 600; }
+  .cal-week div { text-align: center; font-size: 10.5px; color: var(--muted); font-weight: 700; text-transform: uppercase; }
   .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-  .cal-day { min-height: 52px; background: #f8fafc; border-radius: 8px; padding: 3px 4px; cursor: pointer; overflow: hidden; }
+  .cal-day { min-height: 52px; background: var(--soft); border-radius: 10px; padding: 4px 5px; cursor: pointer; overflow: hidden; }
   .cal-day.other { opacity: 0.35; }
-  .cal-day.today { box-shadow: inset 0 0 0 2px #2563eb; }
-  .cal-day.sel { background: #dbeafe; }
-  .cal-day.dlv { box-shadow: inset 0 0 0 2.5px #f59e0b; background: #fffbeb; }
-  .cal-day.dlv.sel { box-shadow: inset 0 0 0 2.5px #f59e0b; background: #fef3c7; }
-  .cal-day.today.dlv { box-shadow: inset 0 0 0 2.5px #f59e0b; }
-  .cal-day .d { font-size: 12px; font-weight: 600; }
-  .cal-chip { font-size: 9px; line-height: 1.3; padding: 1px 4px; border-radius: 4px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
-  .cal-chip.c-work { background: rgba(37,99,235,0.15); color: #1d4ed8; }
-  .cal-chip.c-soon { background: rgba(245,158,11,0.2); color: #b45309; }
-  .cal-chip.c-over { background: rgba(239,68,68,0.18); color: #b91c1c; }
-  .cal-chip.c-done { background: rgba(22,163,74,0.15); color: #15803d; }
-  .cal-delivery-note { margin-top: 10px; background: #fffbeb; border: 1px solid rgba(245,158,11,0.5); border-radius: 10px; padding: 10px 12px; font-size: 13px; }
-  .cal-delivery-note .cdn-title { font-weight: 700; color: #b45309; margin-bottom: 6px; }
-  .cal-delivery-note .cdn-row { padding: 3px 0; color: #1e293b; }
-  .hidden { display: none; }
-  body.red-mode .tabs button.on { background: #dc2626; }
-  body.red-mode .fab { background: #dc2626; box-shadow: 0 4px 14px rgba(220,38,38,0.4); }
-  body.red-mode .btn { background: #dc2626; }
-  body.red-mode .btn.clear, body.red-mode .btn.ghost { background: #fee2e2; color: #b91c1c; }
-  .calc-result { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; margin-top: 10px; }
-  .calc-result .big { font-size: 17px; }
-  .user-list-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding: 8px 4px; font-size: 14px; gap: 8px; }
-  .user-list-row:last-child { border-bottom: none; }
-  .user-list-row .u-login { color: #64748b; font-size: 12px; }
-  .user-bar { display: flex; justify-content: space-between; align-items: center; background: #fff; border-radius: 10px; padding: 8px 12px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); font-size: 13px; }
-  .user-bar .who-now { font-weight: 700; color: #1e293b; }
-  .user-bar button { background: #e2e8f0; border: none; border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: 600; color: #475569; cursor: pointer; margin-left: 6px; }
-  .user-bar button.admin-btn { background: #1e293b; color: #fff; }
-  #loginOverlay { position: fixed; inset: 0; background: #f1f5f9; z-index: 100; display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .cal-day.today { box-shadow: inset 0 0 0 2px var(--accent); }
+  .cal-day.sel { background: rgba(79,70,229,0.12); }
+  .cal-day.dlv { box-shadow: inset 0 0 0 2.5px var(--warn); background: #fffbeb; }
+  .cal-day.dlv.sel { box-shadow: inset 0 0 0 2.5px var(--warn); background: #fef3c7; }
+  .cal-day.today.dlv { box-shadow: inset 0 0 0 2.5px var(--warn); }
+  .cal-day .d { font-size: 12px; font-weight: 650; }
+  .cal-chip { font-size: 9px; line-height: 1.3; padding: 1px 4px; border-radius: 5px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 650; }
+  .cal-chip.c-work { background: rgba(79,70,229,0.14); color: var(--accent-dark); }
+  .cal-chip.c-soon { background: rgba(217,119,6,0.18); color: #92400e; }
+  .cal-chip.c-over { background: rgba(220,38,38,0.16); color: #b91c1c; }
+  .cal-chip.c-done { background: rgba(5,150,105,0.14); color: #047857; }
+  .cal-delivery-note { margin-top: 10px; background: #fffbeb; border: 1px solid rgba(217,119,6,0.4); border-radius: 12px; padding: 10px 12px; font-size: 13px; }
+  .cal-delivery-note .cdn-title { font-weight: 700; color: #92400e; margin-bottom: 6px; }
+  .cal-delivery-note .cdn-row { padding: 3px 0; color: var(--ink); }
+
+  /* ===== итоги расчётов ===== */
+  .calc-result { background: var(--soft); border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-top: 12px; }
+  .calc-result .big { font-size: 16.5px; }
+
+  /* ===== вход ===== */
+  #loginOverlay { position: fixed; inset: 0; background: var(--bg); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 16px; }
   #loginOverlay.hidden { display: none !important; }
-  .login-box { background: #fff; border-radius: 16px; padding: 24px; width: 100%; max-width: 380px; box-shadow: 0 8px 30px rgba(0,0,0,0.15); }
+  .login-box { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 28px 24px; width: 100%; max-width: 380px; }
   .login-box h2 { font-size: 22px; text-align: center; margin-bottom: 4px; }
-  .login-box .sub { text-align: center; font-size: 12px; color: #94a3b8; margin-bottom: 14px; }
-  .login-err { color: #b91c1c; font-size: 13px; text-align: center; min-height: 18px; margin-top: 8px; }
+  .login-box .sub { text-align: center; font-size: 12px; color: var(--muted); margin-bottom: 18px; }
+  .login-err { color: var(--danger); font-size: 13px; text-align: center; min-height: 18px; margin-top: 10px; }
+
+  /* ===== пользователи ===== */
+  .user-list-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); padding: 9px 4px; font-size: 14px; gap: 8px; }
+  .user-list-row:last-child { border-bottom: none; }
+  .user-list-row .u-login { color: var(--muted); font-size: 12px; }
+
   .chk-row { display: flex; align-items: center; gap: 8px; font-size: 14px; margin: 8px 0; }
   .chk-row input { width: 20px; height: 20px; margin: 0; flex-shrink: 0; }
-  .edit-banner { background: #fffbeb; border: 1px solid rgba(245,158,11,0.5); border-radius: 10px; padding: 8px 12px; font-size: 13px; color: #b45309; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-  .edit-banner button { background: none; border: none; color: #b45309; font-size: 12px; font-weight: 600; cursor: pointer; text-decoration: underline; padding: 0; }
-  /* ===== вкладки внутри договорной работы ===== */
-  .sub-tabs { display: flex; background: #e2e8f0; border-radius: 10px; padding: 4px; margin-bottom: 16px; }
-  .sub-tabs button { flex: 1; padding: 9px 4px; border: none; background: none; color: #475569; font-size: 12px; font-weight: 600; border-radius: 8px; cursor: pointer; }
-  .sub-tabs button.on { background: #1e293b; color: #fff; }
-  body.red-mode .sub-tabs button.on { background: #b91c1c; }
+  .edit-banner { background: #fffbeb; border: 1px solid rgba(217,119,6,0.4); border-radius: 12px; padding: 8px 12px; font-size: 13px; color: #92400e; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .edit-banner button { background: none; border: none; color: #92400e; font-size: 12px; font-weight: 600; cursor: pointer; text-decoration: underline; padding: 0; }
+
+  /* ===== красный режим договорной работы ===== */
+  body.red-mode .tabs button.on { color: #b91c1c; border-bottom-color: #b91c1c; }
+  body.red-mode .btn { background: #b91c1c; }
+  body.red-mode .btn.ghost { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
+  body.red-mode .fab { background: #b91c1c; box-shadow: 0 8px 22px rgba(185,28,28,0.35); }
+  body.red-mode .brand .logo { background: #b91c1c; }
+
+  /* ===== под-вкладки ===== */
+  .sub-tabs { display: flex; gap: 4px; border-bottom: 2px solid var(--line); margin: 0 0 16px; }
+  .sub-tabs button { background: none; border: none; padding: 10px 12px; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; }
+  .sub-tabs button.on { color: var(--ink); border-bottom-color: var(--ink); }
+  body.red-mode .sub-tabs button.on { color: #b91c1c; border-bottom-color: #b91c1c; }
+
   /* ===== график поставок ===== */
   .sch-month { margin-bottom: 10px; }
-  .sch-month-title { font-size: 15px; font-weight: 700; color: #dc2626; text-transform: capitalize; }
-  .sch-month-line { width: 100%; height: 1px; background: #dc2626; margin: 5px 0 8px; }
-  .sch-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 4px 2px; border-bottom: 1px solid #f1f5f9; font-size: 13.5px; }
+  .sch-month-title { font-size: 15px; font-weight: 800; color: #b91c1c; text-transform: capitalize; }
+  .sch-month-line { width: 100%; height: 1px; background: #b91c1c; margin: 5px 0 8px; }
+  .sch-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 4px 2px; border-bottom: 1px solid var(--soft); font-size: 13.5px; }
   .sch-row:last-child { border-bottom: none; }
-  .sch-row .snum { font-weight: 500; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
-  .sch-row .sdate { color: #94a3b8; white-space: nowrap; }
-  .sch-row.past .snum, .sch-row.past .sdate { color: #dc2626; opacity: 0.75; }
-  .sch-empty { font-size: 12px; color: #94a3b8; padding: 4px 2px; }
+  .sch-row .snum { font-weight: 500; color: #9ca3af; }
+  .sch-row .sdate { color: #9ca3af; white-space: nowrap; }
+  .sch-row.rkm .snum, .sch-row.rkm .sdate { color: var(--ink); font-weight: 700; }
+  .sch-row.past .snum, .sch-row.past .sdate { color: #b91c1c; opacity: 0.8; }
+  .sch-empty { font-size: 12px; color: #9ca3af; padding: 4px 2px; }
   .sch-search { margin-bottom: 10px; }
   .sch-search input { margin-top: 0; }
-  .sch-filter { margin-top: 12px; }
-  .sch-filter select { margin-top: 0; }
-  .sch-hint { font-size: 11px; color: #94a3b8; text-align: center; margin-top: 8px; }
-  .sch-views { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
-  .sch-view-btn { background: #e2e8f0; border: none; border-radius: 8px; padding: 5px 10px; font-size: 11px; font-weight: 600; color: #475569; cursor: pointer; }
-  .sch-view-btn.on { background: #1e293b; color: #fff; }
-  .sch-chk { width: 16px; height: 16px; margin: 0; flex-shrink: 0; cursor: pointer; accent-color: #16a34a; }
-  .sch-left { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; }
-  .srkm { display: inline-block; font-size: 10px; font-weight: 300; color: #dc2626; white-space: nowrap; margin-right: 6px; vertical-align: middle; }
-  .sch-row .snum.rkm-done { font-weight: 700; color: #1e293b; }
-  .sch-row.done .snum, .sch-row.done .sdate, .sch-row.done .srkm { text-decoration: line-through; opacity: 0.5; }
-  /* ===== печатный блок (выгрузка графика в PDF) ===== */
+  .sch-filters { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+  .sch-filters select { margin-top: 0; }
+  .sch-hint { font-size: 11px; color: #9ca3af; text-align: center; margin-top: 10px; }
+
+  /* ===== печать ===== */
   #printArea { display: none; }
   @media print {
     body { background: #fff; padding: 0; max-width: none; }
     body > *:not(#printArea) { display: none !important; }
     #printArea { display: block !important; }
-    #printArea .pr-title { font-size: 20px; font-weight: 700; color: #1e293b; margin-bottom: 4px; }
-    #printArea .pr-sub { font-size: 12px; color: #64748b; margin-bottom: 6px; }
-    #printArea .pr-criteria { font-size: 12px; color: #475569; background: #f3f4f6; border-radius: 6px; padding: 6px 10px; margin-bottom: 18px; }
+    #printArea .pr-title { font-size: 20px; font-weight: 700; color: #171923; margin-bottom: 4px; }
+    #printArea .pr-sub { font-size: 12px; color: #6b7280; margin-bottom: 6px; }
+    #printArea .pr-criteria { font-size: 12px; color: #374151; background: #f3f4f6; border-radius: 6px; padding: 6px 10px; margin-bottom: 18px; }
     #printArea .sch-month { margin-bottom: 14px; page-break-inside: avoid; }
     #printArea .sch-month-title { font-size: 15px; font-weight: 700; color: #b91c1c; text-transform: capitalize; }
     #printArea .sch-month-line { width: 100%; height: 1px; background: #b91c1c; margin: 5px 0 8px; }
-    #printArea .sch-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 5px 2px; border-bottom: 1px solid #e5e7eb; font-size: 13px; }
+    #printArea .sch-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 5px 2px; border-bottom: 1px solid #e5e7eb; font-size: 13px; }
     #printArea .sch-row:last-child { border-bottom: none; }
-    #printArea .sch-row .snum { font-weight: 500; color: #6b7280; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+    #printArea .sch-row .snum { font-weight: 500; color: #6b7280; }
     #printArea .sch-row .sdate { color: #6b7280; white-space: nowrap; }
+    #printArea .sch-row.rkm .snum, #printArea .sch-row.rkm .sdate { color: #171923; font-weight: 700; }
     #printArea .sch-row.past .snum, #printArea .sch-row.past .sdate { color: #b91c1c; }
     #printArea .sch-empty { font-size: 12px; color: #9ca3af; padding: 4px 2px; }
-    #printArea .sch-views { display: none; }
-    #printArea .sch-chk { width: 11px; height: 11px; margin: 0; }
-    #printArea .sch-left { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; }
-    #printArea .srkm { display: inline-block; font-size: 9px; font-weight: 300; color: #b91c1c; white-space: nowrap; margin-right: 6px; vertical-align: middle; }
-    #printArea .sch-row .snum.rkm-done { font-weight: 700; color: #1e293b; }
-    #printArea .sch-row.done .snum, #printArea .sch-row.done .sdate, #printArea .sch-row.done .srkm { text-decoration: line-through; color: #9ca3af; }
     #printArea .pr-note { margin-top: 24px; font-size: 10px; color: #9ca3af; }
   }
-
-/* красный режим вкладки «ДОГОВОРА» — поверх акцента */
-body.red-mode .tabs button.on { background:#dc2626; }
-body.red-mode .fab { background:#dc2626; box-shadow:0 4px 14px rgba(220,38,38,0.4); }
-body.red-mode .btn { background:#dc2626; }
-body.red-mode .btn.clear, body.red-mode .btn.ghost { background:#fee2e2; color:#b91c1c; }
-/* вкладка ЦЕНЫ: жёлто-золотое свечение только когда активна */
-#tabPrices.on { background:#f59e0b; color:#fff; animation: pricesGlow 2.2s ease-in-out infinite; }
-@keyframes pricesGlow {
-  0%,100% { box-shadow: 0 0 5px rgba(245,158,11,0.55); }
-  50%     { box-shadow: 0 0 16px rgba(245,158,11,0.95); }
-}
-/* вкладка ДОГОВОРА: красное свечение только когда активна */
-#tabDoc.on { background:#dc2626; animation: docGlow 2.2s ease-in-out infinite; }
-@keyframes docGlow {
-  0%,100% { box-shadow: 0 0 5px rgba(220,38,38,0.55); }
-  50%     { box-shadow: 0 0 16px rgba(220,38,38,0.95); }
-}
+  #pdfCapture { position: fixed; left: -10000px; top: 0; width: 720px; background: #fff; padding: 24px; z-index: -1; }
 </style>
 </head>
 <body>
@@ -213,76 +249,93 @@ body.red-mode .btn.clear, body.red-mode .btn.ghost { background:#fee2e2; color:#
 <div id="loginOverlay">
   <form class="login-box" onsubmit="tryLogin(event)">
     <h2>СТРАЖ</h2>
-    <div class="sub">Отдел ПЭО · вход по личному доступу</div>
-    <label>Логин <input type="text" id="inLogin" autocomplete="username"></label>
-    <label>Пароль <input type="password" id="inPass" autocomplete="current-password"></label>
-    <button class="btn" type="submit">Войти</button>
+    <div class="sub">Панель отдела ПЭО · вход по личному доступу</div>
+    <label class="fld"><span class="fld-cap">Логин</span><input type="text" id="inLogin" autocomplete="username"></label>
+    <label class="fld"><span class="fld-cap">Пароль</span><input type="password" id="inPass" autocomplete="current-password"></label>
+    <button class="btn wide" type="submit">Войти</button>
     <div class="login-err" id="loginErr"></div>
     <p class="note">Доступы выдаёт руководитель отдела.</p>
   </form>
 </div>
 
-<div id="userBar" class="user-bar hidden">
-  <span>Вы вошли как: <span class="who-now" id="whoNow"></span></span>
-  <span>
-    <button id="btnAdmin" class="admin-btn hidden" onclick="openAdminModal()">Сотрудники</button>
-    <button onclick="doLogout()">Выйти</button>
-  </span>
+<!-- ШАПКА -->
+<div class="topbar">
+  <div class="brand">
+    <div class="logo">С</div>
+    <div>
+      <h1>СТРАЖ</h1>
+      <div class="sub">Панель ПЭО · задачи · договоры · расчёты</div>
+    </div>
+  </div>
+  <div class="userbar" id="userBar" style="display:none;">
+    <span class="user-chip" id="whoNow"></span>
+    <button class="icon-btn dark" id="btnAdmin" onclick="openAdminModal()" style="display:none;">Сотрудники</button>
+    <button class="icon-btn" onclick="doLogout()">Выйти</button>
+  </div>
 </div>
-
-<h1>СТРАЖ</h1>
-<p class="subtitle">Отдел ПЭО · задачи и дедлайны</p>
 
 <div class="tabs">
   <button id="tabTasks" class="on" onclick="showTab('tasks')">Задачи</button>
-  <button id="tabCal" onclick="showTab('cal')">Календарь экономиста</button>
+  <button id="tabCal" onclick="showTab('cal')">Календарь</button>
   <button id="tabCalc" onclick="showTab('calc')">Калькулятор</button>
-  <button id="tabPrices" onclick="showTab('prices')">ЦЕНЫ</button>
-<button id="tabDoc" onclick="showTab('doc')">ДОГОВОРА</button>
+  <button id="tabDoc" onclick="showTab('doc')">Договорная работа</button>
 </div>
 
 <div id="secTasks">
   <div class="card">
-    <div class="counters">
-      <div class="counter"><div class="num" id="cAll">0</div><div class="lbl">всего</div></div>
-      <div class="counter"><div class="num" id="cQueue">0</div><div class="lbl">в очереди</div></div>
-      <div class="counter"><div class="num" id="cWork">0</div><div class="lbl">в работе</div></div>
-      <div class="counter"><div class="num" id="cSoon">0</div><div class="lbl">скоро дедлайн</div></div>
-      <div class="counter"><div class="num" id="cOver">0</div><div class="lbl">просрочено</div></div>
-      <div class="counter"><div class="num" id="cDone">0</div><div class="lbl">закрыто</div></div>
+    <div class="card-head">
+      <div>
+        <div class="card-title">Сводка</div>
+        <div class="card-sub">текущее состояние задач отдела</div>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat st-ink"><div class="n" id="cAll">0</div><div class="t">всего</div></div>
+      <div class="stat st-mut"><div class="n" id="cQueue">0</div><div class="t">в очереди</div></div>
+      <div class="stat st-acc"><div class="n" id="cWork">0</div><div class="t">в работе</div></div>
+      <div class="stat st-warn"><div class="n" id="cSoon">0</div><div class="t">скоро дедлайн</div></div>
+      <div class="stat st-danger"><div class="n" id="cOver">0</div><div class="t">просрочено</div></div>
+      <div class="stat st-ok"><div class="n" id="cDone">0</div><div class="t">закрыто</div></div>
     </div>
     <div class="status-bar" id="statusBar"></div>
-    <div class="status-legend">
+    <div class="legend">
       <span class="lg-queue">в очереди</span><span class="lg-work">в работе</span><span class="lg-pause">пауза</span>
       <span class="lg-ge">согласование (ГЭ/МВ)</span><span class="lg-rework">доработка</span><span class="lg-done">выполнено</span>
     </div>
     <div class="load-title">Нагрузка по исполнителям (открытые задачи)</div>
     <div id="loadBlock"></div>
   </div>
+
   <div class="card hidden" id="hotCard">
-    <h3 class="hot-title">🔥 Горит сейчас</h3>
+    <div class="card-head">
+      <div class="card-title hot-title">🔥 Горит сейчас</div>
+    </div>
     <div id="hotList"></div>
   </div>
+
   <div class="card">
-    <h3>Задачи <button class="btn clear" onclick="clearFilters()">сбросить</button></h3>
-    <div class="filters">
-      <div><span class="small-lbl">Исполнитель</span><select id="fWho" onchange="render()"></select></div>
-      <div><span class="small-lbl">Категория</span>
+    <div class="card-head">
+      <div class="card-title">Задачи</div>
+      <button class="btn ghost small" onclick="clearFilters()">сбросить</button>
+    </div>
+    <div class="frow">
+      <div><label class="fld" style="margin:0"><span class="fld-cap">Исполнитель</span><select id="fWho" onchange="render()"></select></label></div>
+      <div><label class="fld" style="margin:0"><span class="fld-cap">Категория</span>
         <select id="fCat" onchange="render()">
           <option value="all">все</option><option value="work">в работе</option>
           <option value="soon">скоро дедлайн</option><option value="over">просрочено</option><option value="done">закрыто</option>
         </select>
-      </div>
+      </label></div>
     </div>
-    <div class="filters">
-      <div><span class="small-lbl">Вид</span>
+    <div class="frow">
+      <div><label class="fld" style="margin:0"><span class="fld-cap">Вид</span>
         <select id="vView" onchange="render()">
           <option value="list">плоский список</option><option value="status">по статусам</option><option value="who">по исполнителям</option>
         </select>
-      </div>
-      <div><span class="small-lbl">Сортировка</span>
+      </label></div>
+      <div><label class="fld" style="margin:0"><span class="fld-cap">Сортировка</span>
         <select id="vSort" onchange="render()"><option value="new">новые сверху</option><option value="deadline">по дедлайну</option></select>
-      </div>
+      </label></div>
     </div>
     <div id="taskList"><p class="note">Задач пока нет</p></div>
   </div>
@@ -298,38 +351,59 @@ body.red-mode .btn.clear, body.red-mode .btn.ghost { background:#fee2e2; color:#
     <div class="cal-grid" id="calGrid"></div>
   </div>
   <div class="card">
-    <h3 id="calDayTitle">Выберите день</h3>
+    <div class="card-head"><div class="card-title" id="calDayTitle">Выберите день</div></div>
     <div id="calDayList"><p class="note">Нажмите на день в календаре</p></div>
   </div>
-  <p class="note">Оранжевая рамка — день поставки из расчётов. В календаре задачи стоят на день дедлайна. Просроченные — красным.</p>
+  <p class="note">Жёлтая рамка — день поставки из расчётов. В календаре задачи стоят на день дедлайна. Просроченные — красным.</p>
 </div>
 
 <div id="secCalc" class="hidden">
   <div class="card">
-    <h3>Калькулятор затрат (ПЭО)</h3>
-    <h4>Материалы</h4>
-    <label>Ф4 — материалы, руб. <input type="number" id="f4" step="0.01"></label>
-    <label>Ф6 — ПКИ, руб. <input type="number" id="f6" step="0.01"></label>
-    <label>Ф7 — услуги сторонних организаций, руб. <input type="number" id="f7" step="0.01"></label>
-    <h4>Заработная плата</h4>
-    <label>Средняя ЗП (норматив), руб./мес. <input type="number" id="avg" step="0.01"></label>
-    <label>Трудоёмкость <input type="number" id="labor" step="0.1">
-      <select id="unit"><option value="mm">чел./мес.</option><option value="h">часы</option></select>
-    </label>
-    <label>Часов в чел./мес. <input type="number" id="hpm" value="164" step="0.1"></label>
-    <label>ДЗП (Ф10), % от основной ЗП <input type="number" id="dzp" step="0.1"></label>
-    <label>СТРАХ, % от ЗП всего <input type="number" id="strah" step="0.1"></label>
-    <h4>Накладные расходы</h4>
-    <label>ОПР (Ф11), % от ЗП всего <input type="number" id="opr" step="0.1"></label>
-    <label>ОХР/АУР (Ф12), % от ЗП всего <input type="number" id="ohr" step="0.1"></label>
-    <button class="btn" onclick="calc()">Рассчитать</button>
+    <div class="card-head">
+      <div>
+        <div class="card-title">Калькулятор затрат</div>
+        <div class="card-sub">расчёт цены по статьям затрат</div>
+      </div>
+    </div>
+    <div class="card-title" style="font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:0.4px; margin:6px 0 10px;">Материалы</div>
+    <div class="frow">
+      <div><label class="fld" style="margin:0"><span class="fld-cap">Ф4 — материалы, руб.</span><input type="number" id="f4" step="0.01"></label></div>
+      <div><label class="fld" style="margin:0"><span class="fld-cap">Ф6 — ПКИ, руб.</span><input type="number" id="f6" step="0.01"></label></div>
+    </div>
+    <label class="fld"><span class="fld-cap">Ф7 — услуги сторонних организаций, руб.</span><input type="number" id="f7" step="0.01"></label>
+    <div class="card-title" style="font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:0.4px; margin:10px 0 10px;">Заработная плата</div>
+    <div class="frow">
+      <div><label class="fld" style="margin:0"><span class="fld-cap">Средняя ЗП, руб./мес.</span><input type="number" id="avg" step="0.01"></label></div>
+      <div><label class="fld" style="margin:0"><span class="fld-cap">Трудоёмкость</span><input type="number" id="labor" step="0.1"></label></div>
+    </div>
+    <div class="frow">
+      <div><label class="fld" style="margin:0"><span class="fld-cap">Единица трудоёмкости</span>
+        <select id="unit"><option value="mm">чел./мес.</option><option value="h">часы</option></select>
+      </label></div>
+      <div><label class="fld" style="margin:0"><span class="fld-cap">Часов в чел./мес.</span><input type="number" id="hpm" value="164" step="0.1"></label></div>
+    </div>
+    <div class="frow">
+      <div><label class="fld" style="margin:0"><span class="fld-cap">ДЗП (Ф10), % от основной ЗП</span><input type="number" id="dzp" step="0.1"></label></div>
+      <div><label class="fld" style="margin:0"><span class="fld-cap">СТРАХ, % от ЗП всего</span><input type="number" id="strah" step="0.1"></label></div>
+    </div>
+    <div class="card-title" style="font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:0.4px; margin:10px 0 10px;">Накладные расходы</div>
+    <div class="frow">
+      <div><label class="fld" style="margin:0"><span class="fld-cap">ОПР (Ф11), % от ЗП всего</span><input type="number" id="opr" step="0.1"></label></div>
+      <div><label class="fld" style="margin:0"><span class="fld-cap">ОХР/АУР (Ф12), % от ЗП всего</span><input type="number" id="ohr" step="0.1"></label></div>
+    </div>
+    <button class="btn wide" onclick="calc()">Рассчитать</button>
     <div id="res"></div>
   </div>
+
   <div class="card">
-    <h3>Сумма прописью</h3>
-    <p class="note" style="text-align:left; margin-bottom:8px">Введите стоимость договора уже с НДС — блок рассчитает, сколько в ней НДС 22% «в том числе», и запишет обе цифры прописью.</p>
-    <label>Стоимость договора с НДС, руб. <input type="number" id="swSum" step="0.01"></label>
-    <button class="btn" onclick="sumWords()">Записать прописью</button>
+    <div class="card-head">
+      <div>
+        <div class="card-title">Сумма прописью</div>
+        <div class="card-sub">стоимость договора и выделение НДС</div>
+      </div>
+    </div>
+    <label class="fld"><span class="fld-cap">Стоимость договора с НДС, руб.</span><input type="number" id="swSum" step="0.01"></label>
+    <button class="btn wide" onclick="sumWords()">Записать прописью</button>
     <div id="swRes"></div>
   </div>
 </div>
@@ -342,69 +416,80 @@ body.red-mode .btn.clear, body.red-mode .btn.ghost { background:#fee2e2; color:#
 
   <div id="docSubCalc">
     <div class="card">
-      <h3>Расчёт срока поставки и РКМ</h3>
+      <div class="card-head">
+        <div>
+          <div class="card-title">Расчёт срока поставки и РКМ</div>
+          <div class="card-sub">даты считаются от поздней из двух дат</div>
+        </div>
+      </div>
       <div class="edit-banner hidden" id="editSupplyBanner">
         <span>Идёт правка расчёта — после сохранения даты пересчитаются</span>
         <button onclick="cancelEditSupply()">Отмена правки</button>
       </div>
-      <label>Номер договора <input type="text" id="dcNum" placeholder="Например: 0142ХХП, 0317ХХУС, 0521ХХОКР"></label>
-      <label>Контрагент <input type="text" id="dcContr" placeholder="Организация (можно не заполнять)"></label>
-      <label>Аванс — дата оплаты <input type="date" id="dcPrepay" onchange="updateExactHint()"></label>
-      <label>Давальческое — дата получения <input type="date" id="dcToll" onchange="updateExactHint()"></label>
+      <div class="frow">
+        <div><label class="fld" style="margin:0"><span class="fld-cap">Номер договора</span><input type="text" id="dcNum" placeholder="0142ХХП, 0317ХХУС…"></label></div>
+        <div><label class="fld" style="margin:0"><span class="fld-cap">Контрагент</span><input type="text" id="dcContr" placeholder="можно не заполнять"></label></div>
+      </div>
+      <div class="frow">
+        <div><label class="fld" style="margin:0"><span class="fld-cap">Аванс — дата оплаты</span><input type="date" id="dcPrepay"></label></div>
+        <div><label class="fld" style="margin:0"><span class="fld-cap">Давальческое — дата получения</span><input type="date" id="dcToll"></label></div>
+      </div>
       <p class="mini-note" style="margin-bottom:8px">Нет давальческого — оставьте поле пустым.</p>
-      <label>Срок поставки, мес. с момента оплаты аванса <input type="number" id="dcMonths" step="1" min="1"></label>
-      <label>…или конкретная дата поставки <input type="date" id="dcExactDate" onchange="updateExactHint()"></label>
-      <p class="mini-note" id="dcExactHint" style="margin-top:-2px; min-height:14px"></p>
+      <label class="fld"><span class="fld-cap">Срок поставки, мес. с момента оплаты аванса</span><input type="number" id="dcMonths" step="1" min="1"></label>
       <div class="chk-row">
         <input type="checkbox" id="dcNoRkm">
         <span>РКМ не требуется</span>
       </div>
       <p class="mini-note" style="margin-bottom:8px">Если галочка стоит — дата РКМ не считается и задача РКМ не создаётся.</p>
-      <button class="btn" id="calcSupplyBtn" onclick="calcSupply()">Рассчитать</button>
+      <button class="btn wide" id="calcSupplyBtn" onclick="calcSupply()">Рассчитать</button>
       <div id="dcRes"></div>
     </div>
     <div class="card">
-      <h3>История расчётов <button class="btn clear" onclick="clearSupplyHistory()">очистить</button></h3>
+      <div class="card-head">
+        <div class="card-title">История расчётов</div>
+        <button class="btn ghost small" onclick="clearSupplyHistory()">очистить</button>
+      </div>
       <div id="dcHistory"><p class="note">Расчётов пока нет</p></div>
     </div>
   </div>
 
   <div id="docSubSched" class="hidden">
     <div class="card">
-      <h3>График поставок
+      <div class="card-head">
+        <div class="card-title">График поставок</div>
         <span style="display:flex; gap:6px;">
-          <button class="btn clear" id="schedSearchBtn" onclick="toggleSchedSearch()">🔍 Поиск</button>
-          <button class="btn clear" onclick="printSched()">🖨 Распечатать</button>
+          <button class="btn ghost small" id="schedSearchBtn" onclick="toggleSchedSearch()">🔍 Поиск</button>
+          <button class="btn ghost small" onclick="exportSchedPdf()">⤓ Сохранить в PDF</button>
+          <button class="btn ghost small" onclick="printSched()">🖨 Распечатать</button>
         </span>
-      </h3>
+      </div>
       <div class="sch-search hidden" id="schedSearchWrap">
         <input type="text" id="schedSearchInput" placeholder="Номер договора или контрагент" oninput="renderSched()">
       </div>
-      <div class="sch-filter">
-        <select id="schedMonthFilter" onchange="renderSched()"><option value="all">Месяц: все</option></select>
-      </div>
-      <div class="sch-views">
-        <button type="button" class="sch-view-btn" id="viewAll" onclick="setSchedView('all')">Все месяца</button>
-        <button type="button" class="sch-view-btn" id="viewRkm" onclick="setSchedView('rkm')">С РКМ</button>
-        <button type="button" class="sch-view-btn" id="viewNoEmpty" onclick="setSchedView('noempty')">Без пустых месяцев</button>
+      <div class="sch-filters">
+        <div><label class="fld" style="margin:0"><span class="fld-cap">Месяц</span>
+          <select id="schedMonthFilter" onchange="renderSched()"><option value="all">все</option></select>
+        </label></div>
+        <div><label class="fld" style="margin:0"><span class="fld-cap">Вид</span>
+          <select id="schedViewSel" onchange="onSchedViewChange()">
+            <option value="noempty">Без пустых месяцев</option>
+            <option value="all">Все месяцы</option>
+            <option value="rkm">Поставка с РКМ</option>
+          </select>
+        </label></div>
       </div>
       <div id="schedList"><p class="note">Поставок пока нет — сделайте расчёт на первой вкладке</p></div>
-      <p class="sch-hint">В окне печати выберите «Сохранить как PDF», чтобы получить файл на диск.</p>
+      <p class="sch-hint">Чёрным выделены договоры с РКМ. «Сохранить в PDF» — файл в загрузках, «Распечатать» — бумага или PDF в окне печати.</p>
     </div>
   </div>
 
   <p class="note">ТЕСТОВЫЙ РЕЖИМ. Расчёты хранятся только на этом устройстве. Реестр договоров — в разработке.</p>
 </div>
 
-<div id="secPrices" class="hidden">
-  <div class="card">
-    <h3>Цены — раздел в разработке</h3>
-    <p class="note" style="text-align:left">Здесь появится работа с ценами: расчёт, контроль и сравнение. Пока расчёт цены и НДС доступен во вкладке «Калькулятор».</p>
-  </div>
-</div>
-
-<!-- печатный блок: наполняется перед выгрузкой в PDF -->
+<!-- печатный блок -->
 <div id="printArea"></div>
+<!-- скрытая область для скриншота в PDF -->
+<div id="pdfCapture"></div>
 
 <div id="statusMenu" class="status-menu hidden"></div>
 
@@ -413,10 +498,10 @@ body.red-mode .btn.clear, body.red-mode .btn.ghost { background:#fee2e2; color:#
 <div id="taskOverlay" class="overlay hidden" onclick="if(event.target === this) closeTaskModal()">
   <div class="modal">
     <h3>Новая задача</h3>
-    <label>Название <input type="text" id="tName" placeholder="Например: РКМ - изделие - ХХХП; ДС - ХХХП; НР - месяц.год"></label>
-    <label>Исполнитель <select id="tWho" onchange="toggleCustomWho()"></select></label>
-    <label id="tWhoCustomWrap" class="hidden">Свой вариант <input type="text" id="tWhoCustom" placeholder="имя"></label>
-    <label>Дедлайн <input type="date" id="tDate"></label>
+    <label class="fld"><span class="fld-cap">Название</span><input type="text" id="tName" placeholder="РКМ - изделие - ХХХП; ДС - ХХХП; НР - месяц.год"></label>
+    <label class="fld"><span class="fld-cap">Исполнитель</span><select id="tWho" onchange="toggleCustomWho()"></select></label>
+    <label class="fld hidden" id="tWhoCustomWrap"><span class="fld-cap">Свой вариант</span><input type="text" id="tWhoCustom" placeholder="имя"></label>
+    <label class="fld"><span class="fld-cap">Дедлайн</span><input type="date" id="tDate"></label>
     <div class="modal-actions">
       <button class="btn" onclick="addTask()">Добавить</button>
       <button class="btn ghost" onclick="closeTaskModal()">Отмена</button>
@@ -428,11 +513,11 @@ body.red-mode .btn.clear, body.red-mode .btn.ghost { background:#fee2e2; color:#
   <div class="modal">
     <h3>Сотрудники и доступы</h3>
     <div id="userList"></div>
-    <hr class="hr">
-    <h4>Выдать доступ</h4>
-    <label>Имя сотрудника <input type="text" id="aName" placeholder="Например: Нина"></label>
-    <label>Логин <input type="text" id="aLogin" placeholder="Например: nina"></label>
-    <label>Пароль <input type="text" id="aPass" placeholder="Придумайте пароль"></label>
+    <div class="hr"></div>
+    <div class="card-title" style="font-size:14px; margin-bottom:10px;">Выдать доступ</div>
+    <label class="fld"><span class="fld-cap">Имя сотрудника</span><input type="text" id="aName" placeholder="Например: Нина"></label>
+    <label class="fld"><span class="fld-cap">Логин</span><input type="text" id="aLogin" placeholder="Например: nina"></label>
+    <label class="fld"><span class="fld-cap">Пароль</span><input type="text" id="aPass" placeholder="Придумайте пароль"></label>
     <div class="modal-actions">
       <button class="btn" onclick="addUser()">Выдать доступ</button>
       <button class="btn ghost" onclick="closeAdminModal()">Закрыть</button>
@@ -499,12 +584,12 @@ function applyAuth() {
   const bar = document.getElementById('userBar');
   if (currentUser) {
     overlay.classList.add('hidden');
-    bar.classList.remove('hidden');
+    bar.style.display = 'flex';
     document.getElementById('whoNow').textContent = currentUser.name;
-    document.getElementById('btnAdmin').classList.toggle('hidden', !currentUser.admin);
+    document.getElementById('btnAdmin').style.display = currentUser.admin ? 'inline-block' : 'none';
   } else {
     overlay.classList.remove('hidden');
-    bar.classList.add('hidden');
+    bar.style.display = 'none';
     document.getElementById('inLogin').focus();
   }
 }
@@ -553,7 +638,7 @@ const STATUS_LIST = ['в очереди', 'в работе', 'на паузе', 
 const STATUS_CLS = { 'в очереди':'ss-queue','в работе':'ss-work','на паузе':'ss-pause','на согласовании у ГЭ':'ss-ge','на согласовании у МВ':'ss-mv','на доработке':'ss-rework','выполнено':'ss-done' };
 const STATUS_HEAD = { 'в очереди':'g-queue','в работе':'g-work','на паузе':'g-pause','на согласовании у ГЭ':'g-ge','на согласовании у МВ':'g-mv','на доработке':'g-rework','выполнено':'g-done' };
 const STATUS_SEG = { 'в очереди':'sb-queue','в работе':'sb-work','на паузе':'sb-pause','на согласовании у ГЭ':'sb-ge','на согласовании у МВ':'sb-mv','на доработке':'sb-rework','выполнено':'sb-done' };
-const STATUS_STRIP = { 'в очереди':'#94a3b8','в работе':'#2563eb','на паузе':'#06b6d4','на согласовании у ГЭ':'#eab308','на согласовании у МВ':'#eab308','на доработке':'#ea580c','выполнено':'#16a34a' };
+const STATUS_STRIP = { 'в очереди':'#94a3b8','в работе':'#4f46e5','на паузе':'#0284c7','на согласовании у ГЭ':'#eab308','на согласовании у МВ':'#eab308','на доработке':'#ea580c','выполнено':'#059669' };
 
 const whoOpen = {};
 
@@ -565,12 +650,10 @@ function showTab(name) {
   document.getElementById('secCal').classList.toggle('hidden', name !== 'cal');
   document.getElementById('secCalc').classList.toggle('hidden', name !== 'calc');
   document.getElementById('secDoc').classList.toggle('hidden', name !== 'doc');
-  document.getElementById('secPrices').classList.toggle('hidden', name !== 'prices');
   document.getElementById('tabTasks').classList.toggle('on', name === 'tasks');
   document.getElementById('tabCal').classList.toggle('on', name === 'cal');
   document.getElementById('tabCalc').classList.toggle('on', name === 'calc');
   document.getElementById('tabDoc').classList.toggle('on', name === 'doc');
-  document.getElementById('tabPrices').classList.toggle('on', name === 'prices');
   if (name === 'cal') { renderCal(); renderCalDay(); }
   if (name === 'doc') { showDocSub(docSub); }
   document.body.classList.toggle('red-mode', name === 'doc');
@@ -583,9 +666,9 @@ function showDocSub(name) {
   document.getElementById('subDocCalc').classList.toggle('on', name === 'calc');
   document.getElementById('subDocSched').classList.toggle('on', name === 'sched');
   if (name === 'calc') renderSupplyHistory();
-  if (name === 'sched') { rebuildSchedFilter(); renderSched(); }
+  if (name === 'sched') { restoreSchedView(); rebuildSchedFilter(); renderSched(); }
 }
-function fabClick() { if (currentTab === 'doc' || currentTab === 'prices') return; openTaskModal(); }
+function fabClick() { if (currentTab === 'doc') return; openTaskModal(); }
 
 function allNames() {
   const names = TEAM.slice();
@@ -686,7 +769,7 @@ function taskRow(t) {
   const badgeCls = cat === 'over' ? 'over' : (cat === 'soon' ? 'soon' : (cat === 'done' ? '' : 'ok'));
   const status = t.status || 'в работе';
   const stCls = STATUS_CLS[status] || 'ss-work';
-  const strip = STATUS_STRIP[status] || '#64748b';
+  const strip = STATUS_STRIP[status] || '#94a3b8';
   const safeId = String(t.id || '').replace(/'/g, "\\'");
   return '<div class="task' + (cat === 'done' ? ' is-done' : '') + '" style="border-left-color:' + strip + '">' +
     '<div class="info"><div class="name">' + (cat === 'done' ? '✅ ' : '') + esc(t.name) + '</div>' +
@@ -733,7 +816,7 @@ function renderStatusMenu() {
     const t = tasks.find(x => x.id === menuTaskId);
     const status = t ? (t.status || 'в работе') : 'в работе';
     menu.innerHTML = STATUS_LIST.map(s => {
-      const color = STATUS_STRIP[s] || '#64748b';
+      const color = STATUS_STRIP[s] || '#94a3b8';
       return '<div class="opt" onclick="pickStatus(\'' + s + '\')"><span><span class="sdot" style="background:' + color + '"></span>' + esc(s) + '</span>' + (s === status ? '<b>✓</b>' : '') + '</div>';
     }).join('');
   }
@@ -748,7 +831,7 @@ function renderWhoMenu() {
   let html = '';
   names.forEach(n => {
     const safeName = n.replace(/'/g, "\\'");
-    html += '<div class="opt" onclick="pickWho(\'' + safeName + '\')"><span><span class="sdot" style="background:#2563eb"></span>' + esc(n) + '</span>' + (cur === n ? '<b>✓</b>' : '') + '</div>';
+    html += '<div class="opt" onclick="pickWho(\'' + safeName + '\')"><span><span class="sdot" style="background:#4f46e5"></span>' + esc(n) + '</span>' + (cur === n ? '<b>✓</b>' : '') + '</div>';
   });
   html += '<div class="opt" onclick="pickWho(\'\')"><span><span class="sdot" style="background:#94a3b8"></span>— без исполнителя —</span>' + (cur === '' ? '<b>✓</b>' : '') + '</div>';
   menu.innerHTML = html;
@@ -783,13 +866,13 @@ function renderStats(tasks) {
     else if (c === 'soon') { all++; soon++; }
     else { all++; if (st === 'в очереди') queue++; else work++; }
   });
-  const setCounter = (id, val, cls) => { const el = document.getElementById(id); el.textContent = val; el.className = 'num ' + cls; };
-  setCounter('cAll', all + done, 'c-black');
-  setCounter('cQueue', queue, 'c-gray');
-  setCounter('cWork', work, 'c-blue');
-  setCounter('cSoon', soon, 'c-orange');
-  setCounter('cOver', over, 'c-red');
-  setCounter('cDone', done, 'c-green');
+  const setCounter = (id, val) => { document.getElementById(id).textContent = val; };
+  setCounter('cAll', all + done);
+  setCounter('cQueue', queue);
+  setCounter('cWork', work);
+  setCounter('cSoon', soon);
+  setCounter('cOver', over);
+  setCounter('cDone', done);
   const total = tasks.length;
   const bar = document.getElementById('statusBar');
   if (!total) bar.innerHTML = '';
@@ -939,7 +1022,7 @@ function renderCalDay() {
   listEl.innerHTML = html;
 }
 
-// ===== ДОГОВОРА: расчёт срока поставки и РКМ =====
+// ===== договорная работа: расчёт срока поставки и РКМ =====
 function parseISO(s) { const p = s.split('-'); return new Date(parseInt(p[0],10), parseInt(p[1],10)-1, parseInt(p[2],10)); }
 function isoOfDate(d) { const p = n => (n < 10 ? '0' : '') + n; return d.getFullYear() + '-' + p(d.getMonth()+1) + '-' + p(d.getDate()); }
 function addMonthsISO(iso, n) {
@@ -970,9 +1053,7 @@ function setSupplyForm(e) {
   document.getElementById('dcPrepay').value = e ? (e.prepay || '') : '';
   document.getElementById('dcToll').value = e ? (e.toll || '') : '';
   document.getElementById('dcMonths').value = e ? (e.months || '') : '';
-  document.getElementById('dcExactDate').value = e ? (e.exact || '') : '';
   document.getElementById('dcNoRkm').checked = e ? !!e.noRkm : false;
-  updateExactHint();
 }
 function enterEditSupply(id) {
   const e = loadSupply().find(x => x.id === id);
@@ -992,58 +1073,18 @@ function cancelEditSupply() {
   document.getElementById('dcRes').innerHTML = '';
 }
 
-function diffMonthsDays(fromISO, toISO) {
-  const from = parseISO(fromISO), to = parseISO(toISO);
-  if (to < from) return null;
-  let months = 0;
-  while (parseISO(addMonthsISO(fromISO, months + 1)) <= to) months++;
-  const anchorISO = addMonthsISO(fromISO, months);
-  const days = Math.round((to - parseISO(anchorISO)) / 86400000);
-  return { months: months, days: days };
-}
-function monthsLabel(m, d) {
-  if (!m && !d) return 'менее месяца';
-  let s = '';
-  if (m) s = m + ' мес.';
-  if (d) s += (s ? ' ' : '') + d + ' дн.';
-  return s;
-}
-function updateExactHint() {
-  const hint = document.getElementById('dcExactHint');
-  if (!hint) return;
-  const exact = document.getElementById('dcExactDate').value;
-  const prepay = document.getElementById('dcPrepay').value;
-  const toll = document.getElementById('dcToll').value;
-  if (!exact) { hint.textContent = ''; return; }
-  if (!prepay) { hint.textContent = 'Укажите дату аванса — месяцы посчитаются сами'; return; }
-  const base = (toll && toll > prepay) ? toll : prepay;
-  if (parseISO(exact) < parseISO(base)) { hint.textContent = 'Дата поставки раньше даты отсчёта (' + fmtDate(base) + ')'; return; }
-  const r = diffMonthsDays(base, exact);
-  hint.textContent = 'От ' + fmtDate(base) + ' до ' + fmtDate(exact) + ' — это ' + monthsLabel(r.months, r.days);
-}
 function calcSupply() {
   const num = document.getElementById('dcNum').value.trim();
   if (!num) { alert('Укажите номер договора'); return; }
   const contr = document.getElementById('dcContr').value.trim();
   const prepay = document.getElementById('dcPrepay').value;
   const toll = document.getElementById('dcToll').value;
-  const exactDate = document.getElementById('dcExactDate').value;
+  const months = parseInt(document.getElementById('dcMonths').value, 10);
   const noRkm = document.getElementById('dcNoRkm').checked;
   if (!prepay) { alert('Укажите дату оплаты аванса'); return; }
+  if (!months || months <= 0) { alert('Укажите срок поставки в месяцах'); return; }
   const base = (toll && toll > prepay) ? toll : prepay;
-  let months, delivery, monthsNote = '';
-  if (exactDate) {
-    if (parseISO(exactDate) < parseISO(base)) { alert('Дата поставки не может быть раньше даты отсчёта (' + fmtDate(base) + ')'); return; }
-    delivery = exactDate;
-    const r = diffMonthsDays(base, delivery);
-    months = r.months + (r.days > 0 ? 1 : 0) || 1;
-    monthsNote = 'Срок поставки: до ' + fmtDate(delivery) + ' (это ' + monthsLabel(r.months, r.days) + ')';
-  } else {
-    months = parseInt(document.getElementById('dcMonths').value, 10);
-    if (!months || months <= 0) { alert('Укажите срок поставки в месяцах или конкретную дату поставки'); return; }
-    delivery = addMonthsISO(base, months);
-    monthsNote = 'Срок поставки: ' + months + ' мес.';
-  }
+  const delivery = addMonthsISO(base, months);
   const rkm = noRkm ? '' : addMonthsISO(delivery, -3);
   const arr = loadSupply();
   let entry;
@@ -1053,13 +1094,13 @@ function calcSupply() {
   }
   if (entry) {
     entry.num = num; entry.contr = contr; entry.prepay = prepay; entry.toll = toll;
-    entry.months = months; entry.noRkm = noRkm; entry.exact = exactDate || '';
+    entry.months = months; entry.noRkm = noRkm;
     entry.base = base; entry.delivery = delivery; entry.rkm = rkm;
     entry.updatedAt = new Date().toISOString();
   } else {
     entry = {
       id: 's' + Date.now().toString(36) + Math.random().toString(36).slice(2,7),
-      num: num, contr: contr, prepay: prepay, toll: toll, months: months, noRkm: noRkm, exact: exactDate || '',
+      num: num, contr: contr, prepay: prepay, toll: toll, months: months, noRkm: noRkm,
       base: base, delivery: delivery, rkm: rkm,
       createdAt: new Date().toISOString()
     };
@@ -1074,13 +1115,13 @@ function calcSupply() {
     '<p>Договор: <b>' + esc(num) + '</b>' + (contr ? ' · ' + esc(contr) : '') + '</p>' +
     '<p>Аванс (оплата): ' + fmtDate(prepay) + '</p>' +
     (toll ? '<p>Давальческое (получено): ' + fmtDate(toll) + '</p>' : '') +
-    '<p>' + monthsNote + '</p>' +
+    '<p>Срок поставки: ' + months + ' мес.</p>' +
     (noRkm ? '<p class="mini-note" style="text-align:left">РКМ не требуется</p>' : '') +
-    '<hr class="hr">' +
+    '<div class="hr"></div>' +
     '<p>Отсчёт ведётся с: <b>' + fmtDate(base) + '</b>' + (toll ? ' <span class="note" style="margin:0">(позже из двух дат)</span>' : '') + '</p>' +
     '<p class="big">Поставка: <b>' + fmtDate(delivery) + '</b> <span class="note" style="margin:0">(день подсвечен в календаре и виден в графике поставок)</span></p>' +
     (noRkm
-      ? '<p class="big" style="color:#94a3b8">Формирование РКМ: не требуется</p>'
+      ? '<p class="big" style="color:#9ca3af">Формирование РКМ: не требуется</p>'
       : '<p class="big">Формирование РКМ: <b>' + fmtDate(rkm) + '</b> <span class="note" style="margin:0">(за 3 мес. до поставки)</span></p>') +
     (wasEdit ? '<p class="mini-note" style="text-align:left">Расчёт обновлён в истории</p>' : '') +
     '</div>';
@@ -1103,9 +1144,9 @@ function renderSupplyHistory() {
     let badge = '';
     if (dl !== null) badge = dl < 0 ? '<span class="badge over">поставка прошла</span>' : '<span class="badge ok">до поставки ' + dl + ' дн.</span>';
     const safeId = String(e.id || '').replace(/'/g, "\\'");
-    return '<div class="task" style="border-left-color:#1e293b">' +
+    return '<div class="task" style="border-left-color:#171923">' +
       '<div class="info">' +
-      '<div class="name">' + esc(e.num) + (e.contr ? ' · ' + esc(e.contr) : '') + (e.exact ? ' · до ' + fmtDate(e.exact) : ' · ' + e.months + ' мес.') + (e.noRkm ? ' · без РКМ' : '') + '</div>' +
+      '<div class="name">' + esc(e.num) + (e.contr ? ' · ' + esc(e.contr) : '') + ' · ' + e.months + ' мес.' + (e.noRkm ? ' · без РКМ' : '') + '</div>' +
       '<div class="meta">' +
       '<span>аванс: ' + fmtDate(e.prepay) + '</span>' +
       (e.toll ? '<span>давальческое: ' + fmtDate(e.toll) + '</span>' : '') +
@@ -1118,8 +1159,8 @@ function renderSupplyHistory() {
       (e.updatedAt ? '<span class="stdate">изм. ' + fmtDT(e.updatedAt) + '</span>' : '') +
       '</div></div>' +
       '<div style="display:flex; flex-direction:column; gap:4px;">' +
-      '<button class="btn clear" style="font-size:11px; padding:5px 10px;" onclick="enterEditSupply(\'' + safeId + '\')">✎ Изменить</button>' +
-      (e.rkm ? '<button class="btn clear" style="font-size:11px; padding:5px 10px;" onclick="supplyToCalendar(\'' + safeId + '\')">В календарь</button>' : '') +
+      '<button class="btn ghost small" onclick="enterEditSupply(\'' + safeId + '\')">✎ Изменить</button>' +
+      (e.rkm ? '<button class="btn ghost small" onclick="supplyToCalendar(\'' + safeId + '\')">В календарь</button>' : '') +
       '<button class="del" title="Удалить" onclick="delSupply(\'' + safeId + '\')">✕</button>' +
       '</div></div>';
   }).join('');
@@ -1154,11 +1195,21 @@ function clearSupplyHistory() {
   if (currentTab === 'doc' && docSub === 'sched') { rebuildSchedFilter(); renderSched(); }
 }
 
-// ===== график поставок: поиск + фильтр + виды + отгрузка =====
+// ===== график поставок: поиск, фильтр по месяцам, вид =====
 let schedSearchOpen = false;
 let schedMonthFilter = 'all';
-let schedView = localStorage.getItem('strazh_schedview') || 'all';
-
+let schedView = 'noempty';
+function restoreSchedView() {
+  const saved = localStorage.getItem('strazh_schedview');
+  if (saved === 'all' || saved === 'rkm' || saved === 'noempty') schedView = saved;
+  const sel = document.getElementById('schedViewSel');
+  if (sel) sel.value = schedView;
+}
+function onSchedViewChange() {
+  schedView = document.getElementById('schedViewSel').value;
+  localStorage.setItem('strazh_schedview', schedView);
+  renderSched();
+}
 function toggleSchedSearch() {
   schedSearchOpen = !schedSearchOpen;
   const wrap = document.getElementById('schedSearchWrap');
@@ -1180,7 +1231,7 @@ function rebuildSchedFilter() {
   const sel = document.getElementById('schedMonthFilter');
   if (!sel) return;
   const keys = schedAllMonthKeys();
-  let html = '<option value="all">Месяц: все</option>';
+  let html = '<option value="all">все</option>';
   keys.forEach(mk => {
     html += '<option value="' + mk + '">' + schedMonthLabel(mk) + '</option>';
   });
@@ -1191,82 +1242,33 @@ function rebuildSchedFilter() {
 function schedSearchQuery() {
   return (schedSearchOpen ? (document.getElementById('schedSearchInput').value || '') : '').trim().toLowerCase();
 }
-// ---- отметки «отгружено» (хранятся на устройстве) ----
-function shippedMap() {
-  try { return JSON.parse(localStorage.getItem('strazh_shipped')) || {}; } catch(e) { return {}; }
+function schedViewLabel() {
+  return schedView === 'all' ? 'Все месяцы' : (schedView === 'rkm' ? 'Поставка с РКМ' : 'Без пустых месяцев');
 }
-function saveShippedMap(m) { localStorage.setItem('strazh_shipped', JSON.stringify(m)); }
-function isShipped(id) { return !!shippedMap()[id]; }
-function toggleShipped(id, checked) {
-  const m = shippedMap();
-  if (checked) m[id] = true; else delete m[id];
-  saveShippedMap(m);
-  renderSched();
-}
-// ---- вид графика: все месяца / с РКМ / без пустых месяцев ----
-function setSchedView(v) {
-  schedView = v;
-  localStorage.setItem('strazh_schedview', v);
-  renderSched();
-}
-function schedViewButtons() {
-  const map = { all: 'viewAll', rkm: 'viewRkm', noempty: 'viewNoEmpty' };
-  Object.keys(map).forEach(v => {
-    const b = document.getElementById(map[v]);
-    if (b) b.classList.toggle('on', schedView === v);
-  });
-}
-function schedEntries() {
-  const q = schedSearchQuery();
-  let entries = loadSupply().filter(e => e.delivery);
-  if (q) entries = entries.filter(e => ((e.num || '') + ' ' + (e.contr || '')).toLowerCase().indexOf(q) !== -1);
-  if (schedMonthFilter !== 'all') entries = entries.filter(e => e.delivery.slice(0, 7) === schedMonthFilter);
-  if (schedView === 'rkm') entries = entries.filter(e => e.rkm);
+function applySchedView(entries) {
+  if (schedView === 'rkm') return entries.filter(e => e.rkm);
   return entries;
 }
-function schedByMonth(entries) {
-  const byMonth = {};
-  entries.forEach(e => {
-    const mk = e.delivery.slice(0, 7);
-    if (!byMonth[mk]) byMonth[mk] = [];
-    byMonth[mk].push(e);
-  });
-  return byMonth;
-}
-function schedAllMonthsBetween(keys) {
-  if (!keys.length) return [];
-  const start = parseISO(keys[0] + '-01');
-  const end = parseISO(keys[keys.length - 1] + '-01');
-  const all = [];
-  const cursor = new Date(start.getFullYear(), start.getMonth(), 1);
-  while (cursor <= end) {
-    const mk = cursor.getFullYear() + '-' + (cursor.getMonth() + 1 < 10 ? '0' : '') + (cursor.getMonth() + 1);
-    all.push(mk);
-    cursor.setMonth(cursor.getMonth() + 1);
+function schedMonthKeysForView(entries) {
+  if (schedMonthFilter !== 'all') return [schedMonthFilter];
+  if (schedView === 'all') {
+    const all = loadSupply().filter(e => e.delivery);
+    if (!all.length) return [];
+    const sorted = all.map(e => e.delivery.slice(0,7)).sort();
+    const start = parseISO(sorted[0] + '-01');
+    const end = parseISO(sorted[sorted.length - 1] + '-01');
+    const out = [];
+    const cursor = new Date(start.getFullYear(), start.getMonth(), 1);
+    while (cursor <= end) {
+      const mk = cursor.getFullYear() + '-' + (cursor.getMonth() + 1 < 10 ? '0' : '') + (cursor.getMonth() + 1);
+      out.push(mk);
+      cursor.setMonth(cursor.getMonth() + 1);
+    }
+    return out;
   }
-  return all;
-}
-function schedEmptyMonthHtml(mk) {
-  return '<div class="sch-month">' +
-    '<div class="sch-month-title">' + schedMonthLabel(mk) + '</div>' +
-    '<div class="sch-month-line"></div>' +
-    '<div class="sch-empty">нет поставок</div>' +
-    '</div>';
-}
-function schedRowHtml(e, todayStr) {
-  const shipped = isShipped(e.id);
-  const hasRkm = !!e.rkm;
-  const safeId = String(e.id || '').replace(/'/g, "\\'");
-  return '<div class="sch-row' + (e.delivery < todayStr ? ' past' : '') + (shipped ? ' done' : '') + '">' +
-    '<span class="sch-left">' +
-    '<input type="checkbox" class="sch-chk" title="Отметить: договор отгружен"' + (shipped ? ' checked' : '') +
-      ' onchange="toggleShipped(\'' + safeId + '\', this.checked)">' +
-    '<span class="snum' + (hasRkm ? ' rkm-done' : '') + '">' + esc(e.num) + (e.contr ? ' · ' + esc(e.contr) : '') + '</span>' +
-    '</span>' +
-    '<span class="sdate">' +
-    (hasRkm ? '<span class="srkm">РКМ ' + fmtDate(e.rkm) + '</span>' : '') +
-    fmtDate(e.delivery) +
-    '</span></div>';
+  const set = {};
+  entries.forEach(e => { set[e.delivery.slice(0, 7)] = true; });
+  return Object.keys(set).sort();
 }
 function schedMonthHtml(mk, arr, todayStr) {
   const y = parseInt(mk.slice(0,4),10);
@@ -1274,7 +1276,10 @@ function schedMonthHtml(mk, arr, todayStr) {
   const rows = arr
     .slice()
     .sort((a,b) => a.delivery.localeCompare(b.delivery))
-    .map(e => schedRowHtml(e, todayStr))
+    .map(e => '<div class="sch-row' + (e.rkm ? ' rkm' : '') + (e.delivery < todayStr ? ' past' : '') + '"' +
+      (e.rkm ? ' title="РКМ: ' + fmtDate(e.rkm) + '"' : '') + '>' +
+      '<span class="snum">' + esc(e.num) + (e.contr ? ' · ' + esc(e.contr) : '') + '</span>' +
+      '<span class="sdate">' + fmtDate(e.delivery) + '</span></div>')
     .join('');
   return '<div class="sch-month">' +
     '<div class="sch-month-title">' + MONTHS[m] + ' ' + y + '</div>' +
@@ -1285,59 +1290,64 @@ function schedMonthHtml(mk, arr, todayStr) {
 function renderSched() {
   const list = document.getElementById('schedList');
   if (!list) return;
-  schedViewButtons();
   rebuildSchedFilter();
   const q = schedSearchQuery();
-  const entries = schedEntries();
+  let entries = loadSupply().filter(e => e.delivery);
+  if (q) entries = entries.filter(e => ((e.num || '') + ' ' + (e.contr || '')).toLowerCase().indexOf(q) !== -1);
+  if (schedMonthFilter !== 'all') entries = entries.filter(e => e.delivery.slice(0, 7) === schedMonthFilter);
+  entries = applySchedView(entries);
   if (!entries.length) {
-    list.innerHTML = schedMonthFilter !== 'all'
-      ? '<p class="note">В этом месяце поставок нет' + (q ? ' по вашему поиску' : '') + '</p>'
-      : (schedView === 'rkm'
-          ? '<p class="note">Договоров с рассчитанным РКМ нет</p>'
-          : (q ? '<p class="note">По запросу договоров нет</p>'
-               : '<p class="note">Поставок пока нет — сделайте расчёт на первой вкладке</p>'));
+    list.innerHTML = q
+      ? '<p class="note">По запросу договоров нет</p>'
+      : '<p class="note">Поставок пока нет — сделайте расчёт на первой вкладке</p>';
     return;
   }
-  const byMonth = schedByMonth(entries);
+  const byMonth = {};
+  entries.forEach(e => {
+    const mk = e.delivery.slice(0, 7);
+    if (!byMonth[mk]) byMonth[mk] = [];
+    byMonth[mk].push(e);
+  });
   const todayStr = isoOfDate(new Date());
-  let html;
-  if (schedMonthFilter !== 'all') {
-    html = schedMonthHtml(schedMonthFilter, byMonth[schedMonthFilter] || [], todayStr);
-  } else if (schedView === 'all') {
-    html = schedAllMonthsBetween(Object.keys(byMonth).sort()).map(mk =>
-      byMonth[mk] && byMonth[mk].length ? schedMonthHtml(mk, byMonth[mk], todayStr) : schedEmptyMonthHtml(mk)
-    ).join('');
-  } else {
-    html = Object.keys(byMonth).sort().map(mk => schedMonthHtml(mk, byMonth[mk], todayStr)).join('');
-  }
-  list.innerHTML = html;
+  const keys = schedMonthKeysForView(loadSupply().filter(e => e.delivery));
+  list.innerHTML = keys.map(mk => {
+    if (!byMonth[mk] || !byMonth[mk].length) {
+      return '<div class="sch-month">' +
+        '<div class="sch-month-title">' + schedMonthLabel(mk) + '</div>' +
+        '<div class="sch-month-line"></div>' +
+        '<div class="sch-empty">нет поставок</div>' +
+        '</div>';
+    }
+    return schedMonthHtml(mk, byMonth[mk], todayStr);
+  }).join('');
 }
 
-// ===== выгрузка/печать графика =====
+// ===== сборка печатного HTML =====
 function buildPrintHtml() {
   const q = schedSearchQuery();
   let entries = loadSupply().filter(e => e.delivery);
   if (q) entries = entries.filter(e => ((e.num || '') + ' ' + (e.contr || '')).toLowerCase().indexOf(q) !== -1);
   if (schedMonthFilter !== 'all') entries = entries.filter(e => e.delivery.slice(0, 7) === schedMonthFilter);
-  if (schedView === 'rkm') entries = entries.filter(e => e.rkm);
+  entries = applySchedView(entries);
   if (!entries.length) return null;
-  const viewLabel = schedView === 'all' ? 'все месяца' : (schedView === 'rkm' ? 'с РКМ' : 'без пустых месяцев');
-  const filterLabel = schedMonthFilter === 'all' ? 'все месяцы' : schedMonthLabel(schedMonthFilter);
-  const byMonth = schedByMonth(entries);
-  let keys;
-  if (schedMonthFilter !== 'all') {
-    keys = [schedMonthFilter];
-    if (!byMonth[schedMonthFilter]) byMonth[schedMonthFilter] = [];
-  } else if (schedView === 'all') {
-    keys = schedAllMonthsBetween(Object.keys(byMonth).sort());
-  } else {
-    keys = Object.keys(byMonth).sort();
-  }
+  const byMonth = {};
+  entries.forEach(e => {
+    const mk = e.delivery.slice(0, 7);
+    if (!byMonth[mk]) byMonth[mk] = [];
+    byMonth[mk].push(e);
+  });
+  const keys = schedMonthKeysForView(loadSupply().filter(e => e.delivery));
   const todayStr = isoOfDate(new Date());
   const now = new Date();
   const whoNow = currentUser ? currentUser.name : '';
   const monthsHtml = keys.map(mk => {
-    if (!byMonth[mk] || !byMonth[mk].length) return schedEmptyMonthHtml(mk);
+    if (!byMonth[mk] || !byMonth[mk].length) {
+      return '<div class="sch-month">' +
+        '<div class="sch-month-title">' + schedMonthLabel(mk) + '</div>' +
+        '<div class="sch-month-line"></div>' +
+        '<div class="sch-empty">нет поставок</div>' +
+        '</div>';
+    }
     return schedMonthHtml(mk, byMonth[mk], todayStr);
   }).join('');
   return '<div class="pr-title">График поставки</div>' +
@@ -1346,15 +1356,56 @@ function buildPrintHtml() {
       (whoNow ? ' · ' + whoNow : '') +
     '</div>' +
     '<div class="pr-criteria">Поиск: ' + (q ? '«' + esc(q) + '»' : '—') +
-      ' · Фильтр по месяцам: ' + esc(filterLabel) + ' · Вид: ' + esc(viewLabel) + '</div>' +
+      ' · Месяц: ' + esc(schedMonthFilter === 'all' ? 'все' : schedMonthLabel(schedMonthFilter)) +
+      ' · Вид: ' + esc(schedViewLabel()) + '</div>' +
     monthsHtml +
-    '<div class="pr-note">Тестовый режим. Данные получены из локального хранилища устройства на момент выгрузки.</div>';
+    '<div class="pr-note">Тестовый режим. Данные получены из локального хранилища устройства на момент выгрузки. Чёрным выделены договоры с РКМ.</div>';
 }
 function printSched() {
   const html = buildPrintHtml();
-  if (!html) { alert('Нечего печатать: график поставок пуст или поиск не дал совпадений'); return; }
+  if (!html) { alert('Нечего выгружать: график пуст или поиск не дал совпадений'); return; }
   document.getElementById('printArea').innerHTML = html;
   window.print();
+}
+async function exportSchedPdf() {
+  const html = buildPrintHtml();
+  if (!html) { alert('Нечего выгружать: график пуст или поиск не дал совпадений'); return; }
+  if (typeof html2canvas === 'undefined' || typeof window.jspdf === 'undefined') {
+    alert('Для скачивания PDF нужна загрузка библиотек из интернета (первое использование). Сейчас открою печать — выберите «Сохранить как PDF».');
+    window.print();
+    return;
+  }
+  const cap = document.getElementById('pdfCapture');
+  cap.innerHTML = html;
+  try {
+    const canvas = await html2canvas(cap, { scale: 2, backgroundColor: '#ffffff', useCORS: true });
+    const pdf = new window.jspdf.jsPDF('p', 'mm', 'a4');
+    const pw = 210, ph = 297, margin = 10;
+    const imgW = pw - margin * 2;
+    const pageHpx = Math.floor((ph - margin * 2) * canvas.width / imgW);
+    let sy = 0, page = 0;
+    while (sy < canvas.height) {
+      const sliceH = Math.min(pageHpx, canvas.height - sy);
+      const slice = document.createElement('canvas');
+      slice.width = canvas.width;
+      slice.height = sliceH;
+      const ctx = slice.getContext('2d');
+      ctx.drawImage(canvas, 0, sy, canvas.width, sliceH, 0, 0, canvas.width, sliceH);
+      if (page > 0) pdf.addPage();
+      const sliceImg = slice.toDataURL('image/jpeg', 0.92);
+      const drawH = sliceH * imgW / canvas.width;
+      pdf.addImage(sliceImg, 'JPEG', margin, margin, imgW, drawH);
+      sy += sliceH;
+      page++;
+    }
+    pdf.save('График поставки.pdf');
+  } catch(e) {
+    alert('Не удалось создать PDF на устройстве — открываю печать. В окне выберите «Сохранить как PDF».');
+    document.getElementById('printArea').innerHTML = html;
+    window.print();
+  } finally {
+    cap.innerHTML = '';
+  }
 }
 
 function fmt(x) { return x.toLocaleString('ru-RU', {maximumFractionDigits: 2}) + ' руб.'; }
@@ -1427,7 +1478,7 @@ function calc() {
   const nds = price * 0.22;
   const priceWithNds = price + nds;
   document.getElementById('res').innerHTML =
-    '<hr class="hr">' +
+    '<div class="hr"></div>' +
     '<p>Материалы всего: <b>' + fmt(materials) + '</b></p>' +
     '<p>Ф9 — основная ЗП: ' + fmt(f9) + '</p>' +
     '<p>Ф10 — ДЗП: ' + fmt(f10) + '</p>' +
@@ -1435,13 +1486,13 @@ function calc() {
     '<p>СТРАХ: ' + fmt(strah) + '</p>' +
     '<p>Ф11 — ОПР: ' + fmt(f11) + '</p>' +
     '<p>Ф12 — ОХР/АУР: ' + fmt(f12) + '</p>' +
-    '<hr class="hr">' +
+    '<div class="hr"></div>' +
     '<p>СЕБ — себестоимость: <b>' + fmt(seb) + '</b></p>' +
     '<p>Прибыль: <b>' + fmt(profit) + '</b> <span class="note">(1% от материалов: ' + fmt(profitMaterials) + ' · 25% от собственных: ' + fmt(profitOwn) + ')</span></p>' +
-    '<hr class="hr">' +
+    '<div class="hr"></div>' +
     '<p style="font-size:17px">ЦЕНА БЕЗ НДС: <b>' + fmt(price) + '</b></p>' +
     '<p>НДС 22%: <b>' + fmt(nds) + '</b></p>' +
-    '<hr class="hr">' +
+    '<div class="hr"></div>' +
     '<p style="font-size:19px">ЦЕНА С НДС: <b>' + fmt(priceWithNds) + '</b></p>';
 }
 function sumWords() {
@@ -1450,12 +1501,11 @@ function sumWords() {
   const nds = s * 22 / 122;
   const priceNoNds = s - nds;
   document.getElementById('swRes').innerHTML =
-    '<hr class="hr">' +
+    '<div class="hr"></div>' +
     '<p>Цена без НДС: <b>' + fmt(priceNoNds) + '</b></p>' +
     '<p>в том числе НДС 22%: <b>' + fmt(nds) + '</b></p>' +
     '<div class="calc-result"><p>' + sumInWords(s) + ', в том числе НДС 22% — ' + sumInWords(nds) + '</p></div>';
 }
-
 
 // старт
 buildWhoSelect();
@@ -1463,6 +1513,7 @@ render();
 applyAuth();
 showTab(localStorage.getItem('strazh_tab') || 'tasks');
 docSub = localStorage.getItem('strazh_docsub') || 'calc';
+restoreSchedView();
 </script>
 </body>
 </html>
